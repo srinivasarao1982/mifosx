@@ -27,14 +27,20 @@ import org.mifosplatform.portfolio.paymentdetail.domain.PaymentDetailAssembler;
 import org.mifosplatform.portfolio.paymentdetail.service.PaymentDetailWritePlatformService;
 import org.mifosplatform.portfolio.savings.data.SavingsAccountTransactionDTO;
 import org.mifosplatform.portfolio.savings.domain.DepositAccountAssembler;
+import org.mifosplatform.portfolio.savings.domain.SavingsAccount;
+import org.mifosplatform.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountTransaction;
 import org.mifosplatform.portfolio.savings.service.DepositAccountWritePlatformService;
+import org.mifosplatform.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class CollectionSheetWritePlatformServiceJpaRepositoryImpl implements CollectionSheetWritePlatformService {
-
+	
+	private final static Logger logger = LoggerFactory.getLogger(CollectionSheetWritePlatformServiceJpaRepositoryImpl.class);
     private final LoanWritePlatformService loanWritePlatformService;
     private final CollectionSheetBulkRepaymentCommandFromApiJsonDeserializer bulkRepaymentCommandFromApiJsonDeserializer;
     private final CollectionSheetBulkDisbursalCommandFromApiJsonDeserializer bulkDisbursalCommandFromApiJsonDeserializer;
@@ -44,6 +50,8 @@ public class CollectionSheetWritePlatformServiceJpaRepositoryImpl implements Col
     private final DepositAccountWritePlatformService accountWritePlatformService;
     private final PaymentDetailAssembler paymentDetailAssembler;
     private final PaymentDetailWritePlatformService paymentDetailWritePlatformService;
+    private final SavingsAccountRepositoryWrapper savingsAccountRepository;
+    private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
 
     @Autowired
     public CollectionSheetWritePlatformServiceJpaRepositoryImpl(final LoanWritePlatformService loanWritePlatformService,
@@ -51,7 +59,9 @@ public class CollectionSheetWritePlatformServiceJpaRepositoryImpl implements Col
             final CollectionSheetBulkDisbursalCommandFromApiJsonDeserializer bulkDisbursalCommandFromApiJsonDeserializer,
             final CollectionSheetTransactionDataValidator transactionDataValidator,
             final MeetingWritePlatformService meetingWritePlatformService, final DepositAccountAssembler accountAssembler,
-            final DepositAccountWritePlatformService accountWritePlatformService, final PaymentDetailAssembler paymentDetailAssembler, final PaymentDetailWritePlatformService paymentDetailWritePlatformService) {
+            final DepositAccountWritePlatformService accountWritePlatformService, final PaymentDetailAssembler paymentDetailAssembler,
+            final PaymentDetailWritePlatformService paymentDetailWritePlatformService, final SavingsAccountRepositoryWrapper savingsAccountRepository,
+            final SavingsAccountWritePlatformService savingsAccountWritePlatformService) {
         this.loanWritePlatformService = loanWritePlatformService;
         this.bulkRepaymentCommandFromApiJsonDeserializer = bulkRepaymentCommandFromApiJsonDeserializer;
         this.bulkDisbursalCommandFromApiJsonDeserializer = bulkDisbursalCommandFromApiJsonDeserializer;
@@ -61,6 +71,8 @@ public class CollectionSheetWritePlatformServiceJpaRepositoryImpl implements Col
         this.accountWritePlatformService = accountWritePlatformService;
         this.paymentDetailAssembler = paymentDetailAssembler;
         this.paymentDetailWritePlatformService = paymentDetailWritePlatformService;
+        this.savingsAccountRepository = savingsAccountRepository;
+        this.savingsAccountWritePlatformService = savingsAccountWritePlatformService;
     }
 
     @Override
@@ -145,8 +157,28 @@ public class CollectionSheetWritePlatformServiceJpaRepositoryImpl implements Col
         List<Long> depositTransactionIds = new ArrayList<>();
         for (SavingsAccountTransactionDTO savingsAccountTransactionDTO : savingsTransactions) {
             try {
-                SavingsAccountTransaction savingsAccountTransaction =  this.accountWritePlatformService.mandatorySavingsAccountDeposit(savingsAccountTransactionDTO);
-                depositTransactionIds.add(savingsAccountTransaction.getId());
+            	
+            	
+            	final SavingsAccount account = this.savingsAccountRepository.findOneWithNotFoundDetection(savingsAccountTransactionDTO.getSavingsAccountId());
+            	
+            	
+            	if(account.isRDAccount()){
+                	SavingsAccountTransaction savingsAccountTransaction =  this.accountWritePlatformService.mandatorySavingsAccountDeposit(savingsAccountTransactionDTO);
+                    depositTransactionIds.add(savingsAccountTransaction.getId());
+            		
+            	}
+            	else if(account.isSavingsAccount()){
+            		SavingsAccountTransaction savingsAccountTransaction = this.savingsAccountWritePlatformService.deposit(savingsAccountTransactionDTO);
+            		depositTransactionIds.add(savingsAccountTransaction.getId());
+            	}
+            	else{
+            		
+            		// TODO throw exception saying not supported deposit/saving account type in bulk entry
+            		logger.error("Deposit entry in bulk entry mode is allowed only for savings and Mandatory RD accounts");
+            	}
+            			
+                
+                
             } catch (Exception e) {
                 // TODO: handle exception
             }

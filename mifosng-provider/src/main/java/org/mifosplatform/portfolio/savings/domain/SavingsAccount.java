@@ -2465,4 +2465,17 @@ public class SavingsAccount extends AbstractPersistable<Long> {
     public BigDecimal getWithdrawableBalance() {
         return getAccountBalance().subtract(minRequiredBalanceDerived(getCurrency()).getAmount());
     }
+    
+    public boolean isSavingsAccount() {
+    	return DepositAccountType.SAVINGS_DEPOSIT.getValue().equals(this.depositType);
+    }
+
+  
+    public boolean isRDAccount() {
+    	return DepositAccountType.RECURRING_DEPOSIT.getValue().equals(this.depositType);    
+    }
+
+    public boolean isFDAccount() {
+    	return DepositAccountType.FIXED_DEPOSIT.getValue().equals(this.depositType);    
+    }
 }
