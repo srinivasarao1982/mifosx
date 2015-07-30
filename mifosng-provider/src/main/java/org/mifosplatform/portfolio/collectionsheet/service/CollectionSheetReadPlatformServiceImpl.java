@@ -478,6 +478,10 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("LEFT JOIN m_staff sf ON sf.id = gp.staff_id ")
                     .append("JOIN m_group_client gc ON gc.group_id = gp.id ")
                     .append("JOIN m_client cl ON cl.id = gc.client_id ")
+                    // Added only for Nirantara start
+                    .append("INNER JOIN m_loan ln ON ln.client_id = cl.id AND ( ln.loan_status_id = 300 OR ln.loan_status_id = 700 ) ")
+                    .append("INNER JOIN m_loan_repayment_schedule sh ON sh.loan_id = ln.id AND sh.duedate = :dueDate AND ( IFNULL(sh.principal_amount,0) + IFNULL(sh.interest_amount,0) - IFNULL(sh.principal_completed_derived,0) - IFNULL(sh.interest_completed_derived,0)) > 0 ")
+                    // Added only for Nirantara end
                     .append("JOIN m_savings_account sa ON sa.client_id=cl.id and sa.status_enum=300 ")
                     .append("JOIN m_savings_product sp ON sa.product_id=sp.id ")
                     .append("LEFT JOIN m_deposit_account_recurring_detail dard ON sa.id = dard.savings_account_id AND dard.is_mandatory = true AND dard.is_calendar_inherited = true ")
@@ -494,6 +498,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= :dueDate)) ")
                     .append("GROUP BY gp.id ,cl.id , sa.id ORDER BY gp.id , cl.id , sa.id ");
 
+            
             return sql.toString();
         }
 
@@ -670,6 +675,9 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
         // mandatory savings data for collection sheet
         Collection<IndividualClientData> clientData = this.namedParameterjdbcTemplate.query(
                 mandatorySavingsExtractor.collectionSheetSchema(), namedParameters, mandatorySavingsExtractor);
+        
+
+        
 
         // merge savings data into loan data
         mergeLoanData(collectionSheetFlatDatas, (List<IndividualClientData>) clientData);
@@ -717,6 +725,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
             sb.append("GROUP BY loandata.clientId, loandata.loanId ORDER BY loandata.clientId, loandata.loanId ");
 
             sql = sb.toString();
+            
         }
 
         public String sqlSchema() {
