@@ -28,7 +28,15 @@ import org.mifosplatform.organisation.office.service.OfficeReadPlatformService;
 import org.mifosplatform.organisation.staff.data.StaffData;
 import org.mifosplatform.organisation.staff.service.StaffReadPlatformService;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
+import org.mifosplatform.portfolio.client.data.AgriOccupationDetails;
+import org.mifosplatform.portfolio.client.data.ClientAdditionalDetails;
+import org.mifosplatform.portfolio.client.data.ClientAddress;
+import org.mifosplatform.portfolio.client.data.ClientCFADetails;
 import org.mifosplatform.portfolio.client.data.ClientData;
+import org.mifosplatform.portfolio.client.data.ClientDetailedData;
+import org.mifosplatform.portfolio.client.data.ClientFamilyDetails;
+import org.mifosplatform.portfolio.client.data.ClientIdentifierData;
+import org.mifosplatform.portfolio.client.data.ClientKYCData;
 import org.mifosplatform.portfolio.client.data.ClientTimelineData;
 import org.mifosplatform.portfolio.client.domain.ClientEnumerations;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
@@ -72,7 +80,79 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         this.codeValueReadPlatformService = codeValueReadPlatformService;
         this.savingsProductReadPlatformService = savingsProductReadPlatformService;
     }
+    
+    @Override
+    public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly) {
+        this.context.authenticatedUser();
 
+        ClientData clientBasicDetails = retrieveTemplate(officeId, staffInSelectedOfficeOnly);
+        
+    	final ClientAdditionalDetails additionalDetails = null;
+    	final ClientAddress address = null;
+    	final ClientFamilyDetails familyDetails = null;
+    	final ClientCFADetails cfaDetails = null;
+    	final AgriOccupationDetails agriOccupation = null;
+    	final ClientIdentifierData identifier = null;
+    	final ClientKYCData kycDetails = null;
+    	
+        Collection<CodeValueData> salutation = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_SALUTATION));
+        
+    	Collection<CodeValueData> maritalStatus = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.MARITAL_STATUS));
+    	
+    	Collection<CodeValueData> profession = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PROFESSION));
+    	
+    	Collection<CodeValueData> educationQualification = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.EDUCATION_QUALIFICATION));
+    	
+    	Collection<CodeValueData> annualIncome = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.ANNUAL_INCOME));
+    	
+    	Collection<CodeValueData> landHolding = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.LAND_HOLDING));
+    	
+    	Collection<CodeValueData> houseType = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.HOUSE_TYPE));
+    	
+    	Collection<CodeValueData> state = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.STATE));
+    	
+    	Collection<CodeValueData> district = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.DISTRICT));
+    	
+    	Collection<CodeValueData> identityProof = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.IDENTITY_PROOF));
+    	
+    	Collection<CodeValueData> addressProof = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.ADDRESS_PROOF));
+    	
+    	Collection<CodeValueData> familyrelationShip = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.FAMILY_RELATIONSHIP));
+    	
+    	Collection<CodeValueData> familyOccupation = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.FAMILY_OCCUPATION));
+    	
+    	
+    	Collection<CodeValueData> yesOrNo = new ArrayList<>(
+              this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.YES_NO));
+    	
+    	Collection<CodeValueData> cfaOccupation = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.FIN_OCCUPATION));
+    	
+    	Collection<CodeValueData> externalLoanstatus = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.EXTERNALLOAN_STATUS));
+    	
+        		
+        return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, 
+        		identifier, kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, 
+        		houseType, state, district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, 
+        		externalLoanstatus);
+        
+    }
+    
+    
     @Override
     public ClientData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly) {
         this.context.authenticatedUser();
@@ -104,8 +184,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         final List<CodeValueData> clientClassificationOptions = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_CLASSIFICATION));
 
-        return ClientData.template(defaultOfficeId, new LocalDate(), offices, staffOptions, null, genderOptions, savingsProductDatas,
+        ClientData clientData =  ClientData.template(defaultOfficeId, new LocalDate(), offices, staffOptions, null, genderOptions, savingsProductDatas,
                 clientTypeOptions, clientClassificationOptions);
+        
+        return clientData;
     }
 
     @Override

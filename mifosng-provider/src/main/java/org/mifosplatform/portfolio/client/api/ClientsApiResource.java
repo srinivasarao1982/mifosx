@@ -38,6 +38,7 @@ import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext
 import org.mifosplatform.portfolio.accountdetails.data.AccountSummaryCollectionData;
 import org.mifosplatform.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.mifosplatform.portfolio.client.data.ClientData;
+import org.mifosplatform.portfolio.client.data.ClientDetailedData;
 import org.mifosplatform.portfolio.client.service.ClientReadPlatformService;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.mifosplatform.portfolio.savings.data.SavingsAccountData;
@@ -59,6 +60,7 @@ public class ClientsApiResource {
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final AccountDetailsReadPlatformService accountDetailsReadPlatformService;
     private final SavingsAccountReadPlatformService savingsAccountReadPlatformService;
+    private final ToApiJsonSerializer<ClientDetailedData> clientDetailedDatatoApiJsonSerializer;
 
     @Autowired
     public ClientsApiResource(final PlatformSecurityContext context, final ClientReadPlatformService readPlatformService,
@@ -67,7 +69,9 @@ public class ClientsApiResource {
             final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final AccountDetailsReadPlatformService accountDetailsReadPlatformService,
-            final SavingsAccountReadPlatformService savingsAccountReadPlatformService) {
+            final SavingsAccountReadPlatformService savingsAccountReadPlatformService,
+            final ToApiJsonSerializer<ClientDetailedData> clientDetailedDatatoApiJsonSerializer
+    		) {
         this.context = context;
         this.clientReadPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -76,6 +80,7 @@ public class ClientsApiResource {
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.accountDetailsReadPlatformService = accountDetailsReadPlatformService;
         this.savingsAccountReadPlatformService = savingsAccountReadPlatformService;
+        this.clientDetailedDatatoApiJsonSerializer = clientDetailedDatatoApiJsonSerializer;
     }
 
     @GET
@@ -90,6 +95,8 @@ public class ClientsApiResource {
 
         ClientData clientData = null;
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        
         if (is(commandParam, "close")) {
             clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_CLOSURE_REASON);
         } else if (is(commandParam, "acceptTransfer")) {
@@ -99,14 +106,20 @@ public class ClientsApiResource {
         } else if (is(commandParam, "withdraw")) {
             clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_WITHDRAW_REASON);
         } else {
-            clientData = this.clientReadPlatformService.retrieveTemplate(officeId, staffInSelectedOfficeOnly);
+        	ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(officeId, staffInSelectedOfficeOnly);
+            return this.clientDetailedDatatoApiJsonSerializer.serialize(settings, clientDetailedData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
         }
 
-        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        
         return this.toApiJsonSerializer.serialize(settings, clientData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }
 
-    @GET
+    private ClientDetailedData buildClientDetailedData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("sqlSearch") final String sqlSearch,
