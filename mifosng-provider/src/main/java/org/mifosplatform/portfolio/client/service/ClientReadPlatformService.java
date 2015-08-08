@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import org.mifosplatform.infrastructure.core.service.Page;
 import org.mifosplatform.portfolio.client.data.ClientData;
+import org.mifosplatform.portfolio.client.data.ClientDetailedData;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
 
 public interface ClientReadPlatformService {
@@ -32,4 +33,7 @@ public interface ClientReadPlatformService {
     Collection<ClientData> retrieveActiveClientMembersOfCenter(final Long centerId);
 
     ClientData retrieveAllNarrations(String clientNarrations);
+
+    ClientDetailedData retrieveClientDetailedTemplate(Long officeId,
+			boolean staffInSelectedOfficeOnly);
 }

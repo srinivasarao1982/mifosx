@@ -211,7 +211,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("ln.product_id As productId, ")
                     .append("ln.currency_code as currencyCode, ln.currency_digits as currencyDigits, ln.currency_multiplesof as inMultiplesOf, rc.`name` as currencyName, rc.display_symbol as currencyDisplaySymbol, rc.internationalized_name_code as currencyNameCode, ")
                     .append("if(ln.loan_status_id = 200 , ln.principal_amount , null) As disbursementAmount, ")
-                    .append("sum(ifnull(if(ln.loan_status_id = 300, ls.principal_amount, 0.0), 0.0) - ifnull(if(ln.loan_status_id = 300, ls.principal_completed_derived, 0.0), 0.0)) As principalDue, ")
+                    .append("if(sum(ifnull(if(ln.loan_status_id = 300, ls.principal_amount, 0.0), 0.0)) > ln.principal_outstanding_derived ,ln.principal_outstanding_derived, sum(ifnull(if(ln.loan_status_id = 300, ls.principal_amount, 0.0), 0.0)))  As principalDue, ")
                     .append("ln.principal_repaid_derived As principalPaid, ")
                     .append("sum(ifnull(if(ln.loan_status_id = 300, ls.interest_amount, 0.0), 0.0) - ifnull(if(ln.loan_status_id = 300, ls.interest_completed_derived, 0.0), 0.0)) As interestDue, ")
                     .append("ln.interest_repaid_derived As interestPaid, ")
@@ -470,7 +470,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("rc.`name` as currencyName, ")
                     .append("rc.display_symbol as currencyDisplaySymbol, ")
                     .append("rc.internationalized_name_code as currencyNameCode, ")
-                    .append("sum(ifnull(mss.deposit_amount,0) - ifnull(mss.deposit_amount_completed_derived,0)) as dueAmount ")
+                    .append("IF( sa.default_deposit IS NULL OR sa.default_deposit = 0.0, sum(ifnull(mss.deposit_amount,0) - ifnull(mss.deposit_amount_completed_derived,0)) , sa.default_deposit ) as dueAmount ")
 
                     .append("FROM m_group gp ")
                     .append("LEFT JOIN m_office of ON of.id = gp.office_id AND of.hierarchy like :officeHierarchy ")
@@ -478,10 +478,14 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("LEFT JOIN m_staff sf ON sf.id = gp.staff_id ")
                     .append("JOIN m_group_client gc ON gc.group_id = gp.id ")
                     .append("JOIN m_client cl ON cl.id = gc.client_id ")
+                    // Added only for Nirantara start
+                    .append("INNER JOIN m_loan ln ON ln.client_id = cl.id AND ( ln.loan_status_id = 300 OR ln.loan_status_id = 700 ) ")
+                    .append("INNER JOIN m_loan_repayment_schedule sh ON sh.loan_id = ln.id AND sh.duedate = :dueDate AND ( IFNULL(sh.principal_amount,0) + IFNULL(sh.interest_amount,0) - IFNULL(sh.principal_completed_derived,0) - IFNULL(sh.interest_completed_derived,0)) > 0 ")
+                    // Added only for Nirantara end
                     .append("JOIN m_savings_account sa ON sa.client_id=cl.id and sa.status_enum=300 ")
                     .append("JOIN m_savings_product sp ON sa.product_id=sp.id ")
-                    .append("JOIN m_deposit_account_recurring_detail dard ON sa.id = dard.savings_account_id AND dard.is_mandatory = true AND dard.is_calendar_inherited = true ")
-                    .append("JOIN m_mandatory_savings_schedule mss ON mss.savings_account_id=sa.id AND mss.duedate <= :dueDate ")
+                    .append("LEFT JOIN m_deposit_account_recurring_detail dard ON sa.id = dard.savings_account_id AND dard.is_mandatory = true AND dard.is_calendar_inherited = true ")
+                    .append("LEFT JOIN m_mandatory_savings_schedule mss ON mss.savings_account_id=sa.id AND mss.duedate <= :dueDate ")
                     .append("LEFT JOIN m_currency rc on rc.`code` = sa.currency_code ");
 
             if (isCenterCollection) {
@@ -494,6 +498,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("and (cl.status_enum = 300 or (cl.status_enum = 600 and cl.closedon_date >= :dueDate)) ")
                     .append("GROUP BY gp.id ,cl.id , sa.id ORDER BY gp.id , cl.id , sa.id ");
 
+            
             return sql.toString();
         }
 
@@ -670,6 +675,9 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
         // mandatory savings data for collection sheet
         Collection<IndividualClientData> clientData = this.namedParameterjdbcTemplate.query(
                 mandatorySavingsExtractor.collectionSheetSchema(), namedParameters, mandatorySavingsExtractor);
+        
+
+        
 
         // merge savings data into loan data
         mergeLoanData(collectionSheetFlatDatas, (List<IndividualClientData>) clientData);
@@ -717,6 +725,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
             sb.append("GROUP BY loandata.clientId, loandata.loanId ORDER BY loandata.clientId, loandata.loanId ");
 
             sql = sb.toString();
+            
         }
 
         public String sqlSchema() {

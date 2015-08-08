@@ -119,4 +119,25 @@ public class ClientApiConstants {
 
     public static final Set<String> CLIENT_WITHDRAW_DATA_PARAMETERS =	new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,withdrawalDateParamName,withdrawalReasonIdParamName));
 
+    
+    // Nirantara specific
+    
+    public static final String CLIENT_SALUTATION = "salutation";
+    public static final String MARITAL_STATUS = "maritalStatus";
+    public static final String PROFESSION = "profession";
+    public static final String EDUCATION_QUALIFICATION = "educationQualification";
+    public static final String ANNUAL_INCOME = "annualIncome";
+    public static final String LAND_HOLDING = "landHolding";
+    public static final String HOUSE_TYPE = "houseType";
+    public static final String STATE = "state";
+    public static final String DISTRICT = "district";
+    public static final String IDENTITY_PROOF = "identityProof";
+    public static final String ADDRESS_PROOF = "addressProof";
+    public static final String FAMILY_RELATIONSHIP = "familyrelationShip";
+    public static final String FAMILY_OCCUPATION = "familyOccupation";
+    public static final String YES_NO = "YesNo";
+    public static final String FIN_OCCUPATION = "cfaOccupation";
+    public static final String EXTERNALLOAN_STATUS = "externalLoanstatus";
+    
+    
 }
