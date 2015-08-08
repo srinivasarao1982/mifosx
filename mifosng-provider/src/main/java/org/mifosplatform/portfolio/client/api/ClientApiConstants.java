@@ -81,12 +81,7 @@ public class ClientApiConstants {
     // template related part of response
     public static final String officeOptionsParamName = "officeOptions";
     public static final String staffOptionsParamName = "staffOptions";
-
-    public static final Set<String> CLIENT_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
-            dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName,
-            middlenameParamName, lastnameParamName, fullnameParamName, officeIdParamName, activeParamName, activationDateParamName,
-            staffIdParamName, submittedOnDateParamName, savingsProductIdParamName, dateOfBirthParamName, genderIdParamName,
-            clientTypeIdParamName, clientClassificationIdParamName));
+  
 
     public static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName, middlenameParamName,
@@ -138,6 +133,15 @@ public class ClientApiConstants {
     public static final String YES_NO = "YesNo";
     public static final String FIN_OCCUPATION = "cfaOccupation";
     public static final String EXTERNALLOAN_STATUS = "externalLoanstatus";
+    public static final String clientExtParamName = "clientExt";
+    public static final String familyDetailsParamName = "familyDetails";
+    public static final String naddressParamName = "naddress";
+    
+    public static final Set<String> CLIENT_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
+            dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName,
+            middlenameParamName, lastnameParamName, fullnameParamName, officeIdParamName, activeParamName, activationDateParamName,
+            staffIdParamName, submittedOnDateParamName, savingsProductIdParamName, dateOfBirthParamName, genderIdParamName,
+            clientTypeIdParamName, clientClassificationIdParamName, clientClassificationParamName,CLIENT_TYPE,clientExtParamName,familyDetailsParamName,naddressParamName));
     
     
 }

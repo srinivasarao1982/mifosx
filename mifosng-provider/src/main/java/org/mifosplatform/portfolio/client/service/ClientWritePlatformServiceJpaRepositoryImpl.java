@@ -66,6 +66,8 @@ import org.mifosplatform.portfolio.savings.exception.SavingsAccountNotFoundExcep
 import org.mifosplatform.portfolio.savings.exception.SavingsProductNotFoundException;
 import org.mifosplatform.portfolio.savings.service.SavingsApplicationProcessWritePlatformService;
 import org.mifosplatform.useradministration.domain.AppUser;
+import org.nirantara.client.ext.domain.ClientExt;
+import org.nirantara.client.ext.domain.ClientExtAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +96,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final CommandProcessingService commandProcessingService;
     private final ConfigurationDomainService configurationDomainService;
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
+    private final ClientExtAssembler clientExtAssembler;
 
     @Autowired
     public ClientWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -104,7 +107,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final SavingsAccountRepository savingsRepository, final SavingsProductRepository savingsProductRepository,
             final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService,
             final CommandProcessingService commandProcessingService, final ConfigurationDomainService configurationDomainService,
-            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository) {
+            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,final ClientExtAssembler clientExtAssembler) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.officeRepository = officeRepository;
@@ -121,6 +124,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         this.commandProcessingService = commandProcessingService;
         this.configurationDomainService = configurationDomainService;
         this.accountNumberFormatRepository = accountNumberFormatRepository;
+        this.clientExtAssembler = clientExtAssembler;
     }
 
     @Transactional
@@ -243,12 +247,22 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 this.clientRepository.save(newClient);
             }
 
+            //For nirantara
+            ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, newClient);
+            if(clientExt != null){
+            	newClient.updateClientExt(clientExt);
+            }
+            
+            
+            //
             final Locale locale = command.extractLocale();
             final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);
             CommandProcessingResult result = openSavingsAccount(newClient, fmt);
             if (result.getSavingsId() != null) {
                 this.clientRepository.save(newClient);
             }
+            
+            this.clientRepository.save(newClient);
 
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //

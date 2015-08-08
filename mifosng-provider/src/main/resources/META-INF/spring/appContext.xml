@@ -43,7 +43,8 @@
 										  org.mifosplatform.template.*,
 										  org.mifosplatform.template.service.*,
 										  org.mifosplatform.useradministration.*,
-										  org.mifosplatform.batch">
+										  org.mifosplatform.batch,
+										  org.nirantara.*">
 		<context:exclude-filter expression="org.springframework.stereotype.Controller"
 			type="annotation" />
 
@@ -68,6 +69,7 @@
 	<jpa:repositories base-package="org.mifosplatform.mix.domain" />
 	<jpa:repositories base-package="org.mifosplatform.scheduledjobs.domain" />
 	<jpa:repositories base-package="org.mifosplatform.template.domain" />
+	<jpa:repositories base-package="org.nirantara.*" />
 	
 	<import resource="infrastructure.xml" />
 
