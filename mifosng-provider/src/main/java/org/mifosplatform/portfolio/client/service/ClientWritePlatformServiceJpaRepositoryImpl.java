@@ -66,14 +66,21 @@ import org.mifosplatform.portfolio.savings.exception.SavingsAccountNotFoundExcep
 import org.mifosplatform.portfolio.savings.exception.SavingsProductNotFoundException;
 import org.mifosplatform.portfolio.savings.service.SavingsApplicationProcessWritePlatformService;
 import org.mifosplatform.useradministration.domain.AppUser;
+import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.ClientExt;
 import org.nirantara.client.ext.domain.ClientExtAssembler;
+import org.nirantara.client.ext.domain.FamilyDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Service
 public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWritePlatformService {
@@ -253,7 +260,36 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             	newClient.updateClientExt(clientExt);
             }
             
+            //For nirantara Address
+            final JsonObject formDataObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
+    		final JsonArray addressArray = formDataObject.get("naddress").getAsJsonArray();
+    		if(addressArray != null){
+    			for(int i=0; i<addressArray.size(); i++){
+    				final JsonElement element = addressArray.get(i).getAsJsonObject();
+                    if (!element.isJsonNull() && !element.toString().equals("{}")) {
+                    	Address address = this.clientExtAssembler.assembleAddress(element, newClient);
+                    	if(address != null){
+                        	newClient.updateAddressExt(address);
+                        }
+                    }
+    			}
+    		}
             
+    		//For nirantara familyDetails
+            final JsonObject familyDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
+    		final JsonArray familyDetailsArray = familyDetailsObject.get("familyDetails").getAsJsonArray();
+    		if(familyDetailsArray != null){
+    			for(int i=0; i<familyDetailsArray.size(); i++){
+    				final JsonElement element = familyDetailsArray.get(i).getAsJsonObject();
+                    if (!element.isJsonNull() && !element.toString().equals("{}")) {
+                    	FamilyDetails familyDetails = this.clientExtAssembler.assembleFamilyDetails(element, newClient);
+                    	if(familyDetails != null){
+                        	newClient.updateFamilyDetails(familyDetails);
+                        }
+                    }
+    			}
+    		}
+    		
             //
             final Locale locale = command.extractLocale();
             final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);

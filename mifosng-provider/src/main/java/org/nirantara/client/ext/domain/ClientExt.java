@@ -26,10 +26,15 @@ public class ClientExt extends AbstractPersistable<Long> {
 	@OneToOne
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
-
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "salutation_cv_id", nullable = false)
+	private CodeValue salutation;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "marital_status_cv_id", nullable = false)
 	private CodeValue maritalStatus;
+	
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "profession_cv_id", nullable = false)
@@ -67,7 +72,7 @@ public class ClientExt extends AbstractPersistable<Long> {
 	@Column(name = "nrega_no", length = 100)
 	private String nregaNo;
 
-	public static ClientExt createFrom(final Client client,
+	public static ClientExt createFrom(final Client client,final CodeValue salutation,
 			final CodeValue maritalStatus, final CodeValue profession,
 			final String professionOthers,
 			final CodeValue educationalQualification,
@@ -75,7 +80,7 @@ public class ClientExt extends AbstractPersistable<Long> {
 			final CodeValue houseType, final String aadhaarNo,
 			final String panNo, final CodeValue panForm, final String nregaNo) {
 
-		return new ClientExt(client, maritalStatus, profession,
+		return new ClientExt(client, salutation, maritalStatus, profession,
 				professionOthers, educationalQualification, annualIncome,
 				landholding, houseType, aadhaarNo, panNo, panForm, nregaNo);
 	}
@@ -84,7 +89,7 @@ public class ClientExt extends AbstractPersistable<Long> {
 		//
 	}
 
-	private ClientExt(final Client client, final CodeValue maritalStatus,
+	private ClientExt(final Client client, final CodeValue salutation, final CodeValue maritalStatus,
 			final CodeValue profession, final String professionOthers,
 			final CodeValue educationalQualification,
 			final CodeValue annualIncome, final CodeValue landholding,
@@ -92,6 +97,7 @@ public class ClientExt extends AbstractPersistable<Long> {
 			final String panNo, final CodeValue panForm, final String nregaNo) {
 
 		this.client = client;
+		this.salutation = salutation;
 		this.maritalStatus = maritalStatus;
 		this.profession = profession;
 		this.professionOthers = professionOthers;
