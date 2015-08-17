@@ -1,6 +1,7 @@
 CREATE TABLE `n_client_ext` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
 	`client_id`  BIGINT(20) NOT NULL,
+	`salutation_cv_id` INT(11) NOT NULL,
 	`marital_status_cv_id` INT(11) NOT NULL,
 	`profession_cv_id`   INT(11) NOT NULL,
 	`profession_others`  VARCHAR(100) NULL DEFAULT NULL,
@@ -15,6 +16,7 @@ CREATE TABLE `n_client_ext` (
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `client_id_UNIQUE` (`client_id`),
 	CONSTRAINT `fk_n_client_ext_client_id_m_client` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
+	CONSTRAINT `fk_n_client_ext_salutation_cv_id` FOREIGN KEY (`salutation_cv_id`) REFERENCES `m_code_value` (`id`),
 	CONSTRAINT `fk_n_client_ext_marital_status_cv_id` FOREIGN KEY (`marital_status_cv_id`) REFERENCES `m_code_value` (`id`),
 	CONSTRAINT `fk_n_client_ext_profession_cv_id` FOREIGN KEY (`profession_cv_id`) REFERENCES `m_code_value` (`id`),
 	CONSTRAINT `fk_n_client_ext_eq_cv_id` FOREIGN KEY (`educational_qualification_cv_id`) REFERENCES `m_code_value` (`id`),
@@ -50,7 +52,7 @@ CREATE TABLE `n_address` (
 
 CREATE TABLE `n_family_details` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-	`client_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`client_id` BIGINT(20) NOT NULL,
 	`firstname` VARCHAR(50) NOT NULL,
 	`middlename` VARCHAR(50) NULL DEFAULT NULL,
 	`lastname` VARCHAR(50) NULL DEFAULT NULL,
@@ -63,49 +65,44 @@ CREATE TABLE `n_family_details` (
 	PRIMARY KEY (`id`),
 	CONSTRAINT `FK1_n_family_details_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
 	CONSTRAINT `FK2_n_family_details_relationship_cv_id` FOREIGN KEY (`relationship_cv_id`) REFERENCES `m_code_value` (`id`),
-	CONSTRAINT `FK3_n_family_details_sex_cv_id` FOREIGN KEY (`sex_cv_id`) REFERENCES `sex_cv_id` (`id`),
-	CONSTRAINT `FK4_n_family_details_occupation_cv_id` FOREIGN KEY (`occupation_cv_id`) REFERENCES `sex_cv_id` (`id`),
+	CONSTRAINT `FK3_n_family_details_sex_cv_id` FOREIGN KEY (`gender_cv_id`) REFERENCES `m_code_value` (`id`),
+	CONSTRAINT `FK4_n_family_details_occupation_cv_id` FOREIGN KEY (`occupation_cv_id`) REFERENCES `m_code_value` (`id`),
 	CONSTRAINT `FK5_n_family_details_educational_status_cv_id` FOREIGN KEY (`educational_status_cv_id`) REFERENCES `m_code_value` (`id`)
 );
 
 CREATE TABLE `n_financial_details` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-	`client_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`client_id` BIGINT(20) NOT NULL,
 	`cfa_occupation_cv_id`  INT(11) NOT NULL,
 	`annual_revenue` DECIMAL(19,6) NOT NULL,
 	`annual_expenditure` DECIMAL(19,6) NOT NULL,
 	PRIMARY KEY (`id`),
-	CONSTRAINT `FK1_n_financial_details_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
-	CONSTRAINT `FK2_n_financial_details_relationship_crop_cv_id` FOREIGN KEY (`crop_cv_id`) REFERENCES `m_code_value` (`id`)	)
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB;
+	CONSTRAINT `FK1_n_financial_d_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
+	CONSTRAINT `FK2_n_financial_d_cfa_occupation_cv_id` FOREIGN KEY (`cfa_occupation_cv_id`) REFERENCES `m_code_value` (`id`)	
+);
 
 
 -- Do not use below tables
 
 CREATE TABLE `n_agri_occupational_details` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-	`client_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-	`crop_cv_id` VARCHAR(20) NOT NULL,
+	`client_id` BIGINT(20) NOT NULL,
+	`crop_cv_id` INT(20) NOT NULL,
 	`area`  SMALLINT(3) NOT NULL,
 	`yes_no_cv_id`  INT(11) NOT NULL,
 	PRIMARY KEY (`id`),
-	CONSTRAINT `FK1_n_agri_occupational_details_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
-	CONSTRAINT `FK2_n_agri_occupational_details_relationship_crop_cv_id` FOREIGN KEY (`crop_cv_id`) REFERENCES `m_code_value` (`id`),
-	CONSTRAINT `FK3_n_agri_occupational_details_yes_no_cv_id` FOREIGN KEY (`sex_cv_id`) REFERENCES `yes_no_cv_id` (`id`)
-	)
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB;
+	CONSTRAINT `FK1_n_agri_od_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
+	CONSTRAINT `FK2_n_agri_od_crop_cv_id` FOREIGN KEY (`crop_cv_id`) REFERENCES `m_code_value` (`id`),
+	CONSTRAINT `FK3_n_agri_od_yes_no_cv_id` FOREIGN KEY (`yes_no_cv_id`) REFERENCES `m_code_value` (`id`)
+);
 
 CREATE TABLE `n_agri_investment` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-	`client_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-	`investment_type_cv_id` VARCHAR(20) NOT NULL,
+	`client_id` BIGINT(20) NOT NULL,
+	`investment_type_cv_id` INT(11) NOT NULL,
 	`amount`  SMALLINT(3) NOT NULL
 	PRIMARY KEY (`id`),
-	CONSTRAINT `FK1_n_agri_occupational_details_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
-	CONSTRAINT `FK2_n_agri_occupational_details_relationship_crop_cv_id` FOREIGN KEY (`crop_cv_id`) REFERENCES `m_code_value` (`id`),
-	CONSTRAINT `FK3_n_agri_occupational_details_yes_no_cv_id` FOREIGN KEY (`sex_cv_id`) REFERENCES `yes_no_cv_id` (`id`)
-	)
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB;
+	CONSTRAINT `FK1_n_agri_inv_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
+	CONSTRAINT `FK2_n_agri_inv_r_crop_cv_id` FOREIGN KEY (`crop_cv_id`) REFERENCES `m_code_value` (`id`),
+	CONSTRAINT `FK3_n_agri_inv_i_type_cv_id` FOREIGN KEY (`investment_type_cv_id`) REFERENCES `m_code_value` (`id`)
+);

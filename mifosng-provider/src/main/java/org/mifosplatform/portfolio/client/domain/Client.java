@@ -51,6 +51,7 @@ import org.mifosplatform.portfolio.savings.domain.SavingsProduct;
 import org.mifosplatform.useradministration.domain.AppUser;
 import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.ClientExt;
+import org.nirantara.client.ext.domain.FamilyDetails;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @SuppressWarnings("serial")
@@ -220,6 +221,10 @@ public final class Client extends AbstractPersistable<Long> {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "client", optional = true, orphanRemoval = true)
     private Address addressExt;
+    
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "client", optional = true, orphanRemoval = true)
+    private FamilyDetails familyDetails;
 
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
@@ -909,5 +914,13 @@ public final class Client extends AbstractPersistable<Long> {
 
 	public void updateClientExt(final ClientExt clientExt) {
 		this.clientExt = clientExt;		
+	}
+
+	public void updateAddressExt(final Address address) {
+		this.addressExt = address;		
+	}
+	
+	public void updateFamilyDetails(final FamilyDetails familyDetails) {
+		this.familyDetails = familyDetails;		
 	}
 }
