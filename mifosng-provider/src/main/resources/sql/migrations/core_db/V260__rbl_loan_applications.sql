@@ -100,9 +100,8 @@ CREATE TABLE `n_agri_investment` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
 	`client_id` BIGINT(20) NOT NULL,
 	`investment_type_cv_id` INT(11) NOT NULL,
-	`amount`  SMALLINT(3) NOT NULL
+	`amount`  SMALLINT(3) NOT NULL,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `FK1_n_agri_inv_client_id` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`),
-	CONSTRAINT `FK2_n_agri_inv_r_crop_cv_id` FOREIGN KEY (`crop_cv_id`) REFERENCES `m_code_value` (`id`),
 	CONSTRAINT `FK3_n_agri_inv_i_type_cv_id` FOREIGN KEY (`investment_type_cv_id`) REFERENCES `m_code_value` (`id`)
 );
