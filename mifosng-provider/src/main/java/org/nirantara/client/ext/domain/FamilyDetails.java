@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,7 +27,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @Table(name = "n_family_details", uniqueConstraints = { @UniqueConstraint(columnNames = { "client_id" }, name = "FK1_n_family_details_client_id") })
 public class FamilyDetails extends AbstractPersistable<Long> {
 
-	@OneToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
 

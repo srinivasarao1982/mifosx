@@ -743,4 +743,11 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         return ClientData.template(null, null, null, null, narrations, null, null, clientTypeOptions, clientClassificationOptions);
     }
 
+	@Override
+	public ClientData retrieveClientDetailedExt(ClientData clientData) {
+		
+		
+		return clientData;		
+	}
+
 }
