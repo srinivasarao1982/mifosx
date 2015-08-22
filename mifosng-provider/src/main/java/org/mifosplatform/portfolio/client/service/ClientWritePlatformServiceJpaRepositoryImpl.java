@@ -78,7 +78,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -264,30 +263,20 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final JsonObject formDataObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
     		final JsonArray addressArray = formDataObject.get("naddress").getAsJsonArray();
     		if(addressArray != null){
-    			for(int i=0; i<addressArray.size(); i++){
-    				final JsonElement element = addressArray.get(i).getAsJsonObject();
-                    if (!element.isJsonNull() && !element.toString().equals("{}")) {
-                    	Address address = this.clientExtAssembler.assembleAddress(element, newClient);
-                    	if(address != null){
-                        	newClient.updateAddressExt(address);
-                        }
-                    }
-    			}
+    			List<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
+    			if(address != null && address.size() > 0){
+                	newClient.updateAddressExt(address);
+                }
     		}
             
     		//For nirantara familyDetails
             final JsonObject familyDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
     		final JsonArray familyDetailsArray = familyDetailsObject.get("familyDetails").getAsJsonArray();
     		if(familyDetailsArray != null){
-    			for(int i=0; i<familyDetailsArray.size(); i++){
-    				final JsonElement element = familyDetailsArray.get(i).getAsJsonObject();
-                    if (!element.isJsonNull() && !element.toString().equals("{}")) {
-                    	FamilyDetails familyDetails = this.clientExtAssembler.assembleFamilyDetails(element, newClient);
-                    	if(familyDetails != null){
-                        	newClient.updateFamilyDetails(familyDetails);
-                        }
-                    }
-    			}
+    			List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, newClient);
+    			if(familyDetails != null){
+                	newClient.updateFamilyDetails(familyDetails);
+                }
     		}
     		
             //
@@ -391,6 +380,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 }
                 clientForUpdate.updateClientClassification(newCodeVal);
             }
+            
+            /** Update For Nirantara **/
 
             if (!changes.isEmpty()) {
                 this.clientRepository.saveAndFlush(clientForUpdate);

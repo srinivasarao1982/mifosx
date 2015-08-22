@@ -36,4 +36,6 @@ public interface ClientReadPlatformService {
 
     ClientDetailedData retrieveClientDetailedTemplate(Long officeId,
 			boolean staffInSelectedOfficeOnly);
+
+    ClientData retrieveClientDetailedExt(ClientData clientData);
 }

@@ -161,6 +161,13 @@ public class ClientsApiResource {
                 clientData = ClientData.templateWithSavingAccountOptions(clientData, savingAccountOptions);
             }
         }
+        /*Nirantara Changes*/
+        ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(clientData.getOfficeId(), staffInSelectedOfficeOnly);
+        clientData = this.clientReadPlatformService.retrieveClientDetailedExt(clientData);
+        if(clientDetailedData != null){
+        	clientData.setClientDetailedData(clientDetailedData);
+        	
+        }
 
         return this.toApiJsonSerializer.serialize(settings, clientData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }

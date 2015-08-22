@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -25,7 +24,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 		@UniqueConstraint(columnNames = { "client_id", "address_type_cv_id" }, name = "client_id_address_type_cv_id_UNIQUE") })
 public class Address extends AbstractPersistable<Long> {
 
-	@OneToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
 

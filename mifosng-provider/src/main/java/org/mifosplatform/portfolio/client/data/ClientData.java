@@ -75,6 +75,9 @@ final public class ClientData implements Comparable<ClientData> {
     private final Collection<CodeValueData> genderOptions;
     private final Collection<CodeValueData> clientTypeOptions;
     private final Collection<CodeValueData> clientClassificationOptions;
+    
+    //Nirantara
+    private ClientDetailedData clientDetailedData;
 
     public static ClientData template(final Long officeId, final LocalDate joinedDate, final Collection<OfficeData> officeOptions,
             final Collection<StaffData> staffOptions, final Collection<CodeValueData> narrations,
@@ -320,6 +323,7 @@ final public class ClientData implements Comparable<ClientData> {
         this.savingsProductName = savingsProductName;
         this.savingsAccountId = savingsAccountId;
         this.savingAccountOptions = savingAccountOptions;
+        this.clientDetailedData = null;
 
     }
 
@@ -397,4 +401,12 @@ final public class ClientData implements Comparable<ClientData> {
     public LocalDate getActivationDate() {
         return this.activationDate;
     }
+
+	public Long getOfficeId() {
+		return this.officeId;
+	}
+
+	public void setClientDetailedData(final ClientDetailedData clientDetailedData) {
+		this.clientDetailedData = clientDetailedData;
+	}
 }

@@ -1,5 +1,8 @@
 package org.nirantara.client.ext.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.codes.domain.CodeValue;
 import org.mifosplatform.infrastructure.codes.domain.CodeValueRepositoryWrapper;
@@ -9,6 +12,7 @@ import org.mifosplatform.portfolio.client.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -118,118 +122,145 @@ public class ClientExtAssembler {
 				panFormCodeValue, nregaNo);
 	}
 
-	public Address assembleAddress(JsonElement element, Client newClient) {
+	public List<Address> assembleAddress(final JsonArray addressArray,
+			Client newClient) {
+		
+		List<Address> addressList = new ArrayList<>();
+		
+		for (int i = 0; i < addressArray.size(); i++) {
+			final JsonElement element = addressArray.get(i).getAsJsonObject();
+			if (!element.isJsonNull() && !element.toString().equals("{}")) {
 
-		final Long addressTypeId = this.fromApiJsonHelper.extractLongNamed(
-				"addressType", element);
-		CodeValue addressTypeCodeValue = null;
-		if (addressTypeId != null) {
-			addressTypeCodeValue = this.codeValueRepository
-					.findOneWithNotFoundDetection(addressTypeId);
+				final Long addressTypeId = this.fromApiJsonHelper
+						.extractLongNamed("addressType", element);
+				CodeValue addressTypeCodeValue = null;
+				if (addressTypeId != null) {
+					addressTypeCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(addressTypeId);
+				}
+
+				final String houseNo = this.fromApiJsonHelper
+						.extractStringNamed("houseNo", element);
+
+				final String streetNo = this.fromApiJsonHelper
+						.extractStringNamed("streetNo", element);
+
+				final String areaLocality = this.fromApiJsonHelper
+						.extractStringNamed("areaLocality", element);
+
+				final String landmark = this.fromApiJsonHelper
+						.extractStringNamed("landmark", element);
+
+				final String villageTown = this.fromApiJsonHelper
+						.extractStringNamed("villageTown", element);
+
+				final String taluka = this.fromApiJsonHelper
+						.extractStringNamed("taluka", element);
+
+				final Long districtId = this.fromApiJsonHelper
+						.extractLongNamed("district", element);
+				CodeValue districtCodeValue = null;
+				if (districtId != null) {
+					districtCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(districtId);
+				}
+
+				final Long stateId = this.fromApiJsonHelper.extractLongNamed(
+						"state", element);
+				CodeValue stateCodeValue = null;
+				if (stateId != null) {
+					stateCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(stateId);
+				}
+
+				final Integer pinCode = this.fromApiJsonHelper
+						.extractIntegerWithLocaleNamed("pinCode", element);
+
+				final Long landlineNo = this.fromApiJsonHelper
+						.extractLongNamed("landlineNo", element);
+
+				final Long mobileNo = this.fromApiJsonHelper.extractLongNamed(
+						"mobileNo", element);
+
+				Address address = Address.createFrom(newClient,
+						addressTypeCodeValue, houseNo, streetNo, areaLocality,
+						landmark, villageTown, taluka, districtCodeValue,
+						stateCodeValue, pinCode, landlineNo, mobileNo);
+				
+				if (address != null) {
+					addressList.add(address);
+				}
+			}
 		}
 
-		final String houseNo = this.fromApiJsonHelper.extractStringNamed(
-				"houseNo", element);
-
-		final String streetNo = this.fromApiJsonHelper.extractStringNamed(
-				"streetNo", element);
-
-		final String areaLocality = this.fromApiJsonHelper.extractStringNamed(
-				"areaLocality", element);
-
-		final String landmark = this.fromApiJsonHelper.extractStringNamed(
-				"landmark", element);
-
-		final String villageTown = this.fromApiJsonHelper.extractStringNamed(
-				"villageTown", element);
-
-		final String taluka = this.fromApiJsonHelper.extractStringNamed(
-				"taluka", element);
-
-		final Long districtId = this.fromApiJsonHelper.extractLongNamed(
-				"district", element);
-		CodeValue districtCodeValue = null;
-		if (districtId != null) {
-			districtCodeValue = this.codeValueRepository
-					.findOneWithNotFoundDetection(districtId);
-		}
-
-		final Long stateId = this.fromApiJsonHelper.extractLongNamed("state",
-				element);
-		CodeValue stateCodeValue = null;
-		if (stateId != null) {
-			stateCodeValue = this.codeValueRepository
-					.findOneWithNotFoundDetection(stateId);
-		}
-
-		final Integer pinCode = this.fromApiJsonHelper
-				.extractIntegerWithLocaleNamed("pinCode", element);
-
-		final Long landlineNo = this.fromApiJsonHelper.extractLongNamed(
-				"landlineNo", element);
-
-		final Long mobileNo = this.fromApiJsonHelper.extractLongNamed(
-				"mobileNo", element);
-
-		return Address.createFrom(newClient, addressTypeCodeValue, houseNo,
-				streetNo, areaLocality, landmark, villageTown, taluka,
-				districtCodeValue, stateCodeValue, pinCode, landlineNo,
-				mobileNo);
+		return addressList;
 	}
 
-	public FamilyDetails assembleFamilyDetails(final JsonElement element,
-			final Client newClient) {
+	public List<FamilyDetails> assembleFamilyDetails(
+			final JsonArray familyDetailsArray, final Client newClient) {
+		List<FamilyDetails> familyDetailsList = new ArrayList<>();
+		for (int i = 0; i < familyDetailsArray.size(); i++) {
+			final JsonElement element = familyDetailsArray.get(i)
+					.getAsJsonObject();
+			if (!element.isJsonNull() && !element.toString().equals("{}")) {
 
-		final String firstname = this.fromApiJsonHelper.extractStringNamed(
-				"firstname", element);
+				final String firstname = this.fromApiJsonHelper
+						.extractStringNamed("firstname", element);
 
-		final String middlename = this.fromApiJsonHelper.extractStringNamed(
-				"middlename", element);
+				final String middlename = this.fromApiJsonHelper
+						.extractStringNamed("middlename", element);
 
-		final String lastname = this.fromApiJsonHelper.extractStringNamed(
-				"lastname", element);
+				final String lastname = this.fromApiJsonHelper
+						.extractStringNamed("lastname", element);
 
-		final Long relationshipId = this.fromApiJsonHelper.extractLongNamed(
-				"relationship", element);
-		CodeValue relationshipCodeValue = null;
-		if (relationshipId != null) {
-			relationshipCodeValue = this.codeValueRepository
-					.findOneWithNotFoundDetection(relationshipId);
+				final Long relationshipId = this.fromApiJsonHelper
+						.extractLongNamed("relationship", element);
+				CodeValue relationshipCodeValue = null;
+				if (relationshipId != null) {
+					relationshipCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(relationshipId);
+				}
+
+				final Long genderId = this.fromApiJsonHelper.extractLongNamed(
+						"gender", element);
+				CodeValue genderCodeValue = null;
+				if (genderId != null) {
+					genderCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(genderId);
+				}
+
+				final LocalDate dataOfBirth = this.fromApiJsonHelper
+						.extractLocalDateNamed("dataOfBirth", element);
+
+				final Integer age = this.fromApiJsonHelper
+						.extractIntegerWithLocaleNamed("age", element);
+
+				final Long occupationId = this.fromApiJsonHelper
+						.extractLongNamed("occupation", element);
+				CodeValue occupationCodeValue = null;
+				if (occupationId != null) {
+					occupationCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(occupationId);
+				}
+
+				final Long educationalStatusId = this.fromApiJsonHelper
+						.extractLongNamed("educationalStatus", element);
+				CodeValue educationalStatusCodeValue = null;
+				if (educationalStatusId != null) {
+					educationalStatusCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(educationalStatusId);
+				}
+
+				FamilyDetails familyDetails = FamilyDetails.createFrom(
+						newClient, firstname, middlename, lastname,
+						relationshipCodeValue, genderCodeValue, dataOfBirth,
+						age, occupationCodeValue, educationalStatusCodeValue);
+				if (familyDetails != null) {
+					familyDetailsList.add(familyDetails);
+				}
+			}
 		}
-
-		final Long genderId = this.fromApiJsonHelper.extractLongNamed("gender",
-				element);
-		CodeValue genderCodeValue = null;
-		if (genderId != null) {
-			genderCodeValue = this.codeValueRepository
-					.findOneWithNotFoundDetection(genderId);
-		}
-
-		final LocalDate dataOfBirth = this.fromApiJsonHelper
-				.extractLocalDateNamed("dataOfBirth", element);
-
-		final Integer age = this.fromApiJsonHelper
-				.extractIntegerWithLocaleNamed("age", element);
-
-		final Long occupationId = this.fromApiJsonHelper.extractLongNamed(
-				"occupation", element);
-		CodeValue occupationCodeValue = null;
-		if (occupationId != null) {
-			occupationCodeValue = this.codeValueRepository
-					.findOneWithNotFoundDetection(occupationId);
-		}
-
-		final Long educationalStatusId = this.fromApiJsonHelper
-				.extractLongNamed("educationalStatus", element);
-		CodeValue educationalStatusCodeValue = null;
-		if (educationalStatusId != null) {
-			educationalStatusCodeValue = this.codeValueRepository
-					.findOneWithNotFoundDetection(educationalStatusId);
-		}
-
-		return FamilyDetails.createFrom(newClient, firstname, middlename,
-				lastname, relationshipCodeValue, genderCodeValue, dataOfBirth,
-				age, occupationCodeValue, educationalStatusCodeValue);
+		return familyDetailsList;
 	}
 
 }

@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -219,12 +220,12 @@ public final class Client extends AbstractPersistable<Long> {
     private ClientExt clientExt;
     
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "client", optional = true, orphanRemoval = true)
-    private Address addressExt;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
+    private List<Address> addressExt;
     
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "client", optional = true, orphanRemoval = true)
-    private FamilyDetails familyDetails;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
+    private List<FamilyDetails> familyDetails;
 
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
@@ -916,11 +917,11 @@ public final class Client extends AbstractPersistable<Long> {
 		this.clientExt = clientExt;		
 	}
 
-	public void updateAddressExt(final Address address) {
+	public void updateAddressExt(final List<Address> address) {
 		this.addressExt = address;		
 	}
 	
-	public void updateFamilyDetails(final FamilyDetails familyDetails) {
+	public void updateFamilyDetails(final List<FamilyDetails> familyDetails) {
 		this.familyDetails = familyDetails;		
 	}
 }
