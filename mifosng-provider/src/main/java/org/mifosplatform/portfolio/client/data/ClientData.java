@@ -77,8 +77,8 @@ final public class ClientData implements Comparable<ClientData> {
     private final Collection<CodeValueData> clientClassificationOptions;
     
     //Nirantara
-    private ClientDetailedData clientDetailedData;
-
+    private final ClientDetailedData clientDetailedData;
+    
     public static ClientData template(final Long officeId, final LocalDate joinedDate, final Collection<OfficeData> officeOptions,
             final Collection<StaffData> staffOptions, final Collection<CodeValueData> narrations,
             final Collection<CodeValueData> genderOptions, final Collection<SavingsProductData> savingProductOptions,
@@ -110,130 +110,195 @@ final public class ClientData implements Comparable<ClientData> {
         final Collection<SavingsAccountData> savingAccountOptions = null;
         final CodeValueData clientType = null;
         final CodeValueData clientClassification = null;
+        final ClientDetailedData clientDetailedData = null;
         return new ClientData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
                 middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, joinedDate, imageId, staffId,
                 staffName, officeOptions, groups, staffOptions, narrations, genderOptions, timeline, savingProductOptions,
                 savingsProductId, savingsProductName, savingsAccountId, savingAccountOptions, clientType, clientClassification,
-                clientTypeOptions, clientClassificationOptions);
+                clientTypeOptions, clientClassificationOptions,clientDetailedData);
 
     }
 
-    public static ClientData templateOnTop(final ClientData clientData, final ClientData templateData) {
+	public static ClientData templateOnTop(final ClientData clientData,
+			final ClientData templateData) {
 
-        return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
-                clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname, clientData.middlename,
-                clientData.lastname, clientData.fullname, clientData.displayName, clientData.externalId, clientData.mobileNo,
-                clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId, clientData.staffId,
-                clientData.staffName, templateData.officeOptions, clientData.groups, templateData.staffOptions, templateData.narrations,
-                templateData.genderOptions, clientData.timeline, templateData.savingProductOptions, clientData.savingsProductId,
-                clientData.savingsProductName, clientData.savingsAccountId, clientData.savingAccountOptions, clientData.clientType,
-                clientData.clientClassification, templateData.clientTypeOptions, templateData.clientClassificationOptions);
+		return new ClientData(clientData.accountNo, clientData.status,
+				clientData.subStatus, clientData.officeId,
+				clientData.officeName, clientData.transferToOfficeId,
+				clientData.transferToOfficeName, clientData.id,
+				clientData.firstname, clientData.middlename,
+				clientData.lastname, clientData.fullname,
+				clientData.displayName, clientData.externalId,
+				clientData.mobileNo, clientData.dateOfBirth, clientData.gender,
+				clientData.activationDate, clientData.imageId,
+				clientData.staffId, clientData.staffName,
+				templateData.officeOptions, clientData.groups,
+				templateData.staffOptions, templateData.narrations,
+				templateData.genderOptions, clientData.timeline,
+				templateData.savingProductOptions, clientData.savingsProductId,
+				clientData.savingsProductName, clientData.savingsAccountId,
+				clientData.savingAccountOptions, clientData.clientType,
+				clientData.clientClassification,
+				templateData.clientTypeOptions,
+				templateData.clientClassificationOptions,
+				templateData.clientDetailedData);
 
-    }
-
-    public static ClientData templateWithSavingAccountOptions(final ClientData clientData,
-            final Collection<SavingsAccountData> savingAccountOptions) {
-
-        return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
+	}
+    
+    public static ClientData templateOnTopClientDetailedData(ClientData clientData,
+			ClientDetailedData clientDetailedData) {
+    	return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
                 clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname, clientData.middlename,
                 clientData.lastname, clientData.fullname, clientData.displayName, clientData.externalId, clientData.mobileNo,
                 clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId, clientData.staffId,
                 clientData.staffName, clientData.officeOptions, clientData.groups, clientData.staffOptions, clientData.narrations,
                 clientData.genderOptions, clientData.timeline, clientData.savingProductOptions, clientData.savingsProductId,
-                clientData.savingsProductName, clientData.savingsAccountId, savingAccountOptions, clientData.clientType,
-                clientData.clientClassification, clientData.clientTypeOptions, clientData.clientClassificationOptions);
+                clientData.savingsProductName, clientData.savingsAccountId, clientData.savingAccountOptions, clientData.clientType,
+                clientData.clientClassification, clientData.clientTypeOptions, clientData.clientClassificationOptions, clientDetailedData);
+	}
 
-    }
+	public static ClientData templateWithSavingAccountOptions(
+			final ClientData clientData,
+			final Collection<SavingsAccountData> savingAccountOptions) {
 
-    public static ClientData setParentGroups(final ClientData clientData, final Collection<GroupGeneralData> parentGroups) {
-        return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
-                clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname, clientData.middlename,
-                clientData.lastname, clientData.fullname, clientData.displayName, clientData.externalId, clientData.mobileNo,
-                clientData.dateOfBirth, clientData.gender, clientData.activationDate, clientData.imageId, clientData.staffId,
-                clientData.staffName, clientData.officeOptions, parentGroups, clientData.staffOptions, null, null, clientData.timeline,
-                clientData.savingProductOptions, clientData.savingsProductId, clientData.savingsProductName, clientData.savingsAccountId,
-                clientData.savingAccountOptions, clientData.clientType, clientData.clientClassification, clientData.clientTypeOptions,
-                clientData.clientClassificationOptions);
+		return new ClientData(clientData.accountNo, clientData.status,
+				clientData.subStatus, clientData.officeId,
+				clientData.officeName, clientData.transferToOfficeId,
+				clientData.transferToOfficeName, clientData.id,
+				clientData.firstname, clientData.middlename,
+				clientData.lastname, clientData.fullname,
+				clientData.displayName, clientData.externalId,
+				clientData.mobileNo, clientData.dateOfBirth, clientData.gender,
+				clientData.activationDate, clientData.imageId,
+				clientData.staffId, clientData.staffName,
+				clientData.officeOptions, clientData.groups,
+				clientData.staffOptions, clientData.narrations,
+				clientData.genderOptions, clientData.timeline,
+				clientData.savingProductOptions, clientData.savingsProductId,
+				clientData.savingsProductName, clientData.savingsAccountId,
+				savingAccountOptions, clientData.clientType,
+				clientData.clientClassification, clientData.clientTypeOptions,
+				clientData.clientClassificationOptions,
+				clientData.clientDetailedData);
 
-    }
+	}
 
-    public static ClientData clientIdentifier(final Long id, final String accountNo, final String firstname, final String middlename,
-            final String lastname, final String fullname, final String displayName, final Long officeId, final String officeName) {
+	public static ClientData setParentGroups(final ClientData clientData,
+			final Collection<GroupGeneralData> parentGroups) {
+		return new ClientData(clientData.accountNo, clientData.status,
+				clientData.subStatus, clientData.officeId,
+				clientData.officeName, clientData.transferToOfficeId,
+				clientData.transferToOfficeName, clientData.id,
+				clientData.firstname, clientData.middlename,
+				clientData.lastname, clientData.fullname,
+				clientData.displayName, clientData.externalId,
+				clientData.mobileNo, clientData.dateOfBirth, clientData.gender,
+				clientData.activationDate, clientData.imageId,
+				clientData.staffId, clientData.staffName,
+				clientData.officeOptions, parentGroups,
+				clientData.staffOptions, null, null, clientData.timeline,
+				clientData.savingProductOptions, clientData.savingsProductId,
+				clientData.savingsProductName, clientData.savingsAccountId,
+				clientData.savingAccountOptions, clientData.clientType,
+				clientData.clientClassification, clientData.clientTypeOptions,
+				clientData.clientClassificationOptions,
+				clientData.clientDetailedData);
 
-        final Long transferToOfficeId = null;
-        final String transferToOfficeName = null;
-        final String externalId = null;
-        final String mobileNo = null;
-        final LocalDate dateOfBirth = null;
-        final CodeValueData gender = null;
-        final LocalDate activationDate = null;
-        final Long imageId = null;
-        final Long staffId = null;
-        final String staffName = null;
-        final Collection<OfficeData> allowedOffices = null;
-        final Collection<GroupGeneralData> groups = null;
-        final Collection<StaffData> staffOptions = null;
-        final Collection<CodeValueData> closureReasons = null;
-        final Collection<CodeValueData> genderOptions = null;
-        final ClientTimelineData timeline = null;
-        final Collection<SavingsProductData> savingProductOptions = null;
-        final Long savingsProductId = null;
-        final String savingsProductName = null;
-        final Long savingsAccountId = null;
-        final Collection<SavingsAccountData> savingAccountOptions = null;
-        final CodeValueData clientType = null;
-        final CodeValueData clientClassification = null;
-        final Collection<CodeValueData> clientTypeOptions = null;
-        final Collection<CodeValueData> clientClassificationOptions = null;
-        final EnumOptionData status = null;
-        final CodeValueData subStatus = null;
-        return new ClientData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
-                middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate, imageId, staffId,
-                staffName, allowedOffices, groups, staffOptions, closureReasons, genderOptions, timeline, savingProductOptions,
-                savingsProductId, savingsProductName, savingsAccountId, savingAccountOptions, clientType, clientClassification,
-                clientTypeOptions, clientClassificationOptions);
-    }
+	}
 
-    public static ClientData lookup(final Long id, final String displayName, final Long officeId, final String officeName) {
-        final String accountNo = null;
-        final EnumOptionData status = null;
-        final CodeValueData subStatus = null;
-        final Long transferToOfficeId = null;
-        final String transferToOfficeName = null;
-        final String firstname = null;
-        final String middlename = null;
-        final String lastname = null;
-        final String fullname = null;
-        final String externalId = null;
-        final String mobileNo = null;
-        final LocalDate dateOfBirth = null;
-        final CodeValueData gender = null;
-        final LocalDate activationDate = null;
-        final Long imageId = null;
-        final Long staffId = null;
-        final String staffName = null;
-        final Collection<OfficeData> allowedOffices = null;
-        final Collection<GroupGeneralData> groups = null;
-        final Collection<StaffData> staffOptions = null;
-        final Collection<CodeValueData> closureReasons = null;
-        final Collection<CodeValueData> genderOptions = null;
-        final ClientTimelineData timeline = null;
-        final Collection<SavingsProductData> savingProductOptions = null;
-        final Long savingsProductId = null;
-        final String savingsProductName = null;
-        final Long savingsAccountId = null;
-        final Collection<SavingsAccountData> savingAccountOptions = null;
-        final CodeValueData clientType = null;
-        final CodeValueData clientClassification = null;
-        final Collection<CodeValueData> clientTypeOptions = null;
-        final Collection<CodeValueData> clientClassificationOptions = null;
-        return new ClientData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
-                middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate, imageId, staffId,
-                staffName, allowedOffices, groups, staffOptions, closureReasons, genderOptions, timeline, savingProductOptions,
-                savingsProductId, savingsProductName, savingsAccountId, savingAccountOptions, clientType, clientClassification,
-                clientTypeOptions, clientClassificationOptions);
+	public static ClientData clientIdentifier(final Long id,
+			final String accountNo, final String firstname,
+			final String middlename, final String lastname,
+			final String fullname, final String displayName,
+			final Long officeId, final String officeName) {
 
-    }
+		final Long transferToOfficeId = null;
+		final String transferToOfficeName = null;
+		final String externalId = null;
+		final String mobileNo = null;
+		final LocalDate dateOfBirth = null;
+		final CodeValueData gender = null;
+		final LocalDate activationDate = null;
+		final Long imageId = null;
+		final Long staffId = null;
+		final String staffName = null;
+		final Collection<OfficeData> allowedOffices = null;
+		final Collection<GroupGeneralData> groups = null;
+		final Collection<StaffData> staffOptions = null;
+		final Collection<CodeValueData> closureReasons = null;
+		final Collection<CodeValueData> genderOptions = null;
+		final ClientTimelineData timeline = null;
+		final Collection<SavingsProductData> savingProductOptions = null;
+		final Long savingsProductId = null;
+		final String savingsProductName = null;
+		final Long savingsAccountId = null;
+		final Collection<SavingsAccountData> savingAccountOptions = null;
+		final CodeValueData clientType = null;
+		final CodeValueData clientClassification = null;
+		final Collection<CodeValueData> clientTypeOptions = null;
+		final Collection<CodeValueData> clientClassificationOptions = null;
+		final EnumOptionData status = null;
+		final CodeValueData subStatus = null;
+		final ClientDetailedData clientDetailedData = null;
+		return new ClientData(accountNo, status, subStatus, officeId,
+				officeName, transferToOfficeId, transferToOfficeName, id,
+				firstname, middlename, lastname, fullname, displayName,
+				externalId, mobileNo, dateOfBirth, gender, activationDate,
+				imageId, staffId, staffName, allowedOffices, groups,
+				staffOptions, closureReasons, genderOptions, timeline,
+				savingProductOptions, savingsProductId, savingsProductName,
+				savingsAccountId, savingAccountOptions, clientType,
+				clientClassification, clientTypeOptions,
+				clientClassificationOptions, clientDetailedData);
+	}
+
+	public static ClientData lookup(final Long id, final String displayName,
+			final Long officeId, final String officeName) {
+		final String accountNo = null;
+		final EnumOptionData status = null;
+		final CodeValueData subStatus = null;
+		final Long transferToOfficeId = null;
+		final String transferToOfficeName = null;
+		final String firstname = null;
+		final String middlename = null;
+		final String lastname = null;
+		final String fullname = null;
+		final String externalId = null;
+		final String mobileNo = null;
+		final LocalDate dateOfBirth = null;
+		final CodeValueData gender = null;
+		final LocalDate activationDate = null;
+		final Long imageId = null;
+		final Long staffId = null;
+		final String staffName = null;
+		final Collection<OfficeData> allowedOffices = null;
+		final Collection<GroupGeneralData> groups = null;
+		final Collection<StaffData> staffOptions = null;
+		final Collection<CodeValueData> closureReasons = null;
+		final Collection<CodeValueData> genderOptions = null;
+		final ClientTimelineData timeline = null;
+		final Collection<SavingsProductData> savingProductOptions = null;
+		final Long savingsProductId = null;
+		final String savingsProductName = null;
+		final Long savingsAccountId = null;
+		final Collection<SavingsAccountData> savingAccountOptions = null;
+		final CodeValueData clientType = null;
+		final CodeValueData clientClassification = null;
+		final Collection<CodeValueData> clientTypeOptions = null;
+		final Collection<CodeValueData> clientClassificationOptions = null;
+		final ClientDetailedData clientDetailedData = null;
+		return new ClientData(accountNo, status, subStatus, officeId,
+				officeName, transferToOfficeId, transferToOfficeName, id,
+				firstname, middlename, lastname, fullname, displayName,
+				externalId, mobileNo, dateOfBirth, gender, activationDate,
+				imageId, staffId, staffName, allowedOffices, groups,
+				staffOptions, closureReasons, genderOptions, timeline,
+				savingProductOptions, savingsProductId, savingsProductName,
+				savingsAccountId, savingAccountOptions, clientType,
+				clientClassification, clientTypeOptions,
+				clientClassificationOptions, clientDetailedData);
+
+	}
 
     public static ClientData instance(final String accountNo, final EnumOptionData status, final CodeValueData subStatus,
             final Long officeId, final String officeName, final Long transferToOfficeId, final String transferToOfficeName, final Long id,
@@ -251,11 +316,12 @@ final public class ClientData implements Comparable<ClientData> {
         final Collection<SavingsProductData> savingProductOptions = null;
         final Collection<CodeValueData> clientTypeOptions = null;
         final Collection<CodeValueData> clientClassificationOptions = null;
+        final ClientDetailedData clientDetailedData = null;
         return new ClientData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
                 middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate, imageId, staffId,
                 staffName, allowedOffices, groups, staffOptions, closureReasons, genderOptions, timeline, savingProductOptions,
                 savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification, clientTypeOptions,
-                clientClassificationOptions);
+                clientClassificationOptions,clientDetailedData);
 
     }
 
@@ -270,7 +336,7 @@ final public class ClientData implements Comparable<ClientData> {
             final Collection<SavingsProductData> savingProductOptions, final Long savingsProductId, final String savingsProductName,
             final Long savingsAccountId, final Collection<SavingsAccountData> savingAccountOptions, final CodeValueData clientType,
             final CodeValueData clientClassification, final Collection<CodeValueData> clientTypeOptions,
-            final Collection<CodeValueData> clientClassificationOptions) {
+            final Collection<CodeValueData> clientClassificationOptions,final ClientDetailedData clientDetailedData) {
         this.accountNo = accountNo;
         this.status = status;
         if (status != null) {
@@ -323,7 +389,7 @@ final public class ClientData implements Comparable<ClientData> {
         this.savingsProductName = savingsProductName;
         this.savingsAccountId = savingsAccountId;
         this.savingAccountOptions = savingAccountOptions;
-        this.clientDetailedData = null;
+        this.clientDetailedData = clientDetailedData;
 
     }
 
@@ -404,9 +470,5 @@ final public class ClientData implements Comparable<ClientData> {
 
 	public Long getOfficeId() {
 		return this.officeId;
-	}
-
-	public void setClientDetailedData(final ClientDetailedData clientDetailedData) {
-		this.clientDetailedData = clientDetailedData;
 	}
 }

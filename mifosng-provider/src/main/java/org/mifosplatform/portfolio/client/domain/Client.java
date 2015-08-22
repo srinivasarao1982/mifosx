@@ -916,12 +916,40 @@ public final class Client extends AbstractPersistable<Long> {
 	public void updateClientExt(final ClientExt clientExt) {
 		this.clientExt = clientExt;		
 	}
+	
+	public ClientExt clientExt() {
+		return this.clientExt;		
+	}
 
 	public void updateAddressExt(final List<Address> address) {
-		this.addressExt = address;		
+		if(this.addressExt != null){
+			this.addressExt.clear();
+			this.addressExt.addAll(address);	        
+		}else{
+			this.addressExt = address;
+		}
+		for (Address add : this.addressExt) {
+        	add.updateClient(this);
+        }
+	}
+	
+	public List<Address> addressExt() {
+		return this.addressExt;		
 	}
 	
 	public void updateFamilyDetails(final List<FamilyDetails> familyDetails) {
-		this.familyDetails = familyDetails;		
+		if(this.familyDetails != null){
+			this.familyDetails.clear();
+			this.familyDetails.addAll(familyDetails);
+		}else{
+			this.familyDetails = familyDetails;
+		}
+        for (FamilyDetails fd : this.familyDetails) {
+        	fd.updateClient(this);
+        }	
+	}
+	
+	public List<FamilyDetails> familyDetails() {
+		return this.familyDetails;		
 	}
 }

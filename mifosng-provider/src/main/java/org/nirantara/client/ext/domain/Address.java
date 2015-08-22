@@ -28,7 +28,7 @@ public class Address extends AbstractPersistable<Long> {
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "address_type_cv_id", nullable = false)
 	private CodeValue addressType;
 
@@ -50,11 +50,11 @@ public class Address extends AbstractPersistable<Long> {
 	@Column(name = "taluka", length = 100, nullable = false)
 	private String taluka;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "district_cv_id", nullable = false)
 	private CodeValue district;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "state_cv_id", nullable = false)
 	private CodeValue state;
 
@@ -105,6 +105,83 @@ public class Address extends AbstractPersistable<Long> {
 		this.landlineNo = landlineNo;
 		this.mobileNo = mobileNo;
 
+	}
+	
+	public void updateClient(Client client) {
+        this.client = client;
+    }
+	
+	public Client getClient() {
+		return client;
+	}
+
+	public CodeValue getAddressType() {
+		return addressType;
+	}
+
+	public String getHouseNo() {
+		return houseNo;
+	}
+
+	public String getStreetNo() {
+		return streetNo;
+	}
+
+	public String getAreaLocality() {
+		return areaLocality;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public String getVillageTown() {
+		return villageTown;
+	}
+
+	public String getTaluka() {
+		return taluka;
+	}
+
+	public CodeValue getDistrict() {
+		return district;
+	}
+
+	public CodeValue getState() {
+		return state;
+	}
+
+	public Integer getPinCode() {
+		return pinCode;
+	}
+
+	public Long getLandlineNo() {
+		return landlineNo;
+	}
+
+	public Long getMobileNo() {
+		return mobileNo;
+	}
+
+	public void update(final CodeValue addressType,
+			final String houseNo, final String streetNo,
+			final String areaLocality, final String landmark,
+			final String villageTown, final String taluka,
+			final CodeValue district, final CodeValue state,
+			final Integer pinCode, final Long landlineNo, final Long mobileNo) {
+		// TODO Auto-generated method stub
+		this.addressType = addressType;
+		this.houseNo = houseNo;
+		this.streetNo = streetNo;
+		this.areaLocality = areaLocality;
+		this.landmark = landmark;
+		this.villageTown = villageTown;
+		this.taluka = taluka;
+		this.district = district;
+		this.state = state;
+		this.pinCode = pinCode;
+		this.landlineNo = landlineNo;
+		this.mobileNo = mobileNo;
 	}
 
 }

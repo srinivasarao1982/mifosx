@@ -34,13 +34,13 @@ import org.mifosplatform.infrastructure.core.exception.UnrecognizedQueryParamExc
 import org.mifosplatform.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.mifosplatform.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.mifosplatform.infrastructure.core.service.Page;
+import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.accountdetails.data.AccountSummaryCollectionData;
 import org.mifosplatform.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.mifosplatform.portfolio.client.data.ClientData;
 import org.mifosplatform.portfolio.client.data.ClientDetailedData;
 import org.mifosplatform.portfolio.client.service.ClientReadPlatformService;
-import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.mifosplatform.portfolio.savings.data.SavingsAccountData;
 import org.mifosplatform.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +106,7 @@ public class ClientsApiResource {
         } else if (is(commandParam, "withdraw")) {
             clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_WITHDRAW_REASON);
         } else {
-        	ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(officeId, staffInSelectedOfficeOnly);
+        	ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(officeId, staffInSelectedOfficeOnly, null);
             return this.clientDetailedDatatoApiJsonSerializer.serialize(settings, clientDetailedData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
         }
 
@@ -162,13 +162,10 @@ public class ClientsApiResource {
             }
         }
         /*Nirantara Changes*/
-        ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(clientData.getOfficeId(), staffInSelectedOfficeOnly);
-        clientData = this.clientReadPlatformService.retrieveClientDetailedExt(clientData);
+        ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(clientData.getOfficeId(), staffInSelectedOfficeOnly, clientId);        
         if(clientDetailedData != null){
-        	clientData.setClientDetailedData(clientDetailedData);
-        	
-        }
-
+        	clientData = ClientData.templateOnTopClientDetailedData(clientData, clientDetailedData);    	
+        }        
         return this.toApiJsonSerializer.serialize(settings, clientData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }
 

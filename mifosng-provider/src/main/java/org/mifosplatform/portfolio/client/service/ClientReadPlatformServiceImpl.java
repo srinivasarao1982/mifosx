@@ -38,13 +38,20 @@ import org.mifosplatform.portfolio.client.data.ClientFamilyDetails;
 import org.mifosplatform.portfolio.client.data.ClientIdentifierData;
 import org.mifosplatform.portfolio.client.data.ClientKYCData;
 import org.mifosplatform.portfolio.client.data.ClientTimelineData;
+import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientEnumerations;
+import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientNotFoundException;
 import org.mifosplatform.portfolio.group.data.GroupGeneralData;
 import org.mifosplatform.portfolio.savings.data.SavingsProductData;
 import org.mifosplatform.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.mifosplatform.useradministration.domain.AppUser;
+import org.nirantara.client.ext.data.AddressExtData;
+import org.nirantara.client.ext.data.ClientDataExt;
+import org.nirantara.client.ext.data.FamilyDetailsExtData;
+import org.nirantara.client.ext.domain.Address;
+import org.nirantara.client.ext.domain.FamilyDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -67,22 +74,25 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     private final ClientLookupMapper lookupMapper = new ClientLookupMapper();
     private final ClientMembersOfGroupMapper membersOfGroupMapper = new ClientMembersOfGroupMapper();
     private final ParentGroupsMapper clientGroupsMapper = new ParentGroupsMapper();
+    private final ClientRepositoryWrapper clientRepository;
 
     @Autowired
     public ClientReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
             final OfficeReadPlatformService officeReadPlatformService, final StaffReadPlatformService staffReadPlatformService,
             final CodeValueReadPlatformService codeValueReadPlatformService,
-            final SavingsProductReadPlatformService savingsProductReadPlatformService) {
+            final SavingsProductReadPlatformService savingsProductReadPlatformService,
+            final ClientRepositoryWrapper clientRepository) {
         this.context = context;
         this.officeReadPlatformService = officeReadPlatformService;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.staffReadPlatformService = staffReadPlatformService;
         this.codeValueReadPlatformService = codeValueReadPlatformService;
         this.savingsProductReadPlatformService = savingsProductReadPlatformService;
+        this.clientRepository = clientRepository;
     }
     
     @Override
-    public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly) {
+    public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly, final Long clientId) {
         this.context.authenticatedUser();
 
         ClientData clientBasicDetails = retrieveTemplate(officeId, staffInSelectedOfficeOnly);
@@ -144,11 +154,34 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     	Collection<CodeValueData> externalLoanstatus = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.EXTERNALLOAN_STATUS));
     	
-        		
+    	
+    	
+    	ClientDataExt clientDataExt = null;
+		List<AddressExtData> addressExtData = new ArrayList<>();
+		List<FamilyDetailsExtData> familyDetailsExtData = new ArrayList<>();
+    	if(clientId != null){
+    		final Client client = this.clientRepository
+    				.findOneWithNotFoundDetection(clientId);
+    		if (client != null) {
+    			if(client.clientExt() != null){
+    				clientDataExt = ClientDataExt.formClientDataExt(client.clientExt());
+    			}    			
+    			if(client.addressExt() != null){
+    				for(Address addressExt : client.addressExt()){
+    					addressExtData.add(AddressExtData.formAddressExtData(addressExt));
+    				}
+    			}   
+    			if(client.familyDetails() != null){
+    				for(FamilyDetails familyDetailsExt : client.familyDetails()){
+    					familyDetailsExtData.add(FamilyDetailsExtData.formFamilyDetailsExtData(familyDetailsExt));
+    				}
+    			}
+    		}
+    	}
         return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, 
         		identifier, kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, 
         		houseType, state, district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, 
-        		externalLoanstatus);
+        		externalLoanstatus,clientDataExt,addressExtData,familyDetailsExtData);
         
     }
     
@@ -742,12 +775,4 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         final Collection<CodeValueData> clientClassificationOptions = null;
         return ClientData.template(null, null, null, null, narrations, null, null, clientTypeOptions, clientClassificationOptions);
     }
-
-	@Override
-	public ClientData retrieveClientDetailedExt(ClientData clientData) {
-		
-		
-		return clientData;		
-	}
-
 }
