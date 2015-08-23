@@ -4,8 +4,12 @@
 package org.mifosplatform.portfolio.client.data;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.mifosplatform.infrastructure.codes.data.CodeValueData;
+import org.nirantara.client.ext.data.AddressExtData;
+import org.nirantara.client.ext.data.ClientDataExt;
+import org.nirantara.client.ext.data.FamilyDetailsExtData;
 
 /**
  * @author Srinivas Rao
@@ -40,6 +44,11 @@ public class ClientDetailedData {
 	private  final Collection<CodeValueData> cfaOccupation;
 	private  final Collection<CodeValueData> externalLoanstatus;
 	
+	//Nirantara
+	private final ClientDataExt clientDataExt;
+	private final List<AddressExtData> addressExtData;
+	private final List<FamilyDetailsExtData> familyDetailsExtData;
+	
 	public ClientDetailedData(ClientData clientBasicDetails,
 			ClientAdditionalDetails additionalDetails, ClientAddress address,
 			ClientFamilyDetails familyDetails, ClientCFADetails cfaDetails,
@@ -60,7 +69,10 @@ public class ClientDetailedData {
 			Collection<CodeValueData> familyOccupation,
 			Collection<CodeValueData> yesOrNo,
 			Collection<CodeValueData> cfaOccupation,
-			Collection<CodeValueData> externalLoanstatus) {
+			Collection<CodeValueData> externalLoanstatus,
+			final ClientDataExt clientDataExt,
+			final List<AddressExtData> addressExtData,
+			final List<FamilyDetailsExtData> familyDetailsExtData) {
 		super();
 		this.clientBasicDetails = clientBasicDetails;
 		this.additionalDetails = additionalDetails;
@@ -86,6 +98,9 @@ public class ClientDetailedData {
 		this.yesOrNo = yesOrNo;
 		this.cfaOccupation = cfaOccupation;
 		this.externalLoanstatus = externalLoanstatus;
+		this.clientDataExt = clientDataExt;
+		this.addressExtData = addressExtData;
+		this.familyDetailsExtData = familyDetailsExtData;
 	}
 
 	public ClientData getClientBasicDetails() {
@@ -183,9 +198,17 @@ public class ClientDetailedData {
 	public Collection<CodeValueData> getExternalLoanstatus() {
 		return externalLoanstatus;
 	}
-	
-	
-	
-	
+
+	public ClientDataExt clientDataExt() {
+		return clientDataExt;
+	}
+
+	public List<AddressExtData> addressExtData() {
+		return addressExtData;
+	}
+
+	public List<FamilyDetailsExtData> familyDetailsExtData() {
+		return familyDetailsExtData;
+	}
 	
 }

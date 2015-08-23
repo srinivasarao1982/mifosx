@@ -382,11 +382,36 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
             
             /** Update For Nirantara **/
+            //For nirantara
+            ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, clientForUpdate);
+            if(clientExt != null){
+            	clientForUpdate.updateClientExt(clientExt);
+            }
+            
+            //For nirantara Address
+            final JsonObject formDataObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
+    		final JsonArray addressArray = formDataObject.get("naddress").getAsJsonArray();
+    		if(addressArray != null){
+    			List<Address> address = this.clientExtAssembler.assembleAddress(addressArray, clientForUpdate);
+    			if(address != null && address.size() > 0){
+    				clientForUpdate.updateAddressExt(address);
+                }
+    		}
+            
+    		//For nirantara familyDetails
+    		final JsonObject familyDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
+    		final JsonArray familyDetailsArray = familyDetailsObject.get("familyDetails").getAsJsonArray();
+    		if(familyDetailsArray != null){
+    			List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, clientForUpdate);
+    			if(familyDetails != null){
+    				clientForUpdate.updateFamilyDetails(familyDetails);
+                }
+    		}
 
-            if (!changes.isEmpty()) {
+    		if (!changes.isEmpty()) {
                 this.clientRepository.saveAndFlush(clientForUpdate);
             }
-
+    		
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withOfficeId(clientForUpdate.officeId()) //

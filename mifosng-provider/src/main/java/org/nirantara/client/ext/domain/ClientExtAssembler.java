@@ -1,3 +1,8 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package org.nirantara.client.ext.domain;
 
 import java.util.ArrayList;
@@ -22,12 +27,21 @@ public class ClientExtAssembler {
 
 	private final FromJsonHelper fromApiJsonHelper;
 	private final CodeValueRepositoryWrapper codeValueRepository;
+	private final ClientExtRepository clientExtRepository;
+	private final AddressRepository addressRepository;
+	private final FamilyDetailsRepository familyDetailsRepository;
 
 	@Autowired
 	public ClientExtAssembler(final FromJsonHelper fromApiJsonHelper,
-			final CodeValueRepositoryWrapper codeValueRepository) {
+			final CodeValueRepositoryWrapper codeValueRepository,
+			final ClientExtRepository clientExtRepository,
+			final AddressRepository addressRepository,
+			final FamilyDetailsRepository familyDetailsRepository) {
 		this.fromApiJsonHelper = fromApiJsonHelper;
 		this.codeValueRepository = codeValueRepository;
+		this.clientExtRepository = clientExtRepository;
+		this.addressRepository = addressRepository;
+		this.familyDetailsRepository = familyDetailsRepository;
 	}
 
 	public ClientExt assembleClientExt(final JsonCommand command,
@@ -38,6 +52,8 @@ public class ClientExtAssembler {
 
 		final JsonElement element = formDataObject.get("clientExt");
 
+		final Long id = this.fromApiJsonHelper.extractLongNamed("id", element);
+		
 		final Long salutationId = this.fromApiJsonHelper.extractLongNamed(
 				"salutation", element);
 		CodeValue salutationCodeValue = null;
@@ -115,6 +131,24 @@ public class ClientExtAssembler {
 		final String nregaNo = this.fromApiJsonHelper.extractStringNamed(
 				"nregaNo", element);
 
+		if(id != null){
+			final ClientExt updateClientExt = this.clientExtRepository.findOne(id);
+			if(updateClientExt != null){
+				updateClientExt.update(salutationCodeValue,
+						maritalStatusCodeValue, professionCodeValue, professionOthers,
+						educationalQualificationCodeValue, annualIncomeCodeValue,
+						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
+						panFormCodeValue, nregaNo);
+				return updateClientExt;
+				
+			}else{
+				return ClientExt.createFrom(newClient, salutationCodeValue,
+						maritalStatusCodeValue, professionCodeValue, professionOthers,
+						educationalQualificationCodeValue, annualIncomeCodeValue,
+						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
+						panFormCodeValue, nregaNo);
+			}
+		}
 		return ClientExt.createFrom(newClient, salutationCodeValue,
 				maritalStatusCodeValue, professionCodeValue, professionOthers,
 				educationalQualificationCodeValue, annualIncomeCodeValue,
@@ -131,6 +165,9 @@ public class ClientExtAssembler {
 			final JsonElement element = addressArray.get(i).getAsJsonObject();
 			if (!element.isJsonNull() && !element.toString().equals("{}")) {
 
+				final Long id = this.fromApiJsonHelper
+						.extractLongNamed("id", element);
+				
 				final Long addressTypeId = this.fromApiJsonHelper
 						.extractLongNamed("addressType", element);
 				CodeValue addressTypeCodeValue = null;
@@ -182,11 +219,26 @@ public class ClientExtAssembler {
 				final Long mobileNo = this.fromApiJsonHelper.extractLongNamed(
 						"mobileNo", element);
 
-				Address address = Address.createFrom(newClient,
-						addressTypeCodeValue, houseNo, streetNo, areaLocality,
-						landmark, villageTown, taluka, districtCodeValue,
-						stateCodeValue, pinCode, landlineNo, mobileNo);
-				
+				Address address = null;
+				if(id != null){
+					address = this.addressRepository.findOne(id);
+					if(address != null){
+						address.update(addressTypeCodeValue, houseNo, streetNo, areaLocality,
+								landmark, villageTown, taluka, districtCodeValue,
+								stateCodeValue, pinCode, landlineNo, mobileNo);
+						
+					}else{
+						address = Address.createFrom(newClient,
+								addressTypeCodeValue, houseNo, streetNo, areaLocality,
+								landmark, villageTown, taluka, districtCodeValue,
+								stateCodeValue, pinCode, landlineNo, mobileNo);
+					}
+				}else{
+					address = Address.createFrom(newClient,
+							addressTypeCodeValue, houseNo, streetNo, areaLocality,
+							landmark, villageTown, taluka, districtCodeValue,
+							stateCodeValue, pinCode, landlineNo, mobileNo);
+				}				
 				if (address != null) {
 					addressList.add(address);
 				}
@@ -204,6 +256,9 @@ public class ClientExtAssembler {
 					.getAsJsonObject();
 			if (!element.isJsonNull() && !element.toString().equals("{}")) {
 
+				final Long id = this.fromApiJsonHelper
+						.extractLongNamed("id", element);
+				
 				final String firstname = this.fromApiJsonHelper
 						.extractStringNamed("firstname", element);
 
@@ -230,7 +285,7 @@ public class ClientExtAssembler {
 				}
 
 				final LocalDate dataOfBirth = this.fromApiJsonHelper
-						.extractLocalDateNamed("dataOfBirth", element);
+						.extractLocalDateNamed("dateOfBirth", element);
 
 				final Integer age = this.fromApiJsonHelper
 						.extractIntegerWithLocaleNamed("age", element);
@@ -251,10 +306,27 @@ public class ClientExtAssembler {
 							.findOneWithNotFoundDetection(educationalStatusId);
 				}
 
-				FamilyDetails familyDetails = FamilyDetails.createFrom(
-						newClient, firstname, middlename, lastname,
-						relationshipCodeValue, genderCodeValue, dataOfBirth,
-						age, occupationCodeValue, educationalStatusCodeValue);
+				FamilyDetails familyDetails = null;
+				if(id != null){
+					familyDetails = this.familyDetailsRepository.findOne(id);
+					if(familyDetails != null){
+						familyDetails.update(firstname, middlename, lastname,
+								relationshipCodeValue, genderCodeValue, dataOfBirth,
+								age, occupationCodeValue, educationalStatusCodeValue);
+						
+					}else{
+						familyDetails = FamilyDetails.createFrom(
+								newClient, firstname, middlename, lastname,
+								relationshipCodeValue, genderCodeValue, dataOfBirth,
+								age, occupationCodeValue, educationalStatusCodeValue);
+					}
+				}else{
+					familyDetails = FamilyDetails.createFrom(
+							newClient, firstname, middlename, lastname,
+							relationshipCodeValue, genderCodeValue, dataOfBirth,
+							age, occupationCodeValue, educationalStatusCodeValue);
+				}
+				
 				if (familyDetails != null) {
 					familyDetailsList.add(familyDetails);
 				}

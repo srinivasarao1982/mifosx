@@ -11,6 +11,7 @@ import org.mifosplatform.infrastructure.core.service.Page;
 import org.mifosplatform.portfolio.client.data.ClientData;
 import org.mifosplatform.portfolio.client.data.ClientDetailedData;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
+import org.nirantara.client.ext.data.ClientDataExt;
 
 public interface ClientReadPlatformService {
 
@@ -35,7 +36,5 @@ public interface ClientReadPlatformService {
     ClientData retrieveAllNarrations(String clientNarrations);
 
     ClientDetailedData retrieveClientDetailedTemplate(Long officeId,
-			boolean staffInSelectedOfficeOnly);
-
-    ClientData retrieveClientDetailedExt(ClientData clientData);
+			boolean staffInSelectedOfficeOnly, Long clientId);
 }

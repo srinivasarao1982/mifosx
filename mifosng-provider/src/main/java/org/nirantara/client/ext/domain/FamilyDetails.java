@@ -40,11 +40,11 @@ public class FamilyDetails extends AbstractPersistable<Long> {
 	@Column(name = "lastname", length = 50)
 	private String lastname;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "relationship_cv_id", nullable = false)
 	private CodeValue relationship;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "gender_cv_id", nullable = false)
 	private CodeValue gender;
 
@@ -55,11 +55,11 @@ public class FamilyDetails extends AbstractPersistable<Long> {
 	@Column(name = "age", length = 3, nullable = false)
 	private Integer age;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "occupation_cv_id", nullable = false)
 	private CodeValue occupation;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "educational_status_cv_id", nullable = false)
 	private CodeValue educationalStatus;
 
@@ -97,6 +97,70 @@ public class FamilyDetails extends AbstractPersistable<Long> {
 		this.age = age;
 		this.occupation = occupation;
 		this.educationalStatus = educationalStatus;
+	}
+
+	public void updateClient(Client client) {
+        this.client = client;
+    }
+	
+	public Client getClient() {
+		return client;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public String getMiddlename() {
+		return middlename;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public CodeValue getRelationship() {
+		return relationship;
+	}
+
+	public CodeValue getGender() {
+		return gender;
+	}
+
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public CodeValue getOccupation() {
+		return occupation;
+	}
+
+	public CodeValue getEducationalStatus() {
+		return educationalStatus;
+	}
+
+	public void update(final String firstname,
+			final String middlename, final String lastname,
+			final CodeValue relationship, final CodeValue gender,
+			final LocalDate dateOfBirth, final Integer age,
+			final CodeValue occupation, final CodeValue educationalStatus) {
+		
+		this.firstname = firstname;
+		this.middlename = middlename;
+		this.lastname = lastname;
+		this.relationship = relationship;
+		this.gender = gender;
+		if (dateOfBirth != null) {
+			this.dateOfBirth = dateOfBirth.toDateTimeAtStartOfDay().toDate();
+		}
+		this.age = age;
+		this.occupation = occupation;
+		this.educationalStatus = educationalStatus;
+		
 	}
 
 }

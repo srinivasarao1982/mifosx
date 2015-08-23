@@ -81,13 +81,15 @@ public class ClientApiConstants {
     // template related part of response
     public static final String officeOptionsParamName = "officeOptions";
     public static final String staffOptionsParamName = "staffOptions";
+    
+    //Nirantara
+    public static final String clientExtParamName = "clientExt";
+    public static final String familyDetailsParamName = "familyDetails";
+    public static final String naddressParamName = "naddress";
   
 
-    public static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
-            dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName, middlenameParamName,
-
-            lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName, savingsProductIdParamName,
-            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName));
+    public static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,officeIdParamName,dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName, middlenameParamName,lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName, savingsProductIdParamName,
+            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName));
 
 
     /**
@@ -132,10 +134,7 @@ public class ClientApiConstants {
     public static final String FAMILY_OCCUPATION = "familyOccupation";
     public static final String YES_NO = "YesNo";
     public static final String FIN_OCCUPATION = "cfaOccupation";
-    public static final String EXTERNALLOAN_STATUS = "externalLoanstatus";
-    public static final String clientExtParamName = "clientExt";
-    public static final String familyDetailsParamName = "familyDetails";
-    public static final String naddressParamName = "naddress";
+    public static final String EXTERNALLOAN_STATUS = "externalLoanstatus";    
     
     public static final Set<String> CLIENT_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName,

@@ -27,35 +27,35 @@ public class ClientExt extends AbstractPersistable<Long> {
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "salutation_cv_id", nullable = false)
 	private CodeValue salutation;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "marital_status_cv_id", nullable = false)
 	private CodeValue maritalStatus;
 	
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "profession_cv_id", nullable = false)
 	private CodeValue profession;
 
 	@Column(name = "profession_others", length = 100)
 	private String professionOthers;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "educational_qualification_cv_id", nullable = false)
 	private CodeValue educationalQualification;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "annual_income_cv_id", nullable = false)
 	private CodeValue annualIncome;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "landholding_cv_id", nullable = false)
 	private CodeValue landholding;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "house_type_cv_id", nullable = false)
 	private CodeValue houseType;
 
@@ -65,7 +65,7 @@ public class ClientExt extends AbstractPersistable<Long> {
 	@Column(name = "pan_no", length = 100)
 	private String panNo;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "pan_form_cv_id", nullable = false)
 	private CodeValue panForm;
 
@@ -110,5 +110,80 @@ public class ClientExt extends AbstractPersistable<Long> {
 		this.panForm = panForm;
 		this.nregaNo = nregaNo;
 
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public CodeValue getSalutation() {
+		return salutation;
+	}
+
+	public CodeValue getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public CodeValue getProfession() {
+		return profession;
+	}
+
+	public String getProfessionOthers() {
+		return professionOthers;
+	}
+
+	public CodeValue getEducationalQualification() {
+		return educationalQualification;
+	}
+
+	public CodeValue getAnnualIncome() {
+		return annualIncome;
+	}
+
+	public CodeValue getLandholding() {
+		return landholding;
+	}
+
+	public CodeValue getHouseType() {
+		return houseType;
+	}
+
+	public String getAadhaarNo() {
+		return aadhaarNo;
+	}
+
+	public String getPanNo() {
+		return panNo;
+	}
+
+	public CodeValue getPanForm() {
+		return panForm;
+	}
+
+	public String getNregaNo() {
+		return nregaNo;
+	}
+
+	public void update(final CodeValue salutation,
+			final CodeValue maritalStatus, final CodeValue profession,
+			final String professionOthers,
+			final CodeValue educationalQualification,
+			final CodeValue annualIncome, final CodeValue landholding,
+			final CodeValue houseType, final String aadhaarNo,
+			final String panNo, final CodeValue panForm, final String nregaNo) {
+		
+		this.salutation = salutation;
+		this.maritalStatus = maritalStatus;
+		this.profession = profession;
+		this.professionOthers = professionOthers;
+		this.educationalQualification = educationalQualification;
+		this.annualIncome = annualIncome;
+		this.landholding = landholding;
+		this.houseType = houseType;
+		this.aadhaarNo = aadhaarNo;
+		this.panNo = panNo;
+		this.panForm = panForm;
+		this.nregaNo = nregaNo;
+		
 	}
 }
