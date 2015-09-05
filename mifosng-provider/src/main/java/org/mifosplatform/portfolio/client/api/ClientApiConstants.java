@@ -86,10 +86,11 @@ public class ClientApiConstants {
     public static final String clientExtParamName = "clientExt";
     public static final String familyDetailsParamName = "familyDetails";
     public static final String naddressParamName = "naddress";
+    public static final String clientIdentifierDataParamName = "clientIdentifierData";
   
 
     public static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,officeIdParamName,dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName, middlenameParamName,lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName, savingsProductIdParamName,
-            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName));
+            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName));
 
 
     /**
@@ -140,7 +141,7 @@ public class ClientApiConstants {
             dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName,
             middlenameParamName, lastnameParamName, fullnameParamName, officeIdParamName, activeParamName, activationDateParamName,
             staffIdParamName, submittedOnDateParamName, savingsProductIdParamName, dateOfBirthParamName, genderIdParamName,
-            clientTypeIdParamName, clientClassificationIdParamName, clientClassificationParamName,CLIENT_TYPE,clientExtParamName,familyDetailsParamName,naddressParamName));
+            clientTypeIdParamName, clientClassificationIdParamName, clientClassificationParamName,CLIENT_TYPE,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName));
     
     
 }

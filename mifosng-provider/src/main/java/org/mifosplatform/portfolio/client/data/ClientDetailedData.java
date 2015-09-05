@@ -48,6 +48,7 @@ public class ClientDetailedData {
 	private final ClientDataExt clientDataExt;
 	private final List<AddressExtData> addressExtData;
 	private final List<FamilyDetailsExtData> familyDetailsExtData;
+	private final List<ClientIdentifierData> clientIdentifierData;
 	
 	public ClientDetailedData(ClientData clientBasicDetails,
 			ClientAdditionalDetails additionalDetails, ClientAddress address,
@@ -72,7 +73,8 @@ public class ClientDetailedData {
 			Collection<CodeValueData> externalLoanstatus,
 			final ClientDataExt clientDataExt,
 			final List<AddressExtData> addressExtData,
-			final List<FamilyDetailsExtData> familyDetailsExtData) {
+			final List<FamilyDetailsExtData> familyDetailsExtData, 
+			final List<ClientIdentifierData> clientIdentifierData) {
 		super();
 		this.clientBasicDetails = clientBasicDetails;
 		this.additionalDetails = additionalDetails;
@@ -101,6 +103,7 @@ public class ClientDetailedData {
 		this.clientDataExt = clientDataExt;
 		this.addressExtData = addressExtData;
 		this.familyDetailsExtData = familyDetailsExtData;
+		this.clientIdentifierData = clientIdentifierData;
 	}
 
 	public ClientData getClientBasicDetails() {
@@ -208,7 +211,11 @@ public class ClientDetailedData {
 	}
 
 	public List<FamilyDetailsExtData> familyDetailsExtData() {
-		return familyDetailsExtData;
+		return this.familyDetailsExtData;
+	}
+	
+	public List<ClientIdentifierData> clientIdentifierData() {
+		return this.clientIdentifierData;
 	}
 	
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -21,6 +22,7 @@ import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.domain.AbstractAuditableCustom;
 import org.mifosplatform.useradministration.domain.AppUser;
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name = "m_client_identifier", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "document_type_id", "document_key" }, name = "unique_identifier_key"),
@@ -31,7 +33,7 @@ public class ClientIdentifier extends AbstractAuditableCustom<AppUser, Long> {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "document_type_id", nullable = false)
     private CodeValue documentType;
 
@@ -51,7 +53,7 @@ public class ClientIdentifier extends AbstractAuditableCustom<AppUser, Long> {
         //
     }
 
-    private ClientIdentifier(final Client client, final CodeValue documentType, final String documentKey, final String description) {
+    public ClientIdentifier(final Client client, final CodeValue documentType, final String documentKey, final String description) {
         this.client = client;
         this.documentType = documentType;
         this.documentKey = StringUtils.defaultIfEmpty(documentKey, null);
@@ -96,4 +98,11 @@ public class ClientIdentifier extends AbstractAuditableCustom<AppUser, Long> {
     public Long documentTypeId() {
         return this.documentType.getId();
     }
+
+	public void update(final Client client, final CodeValue documentType, final String documentKey, final String description) {
+		this.client = client;
+        this.documentType = documentType;
+        this.documentKey = StringUtils.defaultIfEmpty(documentKey, null);
+        this.description = StringUtils.defaultIfEmpty(description, null);
+	}
 }

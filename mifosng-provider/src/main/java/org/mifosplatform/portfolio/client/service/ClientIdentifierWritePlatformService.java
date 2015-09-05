@@ -5,8 +5,12 @@
  */
 package org.mifosplatform.portfolio.client.service;
 
+import java.util.List;
+
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
+import org.mifosplatform.portfolio.client.domain.Client;
+import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 
 public interface ClientIdentifierWritePlatformService {
 
@@ -15,4 +19,6 @@ public interface ClientIdentifierWritePlatformService {
     CommandProcessingResult updateClientIdentifier(Long clientId, Long clientIdentifierId, JsonCommand command);
 
     CommandProcessingResult deleteClientIdentifier(Long clientId, Long clientIdentifierId, Long commandId);
+
+	List<ClientIdentifier> addClientIdentifierService(final Client client, final JsonCommand command);
 }

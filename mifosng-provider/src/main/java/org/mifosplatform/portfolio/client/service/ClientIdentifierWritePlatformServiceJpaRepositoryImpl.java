@@ -5,6 +5,7 @@
  */
 package org.mifosplatform.portfolio.client.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.mifosplatform.infrastructure.codes.domain.CodeValue;
@@ -23,12 +24,17 @@ import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.exception.ClientIdentifierNotFoundException;
 import org.mifosplatform.portfolio.client.exception.DuplicateClientIdentifierException;
 import org.mifosplatform.portfolio.client.serialization.ClientIdentifierCommandFromApiJsonDeserializer;
+import org.nirantara.client.ext.domain.ClientExtAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Service
 public class ClientIdentifierWritePlatformServiceJpaRepositoryImpl implements ClientIdentifierWritePlatformService {
@@ -40,17 +46,20 @@ public class ClientIdentifierWritePlatformServiceJpaRepositoryImpl implements Cl
     private final ClientIdentifierRepository clientIdentifierRepository;
     private final CodeValueRepositoryWrapper codeValueRepository;
     private final ClientIdentifierCommandFromApiJsonDeserializer clientIdentifierCommandFromApiJsonDeserializer;
+    private final ClientExtAssembler clientExtAssembler;
 
     @Autowired
     public ClientIdentifierWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
             final ClientRepositoryWrapper clientRepository, final ClientIdentifierRepository clientIdentifierRepository,
             final CodeValueRepositoryWrapper codeValueRepository,
-            final ClientIdentifierCommandFromApiJsonDeserializer clientIdentifierCommandFromApiJsonDeserializer) {
+            final ClientIdentifierCommandFromApiJsonDeserializer clientIdentifierCommandFromApiJsonDeserializer,
+            final ClientExtAssembler clientExtAssembler) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.clientIdentifierRepository = clientIdentifierRepository;
         this.codeValueRepository = codeValueRepository;
         this.clientIdentifierCommandFromApiJsonDeserializer = clientIdentifierCommandFromApiJsonDeserializer;
+        this.clientExtAssembler = clientExtAssembler;
     }
 
     @Transactional
@@ -181,4 +190,21 @@ public class ClientIdentifierWritePlatformServiceJpaRepositoryImpl implements Cl
     private void logAsErrorUnexpectedDataIntegrityException(final DataIntegrityViolationException dve) {
         logger.error(dve.getMessage(), dve);
     }
+
+    @Transactional
+	@Override
+	public List<ClientIdentifier> addClientIdentifierService(final Client client, final JsonCommand command) {
+		final JsonObject clientIdentifierDataObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
+		final JsonArray clientIdentifierDataArray = clientIdentifierDataObject.get("clientIdentifierData").getAsJsonArray();
+		if(clientIdentifierDataArray != null && clientIdentifierDataArray.isJsonArray()){
+			final List<ClientIdentifier> clientIdentifiers = this.clientExtAssembler.assembleDoumentIdentifiersDetails(clientIdentifierDataArray, client);
+			if(clientIdentifiers != null && clientIdentifiers.size() > 0){
+				for(ClientIdentifier clientIdentifier: clientIdentifiers){
+					this.clientIdentifierRepository.save(clientIdentifier);									
+				}
+            }
+			return clientIdentifiers;
+		}
+		return null;
+	}
 }
