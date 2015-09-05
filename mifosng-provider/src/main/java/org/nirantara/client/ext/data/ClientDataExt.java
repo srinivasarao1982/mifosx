@@ -24,6 +24,9 @@ public class ClientDataExt {
 	private final String panNo;
 	private final Long panForm;	
 	private final String nregaNo;
+	private final String spfirstname;
+	private final String spmiddlename;
+	private final String splastname;
 	
 	public static ClientDataExt formClientDataExt(final ClientExt clientExt) {
 		
@@ -40,6 +43,9 @@ public class ClientDataExt {
 		String panNo = null;
 		Long panForm = null;		
 		String nregaNo = null;
+		String spfirstname = null;
+		String spmiddlename = null;
+		String splastname = null;
 		
 		if(clientExt != null){
 			
@@ -85,15 +91,24 @@ public class ClientDataExt {
 			
 			nregaNo = clientExt.getNregaNo();
 			
+			spfirstname = clientExt.getSpfirstname();
+			spmiddlename = clientExt.getSpmiddlename();
+			splastname = clientExt.getSplastname();
+			
 		}
-		return new ClientDataExt(id,salutation,maritalStatus,profession,professionOthers,educationalQualification,annualIncome,landholding,houseType,aadhaarNo,panNo,panForm,nregaNo);
+		return new ClientDataExt(id, salutation, maritalStatus, profession,
+				professionOthers, educationalQualification, annualIncome,
+				landholding, houseType, aadhaarNo, panNo, panForm, nregaNo,
+				spfirstname, spmiddlename, splastname);
 	}
 
-	private ClientDataExt(final Long id,final Long salutation, final Long maritalStatus,
-			final Long profession, final String professionOthers,
-			final Long educationalQualification, final Long annualIncome,
-			final Long landholding, final Long houseType, final String aadhaarNo,
-			final String panNo, final Long panForm, final String nregaNo) {
+	private ClientDataExt(final Long id, final Long salutation,
+			final Long maritalStatus, final Long profession,
+			final String professionOthers, final Long educationalQualification,
+			final Long annualIncome, final Long landholding,
+			final Long houseType, final String aadhaarNo, final String panNo,
+			final Long panForm, final String nregaNo, final String spfirstname,
+			final String spmiddlename, final String splastname) {
 		
 		this.id = id;
 		this.salutation = salutation;
@@ -108,8 +123,15 @@ public class ClientDataExt {
 		this.panNo = panNo;
 		this.panForm = panForm;
 		this.nregaNo = nregaNo;
+		this.spfirstname = spfirstname;
+		this.spmiddlename = spmiddlename;
+		this.splastname = splastname;
 	}
 
+	public Long getId() {
+		return id;
+	}
+	
 	public Long getSalutation() {
 		return salutation;
 	}
@@ -156,6 +178,18 @@ public class ClientDataExt {
 
 	public String getNregaNo() {
 		return nregaNo;
+	}
+
+	public String getSpfirstname() {
+		return spfirstname;
+	}
+
+	public String getSpmiddlename() {
+		return spmiddlename;
+	}
+
+	public String getSplastname() {
+		return splastname;
 	}
 
 }
