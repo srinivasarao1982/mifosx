@@ -71,6 +71,7 @@ import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.ClientExt;
 import org.nirantara.client.ext.domain.ClientExtAssembler;
 import org.nirantara.client.ext.domain.FamilyDetails;
+import org.nirantara.client.ext.domain.OccupationDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -285,7 +286,18 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     		
     		//For nirantara ClientIdentifierWritePlatformService
     		List<ClientIdentifier> clientIdentifiers = this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);    		
-            //
+            
+    		//Occupation Details
+    		final JsonObject occupationDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject(); 
+    		final JsonArray occupationDetailsArray = occupationDetailsObject.get("cfaOccupations").getAsJsonArray();
+    		if(occupationDetailsArray != null){
+    			List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray, newClient);
+    			if(occupationDetails != null){
+                	newClient.updateOccupationDetails(occupationDetails);
+                }
+    		}
+    		
+            
             final Locale locale = command.extractLocale();
             final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);
             CommandProcessingResult result = openSavingsAccount(newClient, fmt);
