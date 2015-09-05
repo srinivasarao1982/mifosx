@@ -53,6 +53,7 @@ import org.mifosplatform.useradministration.domain.AppUser;
 import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.ClientExt;
 import org.nirantara.client.ext.domain.FamilyDetails;
+import org.nirantara.client.ext.domain.OccupationDetails;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @SuppressWarnings("serial")
@@ -230,6 +231,10 @@ public final class Client extends AbstractPersistable<Long> {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
     private List<ClientIdentifier> clientIdentifiers;
+    
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
+    private List<OccupationDetails> occupationDetails;
 
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
@@ -947,6 +952,18 @@ public final class Client extends AbstractPersistable<Long> {
 			this.familyDetails.addAll(familyDetails);
 		}else{
 			this.familyDetails = familyDetails;
+		}
+        for (FamilyDetails fd : this.familyDetails) {
+        	fd.updateClient(this);
+        }	
+	}
+	
+	public void updateOccupationDetails(final List<OccupationDetails> occupationDetails) {
+		if(this.occupationDetails != null){
+			this.occupationDetails.clear();
+			this.occupationDetails.addAll(occupationDetails);
+		}else{
+			this.occupationDetails = occupationDetails;
 		}
         for (FamilyDetails fd : this.familyDetails) {
         	fd.updateClient(this);

@@ -5,8 +5,10 @@
  */
 package org.nirantara.client.ext.domain;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.codes.domain.CodeValue;
@@ -33,6 +35,7 @@ public class ClientExtAssembler {
 	private final AddressRepository addressRepository;
 	private final FamilyDetailsRepository familyDetailsRepository;
 	private final ClientIdentifierRepository clientIdentifierRepository;
+	private final OccupationDetailsRepository occupationDetailsRepository;
 
 	@Autowired
 	public ClientExtAssembler(final FromJsonHelper fromApiJsonHelper,
@@ -40,13 +43,15 @@ public class ClientExtAssembler {
 			final ClientExtRepository clientExtRepository,
 			final AddressRepository addressRepository,
 			final FamilyDetailsRepository familyDetailsRepository,
-			final ClientIdentifierRepository clientIdentifierRepository) {
+			final ClientIdentifierRepository clientIdentifierRepository,
+			final OccupationDetailsRepository occupationDetailsRepository) {
 		this.fromApiJsonHelper = fromApiJsonHelper;
 		this.codeValueRepository = codeValueRepository;
 		this.clientExtRepository = clientExtRepository;
 		this.addressRepository = addressRepository;
 		this.familyDetailsRepository = familyDetailsRepository;
 		this.clientIdentifierRepository = clientIdentifierRepository;
+		this.occupationDetailsRepository = occupationDetailsRepository;
 	}
 
 	public ClientExt assembleClientExt(final JsonCommand command,
@@ -346,6 +351,55 @@ public class ClientExtAssembler {
 			}
 		}
 		return familyDetailsList;
+	}
+	
+	public List<OccupationDetails> assembleOccupationDetails(
+			final JsonArray occupationDetailsArray, final Client newClient) {
+		List<OccupationDetails> occupationDetailsList = new ArrayList<>();
+		for (int i = 0; i < occupationDetailsArray.size(); i++) {
+			final JsonElement element = occupationDetailsArray.get(i)
+					.getAsJsonObject();
+			if (!element.isJsonNull() && !element.toString().equals("{}")) {
+
+				final Long id = this.fromApiJsonHelper.extractLongNamed("occupationId", element);
+				
+				final Long occupationTypeId = this.fromApiJsonHelper.extractLongNamed("id", element);
+				CodeValue occupationTypeCodeValue = null;
+				if (occupationTypeId != null) {
+					occupationTypeCodeValue = this.codeValueRepository
+							.findOneWithNotFoundDetection(occupationTypeId);
+				}
+				
+				final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(element.getAsJsonObject());
+				
+				final BigDecimal annualRevenue = this.fromApiJsonHelper
+						.extractBigDecimalNamed("revenue", element, locale);
+
+				final BigDecimal annualExpense = this.fromApiJsonHelper
+						.extractBigDecimalNamed("expense", element, locale);
+
+				final BigDecimal annualSurplus = this.fromApiJsonHelper
+						.extractBigDecimalNamed("surplus", element, locale);
+
+				OccupationDetails occupationDetails = null;
+				if(id != null){
+					occupationDetails = this.occupationDetailsRepository.findOne(id);
+					if(occupationDetails != null){
+						occupationDetails.update(newClient, occupationTypeCodeValue, annualRevenue, annualExpense, annualSurplus);
+						
+					}else{
+						occupationDetails = OccupationDetails.createFrom(newClient,occupationTypeCodeValue, annualRevenue, annualExpense, annualSurplus);
+					}
+				}else{
+					occupationDetails = OccupationDetails.createFrom(newClient,occupationTypeCodeValue, annualRevenue, annualExpense, annualSurplus);
+				}
+				
+				if (occupationDetails != null) {
+					occupationDetailsList.add(occupationDetails);
+				}
+			}
+		}
+		return occupationDetailsList;
 	}
 
 	public List<ClientIdentifier> assembleDoumentIdentifiersDetails(final 
