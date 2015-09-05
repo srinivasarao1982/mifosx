@@ -135,6 +135,15 @@ public class ClientExtAssembler {
 
 		final String nregaNo = this.fromApiJsonHelper.extractStringNamed(
 				"nregaNo", element);
+		
+		final String spfirstname = this.fromApiJsonHelper.extractStringNamed(
+				"spfirstname", element);
+		
+		final String spmiddlename = this.fromApiJsonHelper.extractStringNamed(
+				"spmiddlename", element);
+		
+		final String splastname = this.fromApiJsonHelper.extractStringNamed(
+				"splastname", element);
 
 		if(id != null){
 			final ClientExt updateClientExt = this.clientExtRepository.findOne(id);
@@ -143,22 +152,21 @@ public class ClientExtAssembler {
 						maritalStatusCodeValue, professionCodeValue, professionOthers,
 						educationalQualificationCodeValue, annualIncomeCodeValue,
 						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-						panFormCodeValue, nregaNo);
-				return updateClientExt;
-				
+						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname);				
+				return updateClientExt;				
 			}else{
 				return ClientExt.createFrom(newClient, salutationCodeValue,
 						maritalStatusCodeValue, professionCodeValue, professionOthers,
 						educationalQualificationCodeValue, annualIncomeCodeValue,
 						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-						panFormCodeValue, nregaNo);
+						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname);
 			}
 		}
 		return ClientExt.createFrom(newClient, salutationCodeValue,
 				maritalStatusCodeValue, professionCodeValue, professionOthers,
 				educationalQualificationCodeValue, annualIncomeCodeValue,
 				landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-				panFormCodeValue, nregaNo);
+				panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname);
 	}
 
 	public List<Address> assembleAddress(final JsonArray addressArray,
@@ -363,8 +371,7 @@ public class ClientExtAssembler {
 		        if(id != null){
 		        	clientIdentifier = this.clientIdentifierRepository.findOne(id);
 					if(clientIdentifier != null){
-						clientIdentifier.update(newClient,documentType,documentKey,description);
-						
+						clientIdentifier.update(newClient,documentType,documentKey,description);						
 					}else{
 						clientIdentifier = new ClientIdentifier(newClient,documentType,documentKey,description);
 					}

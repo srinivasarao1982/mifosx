@@ -71,6 +71,15 @@ public class ClientExt extends AbstractPersistable<Long> {
 
 	@Column(name = "nrega_no", length = 100)
 	private String nregaNo;
+	
+	@Column(name = "sp_firstname", length = 100, nullable = false)
+	private String spfirstname;
+
+	@Column(name = "sp_middlename", length = 50)
+	private String spmiddlename;
+
+	@Column(name = "sp_lastname", length = 50)
+	private String splastname;
 
 	public static ClientExt createFrom(final Client client,final CodeValue salutation,
 			final CodeValue maritalStatus, final CodeValue profession,
@@ -78,23 +87,26 @@ public class ClientExt extends AbstractPersistable<Long> {
 			final CodeValue educationalQualification,
 			final CodeValue annualIncome, final CodeValue landholding,
 			final CodeValue houseType, final String aadhaarNo,
-			final String panNo, final CodeValue panForm, final String nregaNo) {
+			final String panNo, final CodeValue panForm, final String nregaNo,final String spfirstname,final String spmiddlename,final String splastname) {
 
 		return new ClientExt(client, salutation, maritalStatus, profession,
 				professionOthers, educationalQualification, annualIncome,
-				landholding, houseType, aadhaarNo, panNo, panForm, nregaNo);
+				landholding, houseType, aadhaarNo, panNo, panForm, nregaNo,spfirstname,spmiddlename,splastname);
 	}
 
 	protected ClientExt() {
 		//
 	}
 
-	private ClientExt(final Client client, final CodeValue salutation, final CodeValue maritalStatus,
-			final CodeValue profession, final String professionOthers,
+	private ClientExt(final Client client, final CodeValue salutation,
+			final CodeValue maritalStatus, final CodeValue profession,
+			final String professionOthers,
 			final CodeValue educationalQualification,
 			final CodeValue annualIncome, final CodeValue landholding,
 			final CodeValue houseType, final String aadhaarNo,
-			final String panNo, final CodeValue panForm, final String nregaNo) {
+			final String panNo, final CodeValue panForm, final String nregaNo,
+			final String spfirstname, final String spmiddlename,
+			final String splastname) {
 
 		this.client = client;
 		this.salutation = salutation;
@@ -109,7 +121,9 @@ public class ClientExt extends AbstractPersistable<Long> {
 		this.panNo = panNo;
 		this.panForm = panForm;
 		this.nregaNo = nregaNo;
-
+		this.spfirstname = spfirstname;
+		this.spmiddlename = spmiddlename;
+		this.splastname = splastname;
 	}
 
 	public Client getClient() {
@@ -164,14 +178,28 @@ public class ClientExt extends AbstractPersistable<Long> {
 		return nregaNo;
 	}
 
+	public String getSpfirstname() {
+		return spfirstname;
+	}
+
+	public String getSpmiddlename() {
+		return spmiddlename;
+	}
+
+	public String getSplastname() {
+		return splastname;
+	}
+	
 	public void update(final CodeValue salutation,
 			final CodeValue maritalStatus, final CodeValue profession,
 			final String professionOthers,
 			final CodeValue educationalQualification,
 			final CodeValue annualIncome, final CodeValue landholding,
 			final CodeValue houseType, final String aadhaarNo,
-			final String panNo, final CodeValue panForm, final String nregaNo) {
-		
+			final String panNo, final CodeValue panForm, final String nregaNo,
+			final String spfirstname, final String spmiddlename,
+			final String splastname) {
+
 		this.salutation = salutation;
 		this.maritalStatus = maritalStatus;
 		this.profession = profession;
@@ -184,6 +212,8 @@ public class ClientExt extends AbstractPersistable<Long> {
 		this.panNo = panNo;
 		this.panForm = panForm;
 		this.nregaNo = nregaNo;
-		
+		this.spfirstname = spfirstname;
+		this.spmiddlename = spmiddlename;
+		this.splastname = splastname;
 	}
 }
