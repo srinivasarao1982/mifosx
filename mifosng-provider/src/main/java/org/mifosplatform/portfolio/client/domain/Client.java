@@ -226,6 +226,10 @@ public final class Client extends AbstractPersistable<Long> {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
     private List<FamilyDetails> familyDetails;
+    
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
+    private List<ClientIdentifier> clientIdentifiers;
 
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
@@ -951,5 +955,9 @@ public final class Client extends AbstractPersistable<Long> {
 	
 	public List<FamilyDetails> familyDetails() {
 		return this.familyDetails;		
+	}
+	
+	public List<ClientIdentifier> clientIdentifiers() {
+		return this.clientIdentifiers;		
 	}
 }

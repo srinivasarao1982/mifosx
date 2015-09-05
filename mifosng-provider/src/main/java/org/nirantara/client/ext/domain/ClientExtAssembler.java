@@ -14,6 +14,8 @@ import org.mifosplatform.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.portfolio.client.domain.Client;
+import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
+import org.mifosplatform.portfolio.client.domain.ClientIdentifierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,18 +32,21 @@ public class ClientExtAssembler {
 	private final ClientExtRepository clientExtRepository;
 	private final AddressRepository addressRepository;
 	private final FamilyDetailsRepository familyDetailsRepository;
+	private final ClientIdentifierRepository clientIdentifierRepository;
 
 	@Autowired
 	public ClientExtAssembler(final FromJsonHelper fromApiJsonHelper,
 			final CodeValueRepositoryWrapper codeValueRepository,
 			final ClientExtRepository clientExtRepository,
 			final AddressRepository addressRepository,
-			final FamilyDetailsRepository familyDetailsRepository) {
+			final FamilyDetailsRepository familyDetailsRepository,
+			final ClientIdentifierRepository clientIdentifierRepository) {
 		this.fromApiJsonHelper = fromApiJsonHelper;
 		this.codeValueRepository = codeValueRepository;
 		this.clientExtRepository = clientExtRepository;
 		this.addressRepository = addressRepository;
 		this.familyDetailsRepository = familyDetailsRepository;
+		this.clientIdentifierRepository = clientIdentifierRepository;
 	}
 
 	public ClientExt assembleClientExt(final JsonCommand command,
@@ -333,6 +338,45 @@ public class ClientExtAssembler {
 			}
 		}
 		return familyDetailsList;
+	}
+
+	public List<ClientIdentifier> assembleDoumentIdentifiersDetails(final 
+			JsonArray clientIdentifierDataArray, final Client newClient) {
+		List<ClientIdentifier> clientIdentifiers = new ArrayList<>();
+		for (int i = 0; i < clientIdentifierDataArray.size(); i++) {
+			final JsonElement element = clientIdentifierDataArray.get(i)
+					.getAsJsonObject();
+			if (!element.isJsonNull() && !element.toString().equals("{}")) {
+				
+				final Long id = this.fromApiJsonHelper.extractLongNamed("id", element);
+				
+				final Long documentTypeId = this.fromApiJsonHelper.extractLongNamed("documentTypeId", element);
+				
+				CodeValue documentType = null;
+				if (documentTypeId != null) {
+					documentType = this.codeValueRepository.findOneWithNotFoundDetection(documentTypeId);
+				}				
+				final String documentKey = this.fromApiJsonHelper.extractStringNamed("documentKey", element);
+		        final String description = this.fromApiJsonHelper.extractStringNamed("documentDescription", element);
+		        
+		        ClientIdentifier clientIdentifier = null;
+		        if(id != null){
+		        	clientIdentifier = this.clientIdentifierRepository.findOne(id);
+					if(clientIdentifier != null){
+						clientIdentifier.update(newClient,documentType,documentKey,description);
+						
+					}else{
+						clientIdentifier = new ClientIdentifier(newClient,documentType,documentKey,description);
+					}
+				}else{
+					clientIdentifier = new ClientIdentifier(newClient,documentType,documentKey,description);
+				}		        
+		        if(clientIdentifier != null){
+		        	clientIdentifiers.add(clientIdentifier);
+		        }
+			}
+		}
+		return clientIdentifiers;
 	}
 
 }

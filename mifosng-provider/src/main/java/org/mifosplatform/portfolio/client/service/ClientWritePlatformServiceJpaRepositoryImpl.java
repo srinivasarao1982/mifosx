@@ -42,6 +42,7 @@ import org.mifosplatform.portfolio.client.api.ClientApiConstants;
 import org.mifosplatform.portfolio.client.data.ClientDataValidator;
 import org.mifosplatform.portfolio.client.domain.AccountNumberGenerator;
 import org.mifosplatform.portfolio.client.domain.Client;
+import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientActiveForUpdateException;
@@ -103,6 +104,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final ConfigurationDomainService configurationDomainService;
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final ClientExtAssembler clientExtAssembler;
+    private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
 
     @Autowired
     public ClientWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -113,7 +115,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final SavingsAccountRepository savingsRepository, final SavingsProductRepository savingsProductRepository,
             final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService,
             final CommandProcessingService commandProcessingService, final ConfigurationDomainService configurationDomainService,
-            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,final ClientExtAssembler clientExtAssembler) {
+            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,final ClientExtAssembler clientExtAssembler,
+            final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.officeRepository = officeRepository;
@@ -131,6 +134,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         this.configurationDomainService = configurationDomainService;
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.clientExtAssembler = clientExtAssembler;
+        this.clientIdentifierWritePlatformService = clientIdentifierWritePlatformService;
     }
 
     @Transactional
@@ -279,6 +283,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 }
     		}
     		
+    		//For nirantara ClientIdentifierWritePlatformService
+    		List<ClientIdentifier> clientIdentifiers = this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);    		
             //
             final Locale locale = command.extractLocale();
             final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);
@@ -407,10 +413,11 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     				clientForUpdate.updateFamilyDetails(familyDetails);
                 }
     		}
+    		
+    		//For nirantara ClientIdentifierWritePlatformService
+    		List<ClientIdentifier> clientIdentifiers = this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
 
-    		if (!changes.isEmpty()) {
-                this.clientRepository.saveAndFlush(clientForUpdate);
-            }
+    		this.clientRepository.saveAndFlush(clientForUpdate);
     		
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //

@@ -40,6 +40,7 @@ import org.mifosplatform.portfolio.client.data.ClientKYCData;
 import org.mifosplatform.portfolio.client.data.ClientTimelineData;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientEnumerations;
+import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientNotFoundException;
@@ -159,6 +160,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     	ClientDataExt clientDataExt = null;
 		List<AddressExtData> addressExtData = new ArrayList<>();
 		List<FamilyDetailsExtData> familyDetailsExtData = new ArrayList<>();
+		List<ClientIdentifierData> clientIdentifierData = new ArrayList<>();
     	if(clientId != null){
     		final Client client = this.clientRepository
     				.findOneWithNotFoundDetection(clientId);
@@ -176,12 +178,17 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     					familyDetailsExtData.add(FamilyDetailsExtData.formFamilyDetailsExtData(familyDetailsExt));
     				}
     			}
+    			if(client.clientIdentifiers() != null){
+    				for(ClientIdentifier clientIdentifier : client.clientIdentifiers()){
+    					clientIdentifierData.add(ClientIdentifierData.fromData(clientIdentifier));
+    				}
+    			}
     		}
     	}
         return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, 
         		identifier, kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, 
         		houseType, state, district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, 
-        		externalLoanstatus,clientDataExt,addressExtData,familyDetailsExtData);
+        		externalLoanstatus,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData);
         
     }
     
