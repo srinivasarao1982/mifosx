@@ -13,16 +13,24 @@ public class ClientDataExt {
 
 	private final Long id;
 	private final Long salutation;
-	private final Long maritalStatus;	
+	private final String salutationLabel;
+	private final Long maritalStatus;
+	private final String maritalStatusLabel;
 	private final Long profession;
+	private final String professionLabel;
 	private final String professionOthers;
 	private final Long educationalQualification;
+	private final String educationalQualificationLabel;
 	private final Long annualIncome;
+	private final String annualIncomeLabel;
 	private final Long landholding;
+	private final String landholdingLabel;
 	private final Long houseType;
+	private final String houseTypeLabel;
 	private final String aadhaarNo;
 	private final String panNo;
 	private final Long panForm;	
+	private final String panFormLabel;
 	private final String nregaNo;
 	private final String spfirstname;
 	private final String spmiddlename;
@@ -32,16 +40,24 @@ public class ClientDataExt {
 		
 		Long id = null;
 		Long salutation = null;
-		Long maritalStatus = null;		
+		String salutationLabel = null;
+		Long maritalStatus = null;
+		String maritalStatusLabel = null;
 		Long profession = null;
+		String professionLabel = null;
 		String professionOthers = null;
 		Long educationalQualification = null;
+		String educationalQualificationLabel = null;
 		Long annualIncome = null;
+		String annualIncomeLabel = null;
 		Long landholding = null;
+		String landholdingLabel = null;
 		Long houseType = null;
+		String houseTypeLabel = null;
 		String aadhaarNo = null;
 		String panNo = null;
-		Long panForm = null;		
+		Long panForm = null;
+		String panFormLabel = null;
 		String nregaNo = null;
 		String spfirstname = null;
 		String spmiddlename = null;
@@ -53,32 +69,39 @@ public class ClientDataExt {
 			
 			if(clientExt.getSalutation() != null){
 				salutation = clientExt.getSalutation().getId();
+				salutationLabel = clientExt.getSalutation().label();
 			}
 			
 			if(clientExt.getMaritalStatus() != null){
 				maritalStatus = clientExt.getMaritalStatus().getId();
+				maritalStatusLabel = clientExt.getMaritalStatus().label();
 			}
 			
 			if(clientExt.getProfession() != null){
 				profession = clientExt.getProfession().getId();
+				professionLabel = clientExt.getProfession().label();
 			}
 			
 			professionOthers = clientExt.getProfessionOthers();
 			
 			if(clientExt.getEducationalQualification() != null){
 				educationalQualification = clientExt.getEducationalQualification().getId();
+				educationalQualificationLabel = clientExt.getEducationalQualification().label();
 			}
 			
 			if(clientExt.getAnnualIncome() != null){
 				annualIncome = clientExt.getAnnualIncome().getId();
+				annualIncomeLabel = clientExt.getAnnualIncome().label();
 			}
 			
 			if(clientExt.getLandholding() != null){
 				landholding = clientExt.getLandholding().getId();
+				landholdingLabel = clientExt.getLandholding().label();
 			}
 			
 			if(clientExt.getHouseType() != null){
 				houseType = clientExt.getHouseType().getId();
+				houseTypeLabel = clientExt.getHouseType().label();
 			}	
 						
 			aadhaarNo = clientExt.getAadhaarNo();
@@ -87,6 +110,7 @@ public class ClientDataExt {
 			
 			if(clientExt.getPanForm() != null){
 				panForm = clientExt.getPanForm().getId();
+				panFormLabel = clientExt.getPanForm().label();
 			}
 			
 			nregaNo = clientExt.getNregaNo();
@@ -96,32 +120,49 @@ public class ClientDataExt {
 			splastname = clientExt.getSplastname();
 			
 		}
-		return new ClientDataExt(id, salutation, maritalStatus, profession,
-				professionOthers, educationalQualification, annualIncome,
-				landholding, houseType, aadhaarNo, panNo, panForm, nregaNo,
-				spfirstname, spmiddlename, splastname);
+		return new ClientDataExt(id, salutation, salutationLabel,
+				maritalStatus, maritalStatusLabel, profession, professionLabel,
+				professionOthers, educationalQualification,
+				educationalQualificationLabel, annualIncome, annualIncomeLabel,
+				landholding, landholdingLabel, houseType, houseTypeLabel,
+				aadhaarNo, panNo, panForm, panFormLabel, nregaNo, spfirstname,
+				spmiddlename, splastname);
 	}
 
 	private ClientDataExt(final Long id, final Long salutation,
-			final Long maritalStatus, final Long profession,
-			final String professionOthers, final Long educationalQualification,
-			final Long annualIncome, final Long landholding,
-			final Long houseType, final String aadhaarNo, final String panNo,
-			final Long panForm, final String nregaNo, final String spfirstname,
-			final String spmiddlename, final String splastname) {
+			final String salutationLabel, final Long maritalStatus,
+			final String maritalStatusLabel, final Long profession,
+			final String professionLabel, final String professionOthers,
+			final Long educationalQualification,
+			final String educationalQualificationLabel,
+			final Long annualIncome, final String annualIncomeLabel,
+			final Long landholding, final String landholdingLabel,
+			final Long houseType, final String houseTypeLabel,
+			final String aadhaarNo, final String panNo, final Long panForm,
+			final String panFormLabel, final String nregaNo,
+			final String spfirstname, final String spmiddlename,
+			final String splastname) {
 		
 		this.id = id;
 		this.salutation = salutation;
+		this.salutationLabel = salutationLabel;
 		this.maritalStatus = maritalStatus;
+		this.maritalStatusLabel = maritalStatusLabel;
 		this.profession = profession;
+		this.professionLabel = professionLabel;
 		this.professionOthers = professionOthers;
 		this.educationalQualification = educationalQualification;
+		this.educationalQualificationLabel = educationalQualificationLabel;
 		this.annualIncome = annualIncome;
+		this.annualIncomeLabel = annualIncomeLabel;
 		this.landholding = landholding;
+		this.landholdingLabel = landholdingLabel;
 		this.houseType = houseType;
+		this.houseTypeLabel = houseTypeLabel;
 		this.aadhaarNo = aadhaarNo;
 		this.panNo = panNo;
 		this.panForm = panForm;
+		this.panFormLabel = panFormLabel;
 		this.nregaNo = nregaNo;
 		this.spfirstname = spfirstname;
 		this.spmiddlename = spmiddlename;
@@ -131,17 +172,29 @@ public class ClientDataExt {
 	public Long getId() {
 		return id;
 	}
-	
+
 	public Long getSalutation() {
 		return salutation;
+	}
+
+	public String getSalutationLabel() {
+		return salutationLabel;
 	}
 
 	public Long getMaritalStatus() {
 		return maritalStatus;
 	}
 
+	public String getMaritalStatusLabel() {
+		return maritalStatusLabel;
+	}
+
 	public Long getProfession() {
 		return profession;
+	}
+
+	public String getProfessionLabel() {
+		return professionLabel;
 	}
 
 	public String getProfessionOthers() {
@@ -152,16 +205,32 @@ public class ClientDataExt {
 		return educationalQualification;
 	}
 
+	public String getEducationalQualificationLabel() {
+		return educationalQualificationLabel;
+	}
+
 	public Long getAnnualIncome() {
 		return annualIncome;
+	}
+
+	public String getAnnualIncomeLabel() {
+		return annualIncomeLabel;
 	}
 
 	public Long getLandholding() {
 		return landholding;
 	}
 
+	public String getLandholdingLabel() {
+		return landholdingLabel;
+	}
+
 	public Long getHouseType() {
 		return houseType;
+	}
+
+	public String getHouseTypeLabel() {
+		return houseTypeLabel;
 	}
 
 	public String getAadhaarNo() {
@@ -174,6 +243,10 @@ public class ClientDataExt {
 
 	public Long getPanForm() {
 		return panForm;
+	}
+
+	public String getPanFormLabel() {
+		return panFormLabel;
 	}
 
 	public String getNregaNo() {
