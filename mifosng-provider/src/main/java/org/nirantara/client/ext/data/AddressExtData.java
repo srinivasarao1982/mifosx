@@ -59,11 +59,13 @@ public class AddressExtData {
 	}
 
 	private AddressExtData(final Long id, final Long addressType,
-			final String streetNo, final String houseNo, final String addressTypeLabel,
-			final String areaLocality, final String landmark,
-			final String villageTown, final String taluka, final Long district,
-			final String districtLable, final Long state, final String stateLabel,
-			final Integer pinCode, final Long landlineNo, final Long mobileNo) {
+			final String addressTypeLabel, final String houseNo,
+			final String streetNo, final String areaLocality,
+			final String landmark, final String villageTown,
+			final String taluka, final Long district,
+			final String districtLable, final Long state,
+			final String stateLabel, final Integer pinCode,
+			final Long landlineNo, final Long mobileNo) {
 
 		this.id =id;
 		this.addressType = addressType;

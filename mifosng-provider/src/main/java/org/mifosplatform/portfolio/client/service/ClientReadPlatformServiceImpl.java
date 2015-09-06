@@ -157,6 +157,9 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     	Collection<CodeValueData> externalLoanstatus = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.EXTERNALLOAN_STATUS));
     	
+    	Collection<CodeValueData> addressTypes = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_ADDRESS_TYPE));
+    	
     	
     	
     	ClientDataExt clientDataExt = null;
@@ -196,7 +199,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, 
         		identifier, kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, 
         		houseType, state, district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, 
-        		externalLoanstatus,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData, occupationDetailsDatas);
+        		externalLoanstatus, addressTypes,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData, occupationDetailsDatas);
         
     }
     
