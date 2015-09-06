@@ -74,4 +74,44 @@ public class OccupationDetails extends AbstractPersistable<Long> {
 		
 	}
 
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+	public CodeValue getOccupationType() {
+		return occupationType;
+	}
+
+	public void setOccupationType(CodeValue occupationType) {
+		this.occupationType = occupationType;
+	}
+
+	public BigDecimal getAnnulaRevenue() {
+		return annulaRevenue;
+	}
+
+	public void setAnnulaRevenue(BigDecimal annulaRevenue) {
+		this.annulaRevenue = annulaRevenue;
+	}
+
+	public BigDecimal getAnnualExpense() {
+		return annualExpense;
+	}
+
+	public void setAnnualExpense(BigDecimal annualExpense) {
+		this.annualExpense = annualExpense;
+	}
+
+	public BigDecimal getAnnualSurplus() {
+		return annualSurplus;
+	}
+
+	public void setAnnualSurplus(BigDecimal annualSurplus) {
+		this.annualSurplus = annualSurplus;
+	}
+
 }

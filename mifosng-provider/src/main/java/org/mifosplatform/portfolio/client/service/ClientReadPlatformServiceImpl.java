@@ -51,8 +51,10 @@ import org.mifosplatform.useradministration.domain.AppUser;
 import org.nirantara.client.ext.data.AddressExtData;
 import org.nirantara.client.ext.data.ClientDataExt;
 import org.nirantara.client.ext.data.FamilyDetailsExtData;
+import org.nirantara.client.ext.data.OccupationDetailsData;
 import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.FamilyDetails;
+import org.nirantara.client.ext.domain.OccupationDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -161,6 +163,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		List<AddressExtData> addressExtData = new ArrayList<>();
 		List<FamilyDetailsExtData> familyDetailsExtData = new ArrayList<>();
 		List<ClientIdentifierData> clientIdentifierData = new ArrayList<>();
+		List<OccupationDetailsData> occupationDetailsDatas = new ArrayList<>();
     	if(clientId != null){
     		final Client client = this.clientRepository
     				.findOneWithNotFoundDetection(clientId);
@@ -183,12 +186,17 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     					clientIdentifierData.add(ClientIdentifierData.fromData(clientIdentifier));
     				}
     			}
+    			if(client.occupationDetails() != null){
+    				for(OccupationDetails occupationDeatails : client.occupationDetails()){
+    					occupationDetailsDatas.add(OccupationDetailsData.formOccupationDetailsData(occupationDeatails));
+    				}
+    			}
     		}
     	}
         return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, 
         		identifier, kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, 
         		houseType, state, district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, 
-        		externalLoanstatus,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData);
+        		externalLoanstatus,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData, occupationDetailsDatas);
         
     }
     
