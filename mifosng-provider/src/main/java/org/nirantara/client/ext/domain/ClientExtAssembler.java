@@ -36,6 +36,7 @@ public class ClientExtAssembler {
 	private final FamilyDetailsRepository familyDetailsRepository;
 	private final ClientIdentifierRepository clientIdentifierRepository;
 	private final OccupationDetailsRepository occupationDetailsRepository;
+	private final NomineeDetailsRepository nomineeDetailsRepository;
 
 	@Autowired
 	public ClientExtAssembler(final FromJsonHelper fromApiJsonHelper,
@@ -44,7 +45,8 @@ public class ClientExtAssembler {
 			final AddressRepository addressRepository,
 			final FamilyDetailsRepository familyDetailsRepository,
 			final ClientIdentifierRepository clientIdentifierRepository,
-			final OccupationDetailsRepository occupationDetailsRepository) {
+			final OccupationDetailsRepository occupationDetailsRepository,
+			final NomineeDetailsRepository nomineeDetailsRepository) {
 		this.fromApiJsonHelper = fromApiJsonHelper;
 		this.codeValueRepository = codeValueRepository;
 		this.clientExtRepository = clientExtRepository;
@@ -52,6 +54,7 @@ public class ClientExtAssembler {
 		this.familyDetailsRepository = familyDetailsRepository;
 		this.clientIdentifierRepository = clientIdentifierRepository;
 		this.occupationDetailsRepository = occupationDetailsRepository;
+		this.nomineeDetailsRepository = nomineeDetailsRepository;
 	}
 
 	public ClientExt assembleClientExt(final JsonCommand command,
@@ -438,6 +441,77 @@ public class ClientExtAssembler {
 			}
 		}
 		return clientIdentifiers;
+	}
+
+	public List<NomineeDetails> assembleNomineeDetails(final JsonArray nomineeDetailsArray, final Client newClient) {
+		
+		List<NomineeDetails> nomineeDetails = new ArrayList<>();
+		for (int i = 0; i < nomineeDetailsArray.size(); i++) {
+			final JsonElement element = nomineeDetailsArray.get(i).getAsJsonObject();
+			
+			if (!element.isJsonNull() && !element.toString().equals("{}")) {
+
+				final Long id = this.fromApiJsonHelper.extractLongNamed("id", element);
+				
+				final Long salutationId = this.fromApiJsonHelper.extractLongNamed("salutation", element);
+				CodeValue salutation = null;
+				if (salutationId != null) {
+					salutation = this.codeValueRepository.findOneWithNotFoundDetection(salutationId);
+				}
+				
+				final String name = this.fromApiJsonHelper.extractStringNamed("name", element);
+
+				final Long genderId = this.fromApiJsonHelper.extractLongNamed("gender", element);
+				CodeValue gender = null;
+				if (genderId != null) {
+					gender = this.codeValueRepository.findOneWithNotFoundDetection(genderId);
+				}
+
+				final Integer age = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("age", element);
+				
+				final Long relationshipId = this.fromApiJsonHelper.extractLongNamed("relationship", element);
+				CodeValue relationship = null;
+				if (relationshipId != null) {
+					relationship = this.codeValueRepository.findOneWithNotFoundDetection(relationshipId);
+				}
+				
+				final LocalDate dateOfBirth = this.fromApiJsonHelper.extractLocalDateNamed("dateOfBirth", element);
+
+				final String guardianName = this.fromApiJsonHelper.extractStringNamed("guardianName", element);
+				
+				final String address = this.fromApiJsonHelper.extractStringNamed("address", element);
+
+				final LocalDate guardianDateOfBirth = this.fromApiJsonHelper.extractLocalDateNamed("dateOfBirth", element);
+				
+				final String guardianRelationship = this.fromApiJsonHelper.extractStringNamed("guardianRelationship", element);
+
+				
+
+				NomineeDetails nomineeDetail = null;
+				if(id != null){
+					nomineeDetail = this.nomineeDetailsRepository.findOne(id);
+					if(nomineeDetail != null){
+						nomineeDetail.update(newClient, salutation, name, gender,
+								age, relationship, dateOfBirth, guardianName, address,
+								guardianDateOfBirth,guardianRelationship);
+						
+					}else{
+						nomineeDetail = NomineeDetails.createFrom(newClient, salutation, name, gender,
+								age, relationship, dateOfBirth, guardianName, address,
+								guardianDateOfBirth,guardianRelationship);
+					}
+				}else{
+					nomineeDetail = NomineeDetails.createFrom(newClient, salutation, name, gender,
+							age, relationship, dateOfBirth, guardianName, address,
+							guardianDateOfBirth,guardianRelationship);
+				}
+				
+				if (nomineeDetail != null) {
+					nomineeDetails.add(nomineeDetail);
+				}
+			}
+		}
+		return nomineeDetails;
 	}
 
 }

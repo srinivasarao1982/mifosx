@@ -42,7 +42,6 @@ import org.mifosplatform.portfolio.client.api.ClientApiConstants;
 import org.mifosplatform.portfolio.client.data.ClientDataValidator;
 import org.mifosplatform.portfolio.client.domain.AccountNumberGenerator;
 import org.mifosplatform.portfolio.client.domain.Client;
-import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientActiveForUpdateException;
@@ -71,6 +70,7 @@ import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.ClientExt;
 import org.nirantara.client.ext.domain.ClientExtAssembler;
 import org.nirantara.client.ext.domain.FamilyDetails;
+import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,14 +259,14 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             //For nirantara
+            final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
             ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, newClient);
             if(clientExt != null){
             	newClient.updateClientExt(clientExt);
             }
             
-            //For nirantara Address
-            final JsonObject formDataObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
-    		final JsonArray addressArray = formDataObject.get("naddress").getAsJsonArray();
+            //For nirantara Address   		
+    		final JsonArray addressArray = object.get("naddress").getAsJsonArray();
     		if(addressArray != null){
     			List<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
     			if(address != null && address.size() > 0){
@@ -274,9 +274,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 }
     		}
             
-    		//For nirantara familyDetails
-            final JsonObject familyDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
-    		final JsonArray familyDetailsArray = familyDetailsObject.get("familyDetails").getAsJsonArray();
+    		//For nirantara familyDetails    		
+    		final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
     		if(familyDetailsArray != null){
     			List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, newClient);
     			if(familyDetails != null){
@@ -285,11 +284,10 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     		}
     		
     		//For nirantara ClientIdentifierWritePlatformService
-    		List<ClientIdentifier> clientIdentifiers = this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);    		
+    		this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);    		
             
-    		//Occupation Details
-    		final JsonObject occupationDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject(); 
-    		final JsonArray occupationDetailsArray = occupationDetailsObject.get("cfaOccupations").getAsJsonArray();
+    		//Occupation Details 
+    		final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
     		if(occupationDetailsArray != null){
     			List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray, newClient);
     			if(occupationDetails != null){
@@ -297,6 +295,14 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 }
     		}
     		
+    		//For nirantara Nominee Details    		
+    		final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
+    		if(nomineeDetailsArray != null){
+    			List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, newClient);
+    			if(nomineeDetails != null){
+    				newClient.updateNomineeDetails(nomineeDetails);
+                }
+    		}
             
             final Locale locale = command.extractLocale();
             final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);
@@ -400,6 +406,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
             
             /** Update For Nirantara **/
+            final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();  
             //For nirantara
             ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, clientForUpdate);
             if(clientExt != null){
@@ -407,8 +414,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
             
             //For nirantara Address
-            final JsonObject formDataObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
-    		final JsonArray addressArray = formDataObject.get("naddress").getAsJsonArray();
+              		
+    		final JsonArray addressArray = object.get("naddress").getAsJsonArray();
     		if(addressArray != null){
     			List<Address> address = this.clientExtAssembler.assembleAddress(addressArray, clientForUpdate);
     			if(address != null && address.size() > 0){
@@ -416,9 +423,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 }
     		}
             
-    		//For nirantara familyDetails
-    		final JsonObject familyDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
-    		final JsonArray familyDetailsArray = familyDetailsObject.get("familyDetails").getAsJsonArray();
+    		//For nirantara familyDetails    		
+    		final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
     		if(familyDetailsArray != null){
     			List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, clientForUpdate);
     			if(familyDetails != null){
@@ -427,15 +433,23 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     		}
     		
     		//For nirantara ClientIdentifierWritePlatformService
-    		List<ClientIdentifier> clientIdentifiers = this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
+    		this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
     		
     		//For nirantara Occupation Details
-    		final JsonObject occupationDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject(); 
-    		final JsonArray occupationDetailsArray = occupationDetailsObject.get("cfaOccupations").getAsJsonArray();
+    		final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
     		if(occupationDetailsArray != null){
     			List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray, clientForUpdate);
     			if(occupationDetails != null){
     				clientForUpdate.updateOccupationDetails(occupationDetails);
+                }
+    		}
+    		
+    		//For nirantara Nominee Details    		
+    		final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
+    		if(nomineeDetailsArray != null){
+    			List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, clientForUpdate);
+    			if(nomineeDetails != null){
+    				clientForUpdate.updateNomineeDetails(nomineeDetails);
                 }
     		}
     		

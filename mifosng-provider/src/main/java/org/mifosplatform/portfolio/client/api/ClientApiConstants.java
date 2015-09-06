@@ -89,10 +89,11 @@ public class ClientApiConstants {
 
     public static final String clientIdentifierDataParamName = "clientIdentifierData";
     public static final String occupationDetailsParamName = "cfaOccupations";
+    public static final String nomineeDetailsParamName = "nomineeDetails";
   
 
     public static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,officeIdParamName,dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName, middlenameParamName,lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName, savingsProductIdParamName,
-            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName, occupationDetailsParamName));
+            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName, occupationDetailsParamName,nomineeDetailsParamName));
   
 
     /**
@@ -144,7 +145,7 @@ public class ClientApiConstants {
             dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName,
             middlenameParamName, lastnameParamName, fullnameParamName, officeIdParamName, activeParamName, activationDateParamName,
             staffIdParamName, submittedOnDateParamName, savingsProductIdParamName, dateOfBirthParamName, genderIdParamName,
-            clientTypeIdParamName, clientClassificationIdParamName, clientClassificationParamName,CLIENT_TYPE,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName, occupationDetailsParamName));
+            clientTypeIdParamName, clientClassificationIdParamName, clientClassificationParamName,CLIENT_TYPE,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName, occupationDetailsParamName,nomineeDetailsParamName));
     
     
 }

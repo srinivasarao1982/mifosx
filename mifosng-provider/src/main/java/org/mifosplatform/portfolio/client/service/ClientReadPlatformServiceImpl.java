@@ -51,9 +51,11 @@ import org.mifosplatform.useradministration.domain.AppUser;
 import org.nirantara.client.ext.data.AddressExtData;
 import org.nirantara.client.ext.data.ClientDataExt;
 import org.nirantara.client.ext.data.FamilyDetailsExtData;
+import org.nirantara.client.ext.data.NomineeDetailsData;
 import org.nirantara.client.ext.data.OccupationDetailsData;
 import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.FamilyDetails;
+import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -167,6 +169,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		List<FamilyDetailsExtData> familyDetailsExtData = new ArrayList<>();
 		List<ClientIdentifierData> clientIdentifierData = new ArrayList<>();
 		List<OccupationDetailsData> occupationDetailsDatas = new ArrayList<>();
+		List<NomineeDetailsData> nomineeDetailsData = new ArrayList<>();
     	if(clientId != null){
     		final Client client = this.clientRepository
     				.findOneWithNotFoundDetection(clientId);
@@ -194,12 +197,18 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     					occupationDetailsDatas.add(OccupationDetailsData.formOccupationDetailsData(occupationDeatails));
     				}
     			}
+    			
+    			if(client.nomineeDetails() != null){
+    				for(NomineeDetails nomineeDetail : client.nomineeDetails()){
+    					nomineeDetailsData.add(NomineeDetailsData.formNomineeDetailsData(nomineeDetail));
+    				}
+    			}
     		}
     	}
         return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, 
         		identifier, kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, 
         		houseType, state, district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, 
-        		externalLoanstatus, addressTypes,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData, occupationDetailsDatas);
+        		externalLoanstatus, addressTypes,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData, occupationDetailsDatas, nomineeDetailsData);
         
     }
     
