@@ -10,6 +10,7 @@ import org.mifosplatform.infrastructure.codes.data.CodeValueData;
 import org.nirantara.client.ext.data.AddressExtData;
 import org.nirantara.client.ext.data.ClientDataExt;
 import org.nirantara.client.ext.data.FamilyDetailsExtData;
+import org.nirantara.client.ext.data.OccupationDetailsData;
 
 /**
  * @author Srinivas Rao
@@ -49,6 +50,7 @@ public class ClientDetailedData {
 	private final List<AddressExtData> addressExtData;
 	private final List<FamilyDetailsExtData> familyDetailsExtData;
 	private final List<ClientIdentifierData> clientIdentifierData;
+	private final List<OccupationDetailsData> occupationDetailsData;
 	
 	public ClientDetailedData(ClientData clientBasicDetails,
 			ClientAdditionalDetails additionalDetails, ClientAddress address,
@@ -74,7 +76,8 @@ public class ClientDetailedData {
 			final ClientDataExt clientDataExt,
 			final List<AddressExtData> addressExtData,
 			final List<FamilyDetailsExtData> familyDetailsExtData, 
-			final List<ClientIdentifierData> clientIdentifierData) {
+			final List<ClientIdentifierData> clientIdentifierData,
+			final List<OccupationDetailsData> occupationDetailsData) {
 		super();
 		this.clientBasicDetails = clientBasicDetails;
 		this.additionalDetails = additionalDetails;
@@ -104,6 +107,7 @@ public class ClientDetailedData {
 		this.addressExtData = addressExtData;
 		this.familyDetailsExtData = familyDetailsExtData;
 		this.clientIdentifierData = clientIdentifierData;
+		this.occupationDetailsData = occupationDetailsData;
 	}
 
 	public ClientData getClientBasicDetails() {
@@ -216,6 +220,10 @@ public class ClientDetailedData {
 	
 	public List<ClientIdentifierData> clientIdentifierData() {
 		return this.clientIdentifierData;
+	}
+	
+	public List<OccupationDetailsData> OccupationDetailsData() {
+		return this.occupationDetailsData;
 	}
 	
 }

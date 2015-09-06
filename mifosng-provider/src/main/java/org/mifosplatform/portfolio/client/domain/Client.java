@@ -977,4 +977,8 @@ public final class Client extends AbstractPersistable<Long> {
 	public List<ClientIdentifier> clientIdentifiers() {
 		return this.clientIdentifiers;		
 	}
+	
+	public List<OccupationDetails> occupationDetails(){
+		return this.occupationDetails;
+	}
 }

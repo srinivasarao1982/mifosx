@@ -428,7 +428,17 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     		
     		//For nirantara ClientIdentifierWritePlatformService
     		List<ClientIdentifier> clientIdentifiers = this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
-
+    		
+    		//For nirantara Occupation Details
+    		final JsonObject occupationDetailsObject = new JsonParser().parse(command.json()).getAsJsonObject(); 
+    		final JsonArray occupationDetailsArray = occupationDetailsObject.get("cfaOccupations").getAsJsonArray();
+    		if(occupationDetailsArray != null){
+    			List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray, clientForUpdate);
+    			if(occupationDetails != null){
+    				clientForUpdate.updateOccupationDetails(occupationDetails);
+                }
+    		}
+    		
     		this.clientRepository.saveAndFlush(clientForUpdate);
     		
             return new CommandProcessingResultBuilder() //
