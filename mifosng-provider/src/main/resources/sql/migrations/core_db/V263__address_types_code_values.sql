@@ -15,3 +15,6 @@ INSERT IGNORE INTO `m_code_value` (`code_id`, `code_value`, `order_position`) VA
 INSERT IGNORE INTO `m_code_value` (`code_id`, `code_value`, `order_position`) VALUES ((SELECT id FROM m_code WHERE code_name ='cfaOccupation'), 'Other Activity-1', 2);
 INSERT IGNORE INTO `m_code_value` (`code_id`, `code_value`, `order_position`) VALUES ((SELECT id FROM m_code WHERE code_name ='cfaOccupation'), 'Activity of Other Family Members', 3);
 
+ALTER TABLE `n_cfaoccupations`
+	DROP INDEX `client_id_UNIQUE`,
+	DROP FOREIGN KEY `fk_n_cfa_occ_client_id_m_client`;
