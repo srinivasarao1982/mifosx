@@ -162,6 +162,11 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     	Collection<CodeValueData> addressTypes = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_ADDRESS_TYPE));
     	
+    	Collection<CodeValueData> presentLoanSourceTypes = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PRESETLOANSOURCETYPES));
+    	
+    	Collection<CodeValueData> presentLoanPurposeTypes = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PRESETLOANPURPOSETYPES));
     	
     	
     	ClientDataExt clientDataExt = null;
@@ -197,7 +202,6 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     					occupationDetailsDatas.add(OccupationDetailsData.formOccupationDetailsData(occupationDeatails));
     				}
     			}
-    			
     			if(client.nomineeDetails() != null){
     				for(NomineeDetails nomineeDetail : client.nomineeDetails()){
     					nomineeDetailsData.add(NomineeDetailsData.formNomineeDetailsData(nomineeDetail));
@@ -205,10 +209,17 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     			}
     		}
     	}
-        return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, 
-        		identifier, kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, 
-        		houseType, state, district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, 
-        		externalLoanstatus, addressTypes,clientDataExt,addressExtData,familyDetailsExtData,clientIdentifierData, occupationDetailsDatas, nomineeDetailsData);
+    	
+		return new ClientDetailedData(clientBasicDetails, additionalDetails,
+				address, familyDetails, cfaDetails, agriOccupation, identifier,
+				kycDetails, salutation, maritalStatus, profession,
+				educationQualification, annualIncome, landHolding, houseType,
+				state, district, identityProof, addressProof,
+				familyrelationShip, familyOccupation, yesOrNo, cfaOccupation,
+				externalLoanstatus, addressTypes, presentLoanSourceTypes,
+				presentLoanPurposeTypes, clientDataExt, addressExtData,
+				familyDetailsExtData, clientIdentifierData,
+				occupationDetailsDatas, nomineeDetailsData);
         
     }
     
