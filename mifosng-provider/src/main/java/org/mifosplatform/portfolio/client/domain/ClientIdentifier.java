@@ -105,4 +105,20 @@ public class ClientIdentifier extends AbstractAuditableCustom<AppUser, Long> {
         this.documentKey = StringUtils.defaultIfEmpty(documentKey, null);
         this.description = StringUtils.defaultIfEmpty(description, null);
 	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public CodeValue getDocumentType() {
+		return documentType;
+	}
+
+	public String getDocumentKey() {
+		return documentKey;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 }
