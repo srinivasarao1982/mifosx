@@ -137,7 +137,8 @@ public class ClientApiConstants {
     public static final String FAMILY_OCCUPATION = "familyOccupation";
     public static final String YES_NO = "YesNo";
     public static final String FIN_OCCUPATION = "cfaOccupation";
-    public static final String EXTERNALLOAN_STATUS = "externalLoanstatus";    
+    public static final String EXTERNALLOAN_STATUS = "externalLoanstatus";
+    public static final String CLIENT_ADDRESS_TYPE = "addressType";
     
     public static final Set<String> CLIENT_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName,
