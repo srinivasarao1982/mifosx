@@ -18,3 +18,6 @@ INSERT IGNORE INTO `m_code_value` (`code_id`, `code_value`, `order_position`) VA
 ALTER TABLE `n_cfaoccupations`
 	DROP INDEX `client_id_UNIQUE`,
 	DROP FOREIGN KEY `fk_n_cfa_occ_client_id_m_client`;
+	
+ALTER TABLE `n_cfaoccupations`
+	ADD CONSTRAINT `fk_n_cfa_occ_client_id_m_client` FOREIGN KEY (`client_id`) REFERENCES `m_client` (`id`);
