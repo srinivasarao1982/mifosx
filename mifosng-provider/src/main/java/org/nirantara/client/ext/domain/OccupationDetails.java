@@ -114,4 +114,8 @@ public class OccupationDetails extends AbstractPersistable<Long> {
 		this.annualSurplus = annualSurplus;
 	}
 
+	public void updateClient(final Client client) {
+		this.client = client;
+	}
+
 }
