@@ -46,6 +46,8 @@ public class ClientDetailedData {
 	private  final Collection<CodeValueData> cfaOccupation;
 	private  final Collection<CodeValueData> externalLoanstatus;
 	private  final Collection<CodeValueData> addressTypes;
+	private  final Collection<CodeValueData> presentLoanSourceTypes;
+	private  final Collection<CodeValueData> presentLoanPurposeTypes;
 	
 	//Nirantara
 	private final ClientDataExt clientDataExt;
@@ -77,6 +79,8 @@ public class ClientDetailedData {
 			Collection<CodeValueData> cfaOccupation,
 			Collection<CodeValueData> externalLoanstatus,
 			Collection<CodeValueData> addressTypes,
+			Collection<CodeValueData> presentLoanSourceseTypes,
+			Collection<CodeValueData> presentLoanPurposeTypes,
 			final ClientDataExt clientDataExt,
 			final List<AddressExtData> addressExtData,
 			final List<FamilyDetailsExtData> familyDetailsExtData, 
@@ -108,6 +112,8 @@ public class ClientDetailedData {
 		this.cfaOccupation = cfaOccupation;
 		this.externalLoanstatus = externalLoanstatus;
 		this.addressTypes = addressTypes;
+		this.presentLoanSourceTypes = presentLoanSourceseTypes;
+		this.presentLoanPurposeTypes = presentLoanPurposeTypes;
 		this.clientDataExt = clientDataExt;
 		this.addressExtData = addressExtData;
 		this.familyDetailsExtData = familyDetailsExtData;
@@ -235,9 +241,17 @@ public class ClientDetailedData {
 	public Collection<CodeValueData> getAddressTypes() {
 		return addressTypes;
 	}
-
+	
 	public List<NomineeDetailsData> getNomineeDetailsData() {
 		return nomineeDetailsData;
+	}
+	
+	public Collection<CodeValueData> getPresentLoanSourceTypes() {
+		return presentLoanSourceTypes;
+	}
+
+	public Collection<CodeValueData> getPresentLoanPurposeTypes() {
+		return presentLoanPurposeTypes;
 	}
 	
 }
