@@ -413,6 +413,13 @@ public class CommandWrapperBuilder {
         this.href = "/clients/template";
         return this;
     }
+    
+    public CommandWrapperBuilder createCoClient() {
+        this.actionName = "CREATE";
+        this.entityName = "COCLIENT";
+        this.href = "/coapplicant/template";
+        return this;
+    }
 
     public CommandWrapperBuilder activateClient(final Long clientId) {
         this.actionName = "ACTIVATE";

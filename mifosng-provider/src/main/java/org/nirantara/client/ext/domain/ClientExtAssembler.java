@@ -36,7 +36,8 @@ public class ClientExtAssembler {
 	private final FamilyDetailsRepository familyDetailsRepository;
 	private final ClientIdentifierRepository clientIdentifierRepository;
 	private final OccupationDetailsRepository occupationDetailsRepository;
-	private final NomineeDetailsRepository nomineeDetailsRepository;
+	private final NomineeDetailsRepository nomineeDetailsRepository;	
+	private final CoapplicantRepository coapplicantRepository;
 
 	@Autowired
 	public ClientExtAssembler(final FromJsonHelper fromApiJsonHelper,
@@ -46,7 +47,8 @@ public class ClientExtAssembler {
 			final FamilyDetailsRepository familyDetailsRepository,
 			final ClientIdentifierRepository clientIdentifierRepository,
 			final OccupationDetailsRepository occupationDetailsRepository,
-			final NomineeDetailsRepository nomineeDetailsRepository) {
+			final NomineeDetailsRepository nomineeDetailsRepository,
+			final CoapplicantRepository coapplicantRepository) {
 		this.fromApiJsonHelper = fromApiJsonHelper;
 		this.codeValueRepository = codeValueRepository;
 		this.clientExtRepository = clientExtRepository;
@@ -55,6 +57,7 @@ public class ClientExtAssembler {
 		this.clientIdentifierRepository = clientIdentifierRepository;
 		this.occupationDetailsRepository = occupationDetailsRepository;
 		this.nomineeDetailsRepository = nomineeDetailsRepository;
+		this.coapplicantRepository = coapplicantRepository;
 	}
 
 	public ClientExt assembleClientExt(final JsonCommand command,
@@ -512,6 +515,59 @@ public class ClientExtAssembler {
 			}
 		}
 		return nomineeDetails;
+	}
+
+	public List<Coapplicant> assembleCoClientDataArray(final JsonArray coClientDataArray, final Client newClient) {
+		List<Coapplicant> coapplicant = new ArrayList<>();
+		for (int i = 0; i < coClientDataArray.size(); i++) {
+			final JsonElement element = coClientDataArray.get(i).getAsJsonObject();
+			
+			if (!element.isJsonNull() && !element.toString().equals("{}")) {
+
+				final Long id = this.fromApiJsonHelper.extractLongNamed("id", element);
+				
+				final String firstName = this.fromApiJsonHelper.extractStringNamed("firstName", element);
+
+				final String middleName = this.fromApiJsonHelper.extractStringNamed("middleName", element);
+
+				final String lastName = this.fromApiJsonHelper.extractStringNamed("lastName", element);
+				
+				final Long relationshipId = this.fromApiJsonHelper.extractLongNamed("relationship", element);
+				CodeValue relationship = null;
+				if (relationshipId != null) {
+					relationship = this.codeValueRepository.findOneWithNotFoundDetection(relationshipId);
+				}
+				
+				final LocalDate dateOfBirth = this.fromApiJsonHelper.extractLocalDateNamed("dateOfBirth", element);
+
+				final Integer age = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("age", element);
+				
+				final String mothersMaidenName = this.fromApiJsonHelper.extractStringNamed("mothersMaidenName", element);
+				
+				final String emailId = this.fromApiJsonHelper.extractStringNamed("emailId", element);				
+
+				Coapplicant coapp = null;
+				if(id != null){
+					coapp = this.coapplicantRepository.findOne(id);
+					if(coapp != null){
+						coapp.update(newClient, firstName, middleName, lastName,
+								relationship, dateOfBirth, age, mothersMaidenName,emailId);
+						
+					}else{
+						coapp = Coapplicant.createFrom(newClient, firstName, middleName, lastName,
+								relationship, dateOfBirth, age, mothersMaidenName,emailId);
+					}
+				}else{
+					coapp = Coapplicant.createFrom(newClient, firstName, middleName, lastName,
+							relationship, dateOfBirth, age, mothersMaidenName,emailId);
+				}
+				
+				if (coapp != null) {
+					coapplicant.add(coapp);
+				}
+			}
+		}
+		return coapplicant;
 	}
 
 }

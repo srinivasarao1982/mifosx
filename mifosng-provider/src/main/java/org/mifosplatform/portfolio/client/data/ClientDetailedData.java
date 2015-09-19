@@ -9,6 +9,7 @@ import java.util.List;
 import org.mifosplatform.infrastructure.codes.data.CodeValueData;
 import org.nirantara.client.ext.data.AddressExtData;
 import org.nirantara.client.ext.data.ClientDataExt;
+import org.nirantara.client.ext.data.CoapplicantDetailsData;
 import org.nirantara.client.ext.data.FamilyDetailsExtData;
 import org.nirantara.client.ext.data.NomineeDetailsData;
 import org.nirantara.client.ext.data.OccupationDetailsData;
@@ -56,6 +57,7 @@ public class ClientDetailedData {
 	private final List<ClientIdentifierData> clientIdentifierData;
 	private final List<OccupationDetailsData> occupationDetailsData;
 	private final List<NomineeDetailsData> nomineeDetailsData;
+	private final CoapplicantDetailsData coapplicantDetailsData;
 	
 	public ClientDetailedData(ClientData clientBasicDetails,
 			ClientAdditionalDetails additionalDetails, ClientAddress address,
@@ -85,7 +87,9 @@ public class ClientDetailedData {
 			final List<AddressExtData> addressExtData,
 			final List<FamilyDetailsExtData> familyDetailsExtData, 
 			final List<ClientIdentifierData> clientIdentifierData,
-			final List<OccupationDetailsData> occupationDetailsData, final List<NomineeDetailsData> nomineeDetailsData) {
+			final List<OccupationDetailsData> occupationDetailsData, 
+			final List<NomineeDetailsData> nomineeDetailsData,
+			final CoapplicantDetailsData coapplicantDetailsData) {
 		super();
 		this.clientBasicDetails = clientBasicDetails;
 		this.additionalDetails = additionalDetails;
@@ -120,6 +124,7 @@ public class ClientDetailedData {
 		this.clientIdentifierData = clientIdentifierData;
 		this.occupationDetailsData = occupationDetailsData;
 		this.nomineeDetailsData = nomineeDetailsData;
+		this.coapplicantDetailsData = coapplicantDetailsData;
 	}
 
 	public ClientData getClientBasicDetails() {
@@ -252,6 +257,10 @@ public class ClientDetailedData {
 
 	public Collection<CodeValueData> getPresentLoanPurposeTypes() {
 		return presentLoanPurposeTypes;
+	}
+
+	public CoapplicantDetailsData getCoapplicantDetailsData() {
+		return coapplicantDetailsData;
 	}
 	
 }

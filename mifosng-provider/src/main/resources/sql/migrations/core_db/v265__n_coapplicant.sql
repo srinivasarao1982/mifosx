@@ -18,3 +18,6 @@ INSERT INTO `m_code` (`code_name`, `is_system_defined`) VALUES ('SpouseRelationS
 INSERT IGNORE INTO m_code_value(code_id, code_value, order_position) VALUES((SELECT id FROM m_code WHERE m_code.code_name ='addressType'), 'Spouse Address', 0);
 INSERT IGNORE INTO m_code_value(code_id, code_value, order_position) VALUES((SELECT id FROM m_code WHERE m_code.code_name ='SpouseRelationShip'), 'Father', 0);
 INSERT IGNORE INTO m_code_value(code_id, code_value, order_position) VALUES((SELECT id FROM m_code WHERE m_code.code_name ='SpouseRelationShip'), 'Spouse', 0);
+
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('portfolio', 'CREATE_COCLIENT_CHECKER', 'COCLIENT', 'CREATE_CHECKER', 0);
+INSERT INTO `m_permission` (`grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ('portfolio', 'CREATE_COCLIENT', 'COCLIENT', 'CREATE', 0);

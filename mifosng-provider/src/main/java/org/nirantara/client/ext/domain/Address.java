@@ -107,7 +107,7 @@ public class Address extends AbstractPersistable<Long> {
 
 	}
 	
-	public void updateClient(Client client) {
+	public void updateClient(final Client client) {
         this.client = client;
     }
 	
