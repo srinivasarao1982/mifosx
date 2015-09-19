@@ -2,14 +2,16 @@ package org.nirantara.client.ext.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.mifosplatform.infrastructure.codes.data.CodeValueData;
 import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
+import org.mifosplatform.portfolio.client.domain.Client;
 import org.nirantara.client.ext.api.CoapplicantApiConstants;
-import org.nirantara.client.ext.data.AddressExtData;
 import org.nirantara.client.ext.data.CoapplicantData;
 import org.nirantara.client.ext.data.CoapplicantDetailsData;
+import org.nirantara.client.ext.domain.Coapplicant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ public class CoapplicantReadPlatformServiceImpl implements CoapplicantReadPlatfo
 	}
 	
 	@Override
-	public CoapplicantDetailsData retrieveCoapplicantDetailsDataTemplate() {
+	public CoapplicantDetailsData retrieveCoapplicantDetailsDataTemplate(final Client client) {
 
 		Collection<CodeValueData> spouseRelationShip = new ArrayList<>(
 				this.codeValueReadPlatformService
@@ -42,12 +44,18 @@ public class CoapplicantReadPlatformServiceImpl implements CoapplicantReadPlatfo
 				this.codeValueReadPlatformService
 						.retrieveCodeValuesByCode(ClientApiConstants.DISTRICT));
 
-		final CoapplicantData coapplicantData = null;
-		final AddressExtData addressExtData = null;
-
+		List<CoapplicantData> coapplicantData = new ArrayList<>();
+		if(client != null){
+			if(client.coapplicant() != null){
+				for(Coapplicant ca : client.coapplicant()){
+					coapplicantData.add(CoapplicantData.formCoapplicantData(ca));
+				}
+			}
+		}
+		
 		return CoapplicantDetailsData.fromCoapplicantDetailsData(
 				spouseRelationShip, addressTypes, state, district,
-				coapplicantData, addressExtData);
+				coapplicantData);
 	}
 
 }

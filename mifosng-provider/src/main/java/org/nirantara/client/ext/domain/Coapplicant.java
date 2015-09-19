@@ -84,5 +84,64 @@ public class Coapplicant extends AbstractPersistable<Long> {
 		this.mothersMaidenName = mothersMaidenName;
 		this.emailId = emailId;
 	}
+
+	public void update(final Client client,
+			final String firstName, final String middleName,
+			final String lastName, final CodeValue relationship,
+			final LocalDate dateOfBirth, final Integer age,
+			final String mothersMaidenName, final String emailId) {
+		
+		this.client = client;
+		this.firstName = firstName;
+		this.middleName = middleName;
+		this.lastName = lastName;
+		this.relationship = relationship;
+		if (dateOfBirth != null) {
+			this.dateOfBirth = dateOfBirth.toDateTimeAtStartOfDay().toDate();
+		}
+		this.age = age;
+		this.mothersMaidenName = mothersMaidenName;
+		this.emailId = emailId;
+	}
+	
+	public void updateClient(final Client client) {
+		this.client = client;		
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public CodeValue getRelationship() {
+		return relationship;
+	}
+
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public String getMothersMaidenName() {
+		return mothersMaidenName;
+	}
+
+	public String getEmailId() {
+		return emailId;
+	}
 	
 }

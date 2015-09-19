@@ -50,6 +50,7 @@ import org.mifosplatform.portfolio.savings.service.SavingsProductReadPlatformSer
 import org.mifosplatform.useradministration.domain.AppUser;
 import org.nirantara.client.ext.data.AddressExtData;
 import org.nirantara.client.ext.data.ClientDataExt;
+import org.nirantara.client.ext.data.CoapplicantDetailsData;
 import org.nirantara.client.ext.data.FamilyDetailsExtData;
 import org.nirantara.client.ext.data.NomineeDetailsData;
 import org.nirantara.client.ext.data.OccupationDetailsData;
@@ -57,6 +58,7 @@ import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.FamilyDetails;
 import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
+import org.nirantara.client.ext.service.CoapplicantReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -80,13 +82,15 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     private final ClientMembersOfGroupMapper membersOfGroupMapper = new ClientMembersOfGroupMapper();
     private final ParentGroupsMapper clientGroupsMapper = new ParentGroupsMapper();
     private final ClientRepositoryWrapper clientRepository;
+    private final CoapplicantReadPlatformService coapplicantReadPlatformService;
 
     @Autowired
     public ClientReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
             final OfficeReadPlatformService officeReadPlatformService, final StaffReadPlatformService staffReadPlatformService,
             final CodeValueReadPlatformService codeValueReadPlatformService,
             final SavingsProductReadPlatformService savingsProductReadPlatformService,
-            final ClientRepositoryWrapper clientRepository) {
+            final ClientRepositoryWrapper clientRepository,
+            final CoapplicantReadPlatformService coapplicantReadPlatformService) {
         this.context = context;
         this.officeReadPlatformService = officeReadPlatformService;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -94,6 +98,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         this.codeValueReadPlatformService = codeValueReadPlatformService;
         this.savingsProductReadPlatformService = savingsProductReadPlatformService;
         this.clientRepository = clientRepository;
+        this.coapplicantReadPlatformService = coapplicantReadPlatformService;
     }
     
     @Override
@@ -175,6 +180,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 		List<ClientIdentifierData> clientIdentifierData = new ArrayList<>();
 		List<OccupationDetailsData> occupationDetailsDatas = new ArrayList<>();
 		List<NomineeDetailsData> nomineeDetailsData = new ArrayList<>();
+		CoapplicantDetailsData coapplicantDetailsData = null;
     	if(clientId != null){
     		final Client client = this.clientRepository
     				.findOneWithNotFoundDetection(clientId);
@@ -207,6 +213,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     					nomineeDetailsData.add(NomineeDetailsData.formNomineeDetailsData(nomineeDetail));
     				}
     			}
+    			
+    			if(client.coapplicant() != null){
+    				coapplicantDetailsData = this.coapplicantReadPlatformService.retrieveCoapplicantDetailsDataTemplate(client);
+    			}
     		}
     	}
     	
@@ -219,7 +229,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 				externalLoanstatus, addressTypes, presentLoanSourceTypes,
 				presentLoanPurposeTypes, clientDataExt, addressExtData,
 				familyDetailsExtData, clientIdentifierData,
-				occupationDetailsDatas, nomineeDetailsData);
+				occupationDetailsDatas, nomineeDetailsData,coapplicantDetailsData);
         
     }
     

@@ -69,6 +69,7 @@ import org.mifosplatform.useradministration.domain.AppUser;
 import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.ClientExt;
 import org.nirantara.client.ext.domain.ClientExtAssembler;
+import org.nirantara.client.ext.domain.Coapplicant;
 import org.nirantara.client.ext.domain.FamilyDetails;
 import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
@@ -450,6 +451,15 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     			List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, clientForUpdate);
     			if(nomineeDetails != null){
     				clientForUpdate.updateNomineeDetails(nomineeDetails);
+                }
+    		}
+    		
+    		//Co Applicant Details
+    		final JsonArray coClientDataArray = object.get("coClientData").getAsJsonArray();
+    		if(coClientDataArray != null){
+    			List<Coapplicant> coapplicant = this.clientExtAssembler.assembleCoClientDataArray(coClientDataArray, clientForUpdate);
+    			if(coapplicant != null && coapplicant.size() > 0){
+    				clientForUpdate.updateCoapplicant(coapplicant);
                 }
     		}
     		

@@ -1,6 +1,7 @@
 package org.nirantara.client.ext.data;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.mifosplatform.infrastructure.codes.data.CodeValueData;
 
@@ -13,17 +14,15 @@ public class CoapplicantDetailsData {
 	private final Collection<CodeValueData> district;
 	
 	//Data
-	private final CoapplicantData coapplicantData;
-	private final AddressExtData addressExtData;
+	private final List<CoapplicantData> coapplicantData;
 	
 	public static CoapplicantDetailsData fromCoapplicantDetailsData(
 			final Collection<CodeValueData> spouseRelationShip,
 			final Collection<CodeValueData> addressTypes,
 			final Collection<CodeValueData> state,
 			final Collection<CodeValueData> district,
-			final CoapplicantData coapplicantData,
-			final AddressExtData addressExtData) {
-		return new CoapplicantDetailsData(spouseRelationShip,addressTypes,state,district,coapplicantData, addressExtData);
+			final List<CoapplicantData> coapplicantData) {
+		return new CoapplicantDetailsData(spouseRelationShip,addressTypes,state,district,coapplicantData);
 	}
 	
 	private CoapplicantDetailsData(
@@ -31,14 +30,32 @@ public class CoapplicantDetailsData {
 			final Collection<CodeValueData> addressTypes,
 			final Collection<CodeValueData> state,
 			final Collection<CodeValueData> district,
-			final CoapplicantData coapplicantData,
-			final AddressExtData addressExtData) {
+			final List<CoapplicantData> coapplicantData) {
 		
 		this.spouseRelationShip = spouseRelationShip;
 		this.addressTypes = addressTypes;
 		this.state = state;
 		this.district = district;		
 		this.coapplicantData = coapplicantData;
-		this.addressExtData = addressExtData;
+	}
+
+	public Collection<CodeValueData> getSpouseRelationShip() {
+		return spouseRelationShip;
+	}
+
+	public Collection<CodeValueData> getAddressTypes() {
+		return addressTypes;
+	}
+
+	public Collection<CodeValueData> getState() {
+		return state;
+	}
+
+	public Collection<CodeValueData> getDistrict() {
+		return district;
+	}
+
+	public List<CoapplicantData> getCoapplicantData() {
+		return coapplicantData;
 	}
 }

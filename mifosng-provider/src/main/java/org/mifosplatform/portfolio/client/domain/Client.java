@@ -52,6 +52,7 @@ import org.mifosplatform.portfolio.savings.domain.SavingsProduct;
 import org.mifosplatform.useradministration.domain.AppUser;
 import org.nirantara.client.ext.domain.Address;
 import org.nirantara.client.ext.domain.ClientExt;
+import org.nirantara.client.ext.domain.Coapplicant;
 import org.nirantara.client.ext.domain.FamilyDetails;
 import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
@@ -240,6 +241,10 @@ public final class Client extends AbstractPersistable<Long> {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
     private List<NomineeDetails> nomineeDetails;
+    
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
+    private List<Coapplicant> coapplicant;
 
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
@@ -1002,4 +1007,34 @@ public final class Client extends AbstractPersistable<Long> {
         	nd.updateClient(this);
         }	
 	}
+
+	public void addAddressExt(final List<Address> address) {
+		if(this.addressExt != null){
+			for (Address add : address) {
+				this.addressExt.add(add);
+			}      
+		}else{
+			this.addressExt = address;
+		}
+		for (Address add : this.addressExt) {
+        	add.updateClient(this);
+        }		
+	}
+	
+	public void updateCoapplicant(final List<Coapplicant> coapplicant) {
+		if(this.coapplicant != null){
+			this.coapplicant.clear();
+			this.coapplicant.addAll(coapplicant);	        
+		}else{
+			this.coapplicant = coapplicant;
+		}
+		for (Coapplicant ca : this.coapplicant) {
+			ca.updateClient(this);
+        }
+	}
+	
+	public List<Coapplicant> coapplicant(){
+		return this.coapplicant;
+	}
+	
 }

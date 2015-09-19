@@ -90,10 +90,12 @@ public class ClientApiConstants {
     public static final String clientIdentifierDataParamName = "clientIdentifierData";
     public static final String occupationDetailsParamName = "cfaOccupations";
     public static final String nomineeDetailsParamName = "nomineeDetails";
+    public static final String coClientDataParamName = "coClientData";
+    
   
 
     public static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,officeIdParamName,dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName, middlenameParamName,lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName, savingsProductIdParamName,
-            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName, occupationDetailsParamName,nomineeDetailsParamName));
+            dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName, occupationDetailsParamName,nomineeDetailsParamName,coClientDataParamName));
   
 
     /**
