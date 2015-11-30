@@ -18,6 +18,7 @@ public class ClientApiConstants {
     public static final String CLIENT_ACTION_REASON = "ClientActionReason";
     public static final String CLIENT_REJECT_REASON = "ClientRejectReason";
     public static final String CLIENT_WITHDRAW_REASON = "ClientWithdrawReason";
+    public static final String SPOUSE_RELATIONSHIP=  "spouseRelationShip";
 
 	
     public static final String GENDER = "Gender";
