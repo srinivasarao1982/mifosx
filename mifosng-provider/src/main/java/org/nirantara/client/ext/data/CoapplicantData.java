@@ -16,6 +16,9 @@ public class CoapplicantData {
 	private final Integer age;
 	private final String mothersMaidenName;
 	private final String emailId;
+	private final String fatherFirstName;
+	private final String fatherMiddleName;
+	private final String fatherLastName;
 	
 	public static CoapplicantData formCoapplicantData(final Coapplicant coapplicant) {
 		
@@ -33,10 +36,12 @@ public class CoapplicantData {
 		Integer age = coapplicant.getAge();
 		String mothersMaidenName = coapplicant.getMothersMaidenName();
 		String emailId = coapplicant.getEmailId();
-		
+		String fatherFirstName= coapplicant.getFatherFirstName();
+		String fatherMiddleName=coapplicant.getFatherMiddleName();
+		String fatherLastName=coapplicant.getFatherLastName();
 		return new CoapplicantData(id, firstName, middleName, lastName,
 				relationship,relationshipLabel, dateOfBirth, age, mothersMaidenName,
-				emailId);
+				emailId,fatherFirstName,fatherMiddleName,fatherLastName);
 	}
 	
 	
@@ -44,7 +49,7 @@ public class CoapplicantData {
 			final String firstName, final String middleName,
 			final String lastName, final Long relationship,final String relationshipLabel,
 			final Date dateOfBirth, final Integer age,
-			final String mothersMaidenName, final String emailId) {
+			final String mothersMaidenName, final String emailId,final String fatherFirstName,final String fatherMiddleName,final String fatherLastName ) {
 		
 		this.id = id;
 		this.firstName = firstName;
@@ -56,6 +61,10 @@ public class CoapplicantData {
 		this.age = age;
 		this.mothersMaidenName = mothersMaidenName;
 		this.emailId = emailId;
+		this.fatherFirstName=fatherFirstName;
+		this.fatherMiddleName=fatherMiddleName;
+		this.fatherLastName=fatherLastName;
+		
 	}
 
 
@@ -98,5 +107,21 @@ public class CoapplicantData {
 	public String getEmailId() {
 		return emailId;
 	}
+
+
+	public String getFatherFirstName() {
+		return fatherFirstName;
+	}
+
+
+	public String getFatherMiddleName() {
+		return fatherMiddleName;
+	}
+
+
+	public String getFatherLastName() {
+		return fatherLastName;
+	}
+	
 
 }

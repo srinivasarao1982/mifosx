@@ -544,7 +544,13 @@ public class ClientExtAssembler {
 				
 				final String mothersMaidenName = this.fromApiJsonHelper.extractStringNamed("mothersMaidenName", element);
 				
-				final String emailId = this.fromApiJsonHelper.extractStringNamed("emailId", element);				
+				final String emailId = this.fromApiJsonHelper.extractStringNamed("emailId", element);	
+				
+				final String fatherFirstName=this.fromApiJsonHelper.extractStringNamed("fatherFirstName", element);
+				
+				final String fatherMiddleName=this.fromApiJsonHelper.extractStringNamed("fatherMiddleName", element);
+				
+				final String fatherLastName = this.fromApiJsonHelper.extractStringNamed("fatherLastName",element);
 
 				Coapplicant coapp = null;
 				if(id != null){
@@ -555,11 +561,11 @@ public class ClientExtAssembler {
 						
 					}else{
 						coapp = Coapplicant.createFrom(newClient, firstName, middleName, lastName,
-								relationship, dateOfBirth, age, mothersMaidenName,emailId);
+								relationship, dateOfBirth, age, mothersMaidenName,emailId,fatherFirstName,fatherMiddleName,fatherLastName);
 					}
 				}else{
 					coapp = Coapplicant.createFrom(newClient, firstName, middleName, lastName,
-							relationship, dateOfBirth, age, mothersMaidenName,emailId);
+							relationship, dateOfBirth, age, mothersMaidenName,emailId,fatherFirstName,fatherMiddleName,fatherLastName);
 				}
 				
 				if (coapp != null) {
