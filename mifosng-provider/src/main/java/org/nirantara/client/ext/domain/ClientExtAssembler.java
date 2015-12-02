@@ -85,6 +85,13 @@ public class ClientExtAssembler {
 			maritalStatusCodeValue = this.codeValueRepository
 					.findOneWithNotFoundDetection(maritalStatusId);
 		}
+		final Long spouseRelationShipId = this.fromApiJsonHelper.extractLongNamed(
+				"spouseRelationShip", element);
+		CodeValue spouseRelationShip = null;
+		if (spouseRelationShipId != null) {
+			spouseRelationShip = this.codeValueRepository
+					.findOneWithNotFoundDetection(spouseRelationShipId);
+		}
 
 		final Long professionId = this.fromApiJsonHelper.extractLongNamed(
 				"profession", element);
@@ -163,21 +170,21 @@ public class ClientExtAssembler {
 						maritalStatusCodeValue, professionCodeValue, professionOthers,
 						educationalQualificationCodeValue, annualIncomeCodeValue,
 						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname);				
+						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip);				
 				return updateClientExt;				
 			}else{
 				return ClientExt.createFrom(newClient, salutationCodeValue,
 						maritalStatusCodeValue, professionCodeValue, professionOthers,
 						educationalQualificationCodeValue, annualIncomeCodeValue,
 						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname);
+						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip);
 			}
 		}
 		return ClientExt.createFrom(newClient, salutationCodeValue,
 				maritalStatusCodeValue, professionCodeValue, professionOthers,
 				educationalQualificationCodeValue, annualIncomeCodeValue,
 				landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-				panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname);
+				panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip);
 	}
 
 	public List<Address> assembleAddress(final JsonArray addressArray,

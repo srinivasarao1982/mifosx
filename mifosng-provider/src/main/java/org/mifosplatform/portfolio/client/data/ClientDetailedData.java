@@ -49,6 +49,7 @@ public class ClientDetailedData {
 	private  final Collection<CodeValueData> addressTypes;
 	private  final Collection<CodeValueData> presentLoanSourceTypes;
 	private  final Collection<CodeValueData> presentLoanPurposeTypes;
+	private  final Collection<CodeValueData> spouseRelationShip;  
 	
 	//Nirantara
 	private final ClientDataExt clientDataExt;
@@ -89,7 +90,9 @@ public class ClientDetailedData {
 			final List<ClientIdentifierData> clientIdentifierData,
 			final List<OccupationDetailsData> occupationDetailsData, 
 			final List<NomineeDetailsData> nomineeDetailsData,
-			final CoapplicantDetailsData coapplicantDetailsData) {
+			final CoapplicantDetailsData coapplicantDetailsData,
+			Collection<CodeValueData>spouseRelationShip)
+ {
 		super();
 		this.clientBasicDetails = clientBasicDetails;
 		this.additionalDetails = additionalDetails;
@@ -101,6 +104,7 @@ public class ClientDetailedData {
 		this.kycDetails = kycDetails;
 		this.salutation = salutation;
 		this.maritalStatus = maritalStatus;
+		this.spouseRelationShip=spouseRelationShip;
 		this.profession = profession;
 		this.educationQualification = educationQualification;
 		this.annualIncome = annualIncome;
@@ -262,5 +266,10 @@ public class ClientDetailedData {
 	public CoapplicantDetailsData getCoapplicantDetailsData() {
 		return coapplicantDetailsData;
 	}
+
+	public Collection<CodeValueData> getSpouseRelationShip() {
+		return spouseRelationShip;
+	}
+	
 	
 }

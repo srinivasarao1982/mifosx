@@ -115,6 +115,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     	final ClientIdentifierData identifier = null;
     	final ClientKYCData kycDetails = null;
     	
+    	Collection<CodeValueData> spouseRelationShip = new ArrayList<>(
+				this.codeValueReadPlatformService
+						.retrieveCodeValuesByCode(ClientApiConstants.SPOUSE_RELATIONSHIP));
+    	
         Collection<CodeValueData> salutation = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_SALUTATION));
         
@@ -229,7 +233,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 				externalLoanstatus, addressTypes, presentLoanSourceTypes,
 				presentLoanPurposeTypes, clientDataExt, addressExtData,
 				familyDetailsExtData, clientIdentifierData,
-				occupationDetailsDatas, nomineeDetailsData,coapplicantDetailsData);
+				occupationDetailsDatas, nomineeDetailsData,coapplicantDetailsData,spouseRelationShip);
         
     }
     

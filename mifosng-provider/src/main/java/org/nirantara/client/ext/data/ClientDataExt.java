@@ -35,6 +35,8 @@ public class ClientDataExt {
 	private final String spfirstname;
 	private final String spmiddlename;
 	private final String splastname;
+	private final Long spouseRelationShip;
+	private final String spouseRelationShipLabel;
 	
 	public static ClientDataExt formClientDataExt(final ClientExt clientExt) {
 		
@@ -62,6 +64,8 @@ public class ClientDataExt {
 		String spfirstname = null;
 		String spmiddlename = null;
 		String splastname = null;
+		Long  spouseRelationShip=null;
+		String spouseRelationShipLabel=null;
 		
 		if(clientExt != null){
 			
@@ -76,7 +80,10 @@ public class ClientDataExt {
 				maritalStatus = clientExt.getMaritalStatus().getId();
 				maritalStatusLabel = clientExt.getMaritalStatus().label();
 			}
-			
+			if(clientExt.getSpouseRelationShip() != null){
+				spouseRelationShip = clientExt.getSpouseRelationShip().getId();
+				spouseRelationShipLabel = clientExt.getSpouseRelationShip().label();
+			}
 			if(clientExt.getProfession() != null){
 				profession = clientExt.getProfession().getId();
 				professionLabel = clientExt.getProfession().label();
@@ -126,7 +133,7 @@ public class ClientDataExt {
 				educationalQualificationLabel, annualIncome, annualIncomeLabel,
 				landholding, landholdingLabel, houseType, houseTypeLabel,
 				aadhaarNo, panNo, panForm, panFormLabel, nregaNo, spfirstname,
-				spmiddlename, splastname);
+				spmiddlename, splastname,spouseRelationShip,spouseRelationShipLabel);
 	}
 
 	private ClientDataExt(final Long id, final Long salutation,
@@ -141,7 +148,8 @@ public class ClientDataExt {
 			final String aadhaarNo, final String panNo, final Long panForm,
 			final String panFormLabel, final String nregaNo,
 			final String spfirstname, final String spmiddlename,
-			final String splastname) {
+			final String splastname,final Long spouseRelationShip,
+			final String spouseRelationShipLabel) {
 		
 		this.id = id;
 		this.salutation = salutation;
@@ -167,6 +175,8 @@ public class ClientDataExt {
 		this.spfirstname = spfirstname;
 		this.spmiddlename = spmiddlename;
 		this.splastname = splastname;
+		this.spouseRelationShip=spouseRelationShip;
+		this.spouseRelationShipLabel=spouseRelationShipLabel;
 	}
 
 	public Long getId() {
@@ -264,5 +274,14 @@ public class ClientDataExt {
 	public String getSplastname() {
 		return splastname;
 	}
+
+	public Long getSpouseRelationShip() {
+		return spouseRelationShip;
+	}
+
+	public String getSpouseRelationShipLabel() {
+		return spouseRelationShipLabel;
+	}
+	
 
 }
