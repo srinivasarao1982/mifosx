@@ -37,6 +37,7 @@ public class ClientDataExt {
 	private final String splastname;
 	private final Long spouseRelationShip;
 	private final String spouseRelationShipLabel;
+	private final String externalId2;
 	
 	public static ClientDataExt formClientDataExt(final ClientExt clientExt) {
 		
@@ -66,6 +67,7 @@ public class ClientDataExt {
 		String splastname = null;
 		Long  spouseRelationShip=null;
 		String spouseRelationShipLabel=null;
+		String externalId2=null;
 		
 		if(clientExt != null){
 			
@@ -125,6 +127,7 @@ public class ClientDataExt {
 			spfirstname = clientExt.getSpfirstname();
 			spmiddlename = clientExt.getSpmiddlename();
 			splastname = clientExt.getSplastname();
+			externalId2= clientExt.getExternalId2();
 			
 		}
 		return new ClientDataExt(id, salutation, salutationLabel,
@@ -133,7 +136,7 @@ public class ClientDataExt {
 				educationalQualificationLabel, annualIncome, annualIncomeLabel,
 				landholding, landholdingLabel, houseType, houseTypeLabel,
 				aadhaarNo, panNo, panForm, panFormLabel, nregaNo, spfirstname,
-				spmiddlename, splastname,spouseRelationShip,spouseRelationShipLabel);
+				spmiddlename, splastname,spouseRelationShip,spouseRelationShipLabel,externalId2);
 	}
 
 	private ClientDataExt(final Long id, final Long salutation,
@@ -149,7 +152,8 @@ public class ClientDataExt {
 			final String panFormLabel, final String nregaNo,
 			final String spfirstname, final String spmiddlename,
 			final String splastname,final Long spouseRelationShip,
-			final String spouseRelationShipLabel) {
+			final String spouseRelationShipLabel,
+			final String externalId2) {
 		
 		this.id = id;
 		this.salutation = salutation;
@@ -177,6 +181,7 @@ public class ClientDataExt {
 		this.splastname = splastname;
 		this.spouseRelationShip=spouseRelationShip;
 		this.spouseRelationShipLabel=spouseRelationShipLabel;
+		this.externalId2=externalId2;
 	}
 
 	public Long getId() {
@@ -282,6 +287,12 @@ public class ClientDataExt {
 	public String getSpouseRelationShipLabel() {
 		return spouseRelationShipLabel;
 	}
+
+	public String getExternalId2() {
+		return externalId2;
+	}
+	
+	
 	
 
 }

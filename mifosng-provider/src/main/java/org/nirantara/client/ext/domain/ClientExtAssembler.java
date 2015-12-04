@@ -162,6 +162,8 @@ public class ClientExtAssembler {
 		
 		final String splastname = this.fromApiJsonHelper.extractStringNamed(
 				"splastname", element);
+		
+		final String externalId2=this.fromApiJsonHelper.extractStringNamed("externalId2",element);
 
 		if(id != null){
 			final ClientExt updateClientExt = this.clientExtRepository.findOne(id);
@@ -170,21 +172,21 @@ public class ClientExtAssembler {
 						maritalStatusCodeValue, professionCodeValue, professionOthers,
 						educationalQualificationCodeValue, annualIncomeCodeValue,
 						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip);				
+						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip,externalId2);				
 				return updateClientExt;				
 			}else{
 				return ClientExt.createFrom(newClient, salutationCodeValue,
 						maritalStatusCodeValue, professionCodeValue, professionOthers,
 						educationalQualificationCodeValue, annualIncomeCodeValue,
 						landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip);
+						panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip,externalId2);
 			}
 		}
 		return ClientExt.createFrom(newClient, salutationCodeValue,
 				maritalStatusCodeValue, professionCodeValue, professionOthers,
 				educationalQualificationCodeValue, annualIncomeCodeValue,
 				landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-				panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip);
+				panFormCodeValue, nregaNo,spfirstname,spmiddlename,splastname,spouseRelationShip,externalId2);
 	}
 
 	public List<Address> assembleAddress(final JsonArray addressArray,
