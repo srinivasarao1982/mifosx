@@ -105,8 +105,9 @@ public class Coapplicant extends AbstractPersistable<Long> {
 			final String firstName, final String middleName,
 			final String lastName, final CodeValue relationship,
 			final LocalDate dateOfBirth, final Integer age,
-			final String mothersMaidenName, final String emailId) {
-		
+			final String mothersMaidenName, final String emailId, 
+		    final String fatherFirstName,final String fatherMiddleName,
+		    final String fatherLastName ){  
 		this.client = client;
 		this.firstName = firstName;
 		this.middleName = middleName;
@@ -118,6 +119,9 @@ public class Coapplicant extends AbstractPersistable<Long> {
 		this.age = age;
 		this.mothersMaidenName = mothersMaidenName;
 		this.emailId = emailId;
+		this.fatherFirstName=fatherFirstName;
+		this.fatherMiddleName=fatherMiddleName;
+		this.fatherLastName=fatherLastName;
 	}
 	
 	public void updateClient(final Client client) {

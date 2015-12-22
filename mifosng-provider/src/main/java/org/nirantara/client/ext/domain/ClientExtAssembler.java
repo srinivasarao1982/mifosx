@@ -566,7 +566,7 @@ public class ClientExtAssembler {
 					coapp = this.coapplicantRepository.findOne(id);
 					if(coapp != null){
 						coapp.update(newClient, firstName, middleName, lastName,
-								relationship, dateOfBirth, age, mothersMaidenName,emailId);
+								relationship, dateOfBirth, age, mothersMaidenName,emailId,fatherFirstName,fatherMiddleName,fatherLastName);
 						
 					}else{
 						coapp = Coapplicant.createFrom(newClient, firstName, middleName, lastName,
