@@ -110,6 +110,7 @@ import org.mifosplatform.portfolio.loanproduct.domain.LoanTransactionProcessingS
 import org.mifosplatform.portfolio.loanproduct.domain.RecalculationFrequencyType;
 import org.mifosplatform.portfolio.loanproduct.service.LoanEnumerations;
 import org.mifosplatform.useradministration.domain.AppUser;
+import org.nirantara.client.ext.domain.LoanExt;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import com.google.gson.JsonArray;
@@ -351,6 +352,10 @@ public class Loan extends AbstractPersistable<Long> {
 
     @Column(name = "guarantee_amount_derived", scale = 6, precision = 19, nullable = true)
     private BigDecimal guaranteeAmountDerived;
+    
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "loan", orphanRemoval = true)
+    private LoanExt loanExt;
 
     public static Loan newIndividualLoanApplication(final String accountNo, final Client client, final Integer loanType,
             final LoanProduct loanProduct, final Fund fund, final Staff officer, final CodeValue loanPurpose,
@@ -5258,5 +5263,11 @@ public class Loan extends AbstractPersistable<Long> {
 
         return lastTransactionDate == null ? now : lastTransactionDate;
     }
-
+    public void updateLoanExt(final LoanExt loanExt) {
+		this.loanExt = loanExt;		
+	}
+	
+	public LoanExt loanExt() {
+		return this.loanExt;		
+	}
 }

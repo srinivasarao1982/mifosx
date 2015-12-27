@@ -94,6 +94,8 @@ import org.mifosplatform.portfolio.note.domain.NoteRepository;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccount;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountAssembler;
 import org.mifosplatform.useradministration.domain.AppUser;
+import org.nirantara.client.ext.domain.ClientExtAssembler;
+import org.nirantara.client.ext.domain.LoanExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +105,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Service
 public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements LoanApplicationWritePlatformService {
@@ -138,6 +142,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
     private final BusinessEventNotifierService businessEventNotifierService;
     private final ConfigurationDomainService configurationDomainService;
     private final LoanScheduleAssembler loanScheduleAssembler;
+    private final ClientExtAssembler clientExtAssembler;
 
     @Autowired
     public LoanApplicationWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final FromJsonHelper fromJsonHelper,
@@ -156,7 +161,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
             final LoanReadPlatformService loanReadPlatformService, final LoanAccountDomainService loanAccountDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
             final BusinessEventNotifierService businessEventNotifierService, final ConfigurationDomainService configurationDomainService,
-            final LoanScheduleAssembler loanScheduleAssembler) {
+            final LoanScheduleAssembler loanScheduleAssembler,
+            final ClientExtAssembler clientExtAssembler) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.loanApplicationTransitionApiJsonValidator = loanApplicationTransitionApiJsonValidator;
@@ -186,6 +192,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         this.businessEventNotifierService = businessEventNotifierService;
         this.configurationDomainService = configurationDomainService;
         this.loanScheduleAssembler = loanScheduleAssembler;
+        this.clientExtAssembler= clientExtAssembler;
     }
 
     private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -243,6 +250,15 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     newLoanApplication);
 
             this.loanRepository.save(newLoanApplication);
+            
+            final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
+    		final JsonElement jsonElement=object.get("loanApplicationId");
+    		if(jsonElement!=null){
+    			String loanApplicationId =jsonElement.getAsString();
+    		LoanExt loanExt =this.clientExtAssembler.assembleLoantemparyId(newLoanApplication,loanApplicationId );
+    		newLoanApplication.updateLoanExt(loanExt);
+    		this.loanRepository.save(newLoanApplication);
+    		}
 
             if (loanProduct.isInterestRecalculationEnabled()) {
                 this.fromApiJsonDeserializer.validateLoanForInterestRecalculation(newLoanApplication);
@@ -580,6 +596,17 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
             existingLoanApplication.updateIsInterestRecalculationEnabled();
             validateSubmittedOnDate(existingLoanApplication);
+            
+            //nirantra changes
+            final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
+    		final JsonElement jsonElement=object.get("loanApplicationId");
+    		if(jsonElement!=null){
+    			String loanApplicationId =jsonElement.getAsString();
+    		LoanExt loanExt =this.clientExtAssembler.assembleLoantemparyId(existingLoanApplication,loanApplicationId );
+    		existingLoanApplication.updateLoanExt(loanExt);
+    		//this.loanRepository.save(newLoanApplication);
+    		}
+            
 
             final LoanProductRelatedDetail productRelatedDetail = existingLoanApplication.repaymentScheduleDetail();
             if (existingLoanApplication.loanProduct().getLoanProductConfigurableAttributes() != null) {

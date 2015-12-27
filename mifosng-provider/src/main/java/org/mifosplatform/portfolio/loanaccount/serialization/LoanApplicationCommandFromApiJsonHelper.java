@@ -63,6 +63,7 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             "submittedOnNote", //
             "accountNo",
             "externalId",
+            "loanApplicationId",
             "fundId",
             "loanOfficerId", // optional
             "loanPurposeId",
@@ -157,7 +158,13 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             final String externalId = this.fromApiJsonHelper.extractStringNamed(externalIdParameterName, element);
             baseDataValidator.reset().parameter(externalIdParameterName).value(externalId).ignoreIfNull().notExceedingLengthOf(100);
         }
-
+       
+        final String loanApplicationIdParameterName = "loanApplicationId";
+        if (this.fromApiJsonHelper.parameterExists(loanApplicationIdParameterName, element)) {
+            final String loanApplicationId = this.fromApiJsonHelper.extractStringNamed(loanApplicationIdParameterName, element);
+            baseDataValidator.reset().parameter(loanApplicationIdParameterName).value(loanApplicationId).ignoreIfNull().notExceedingLengthOf(100);
+        }
+        
         final String fundIdParameterName = "fundId";
         if (this.fromApiJsonHelper.parameterExists(fundIdParameterName, element)) {
             final Long fundId = this.fromApiJsonHelper.extractLongNamed(fundIdParameterName, element);
@@ -436,7 +443,12 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             final String externalId = this.fromApiJsonHelper.extractStringNamed(externalIdParameterName, element);
             baseDataValidator.reset().parameter(externalIdParameterName).value(externalId).ignoreIfNull().notExceedingLengthOf(100);
         }
-
+        final String loanApplicationIdParameterName = "loanApplicationId";
+        if (this.fromApiJsonHelper.parameterExists(loanApplicationIdParameterName, element)) {
+            atLeastOneParameterPassedForUpdate = true;
+            final String loanApplicationId = this.fromApiJsonHelper.extractStringNamed(loanApplicationIdParameterName, element);
+            baseDataValidator.reset().parameter(loanApplicationIdParameterName).value(loanApplicationId).ignoreIfNull().notExceedingLengthOf(100);
+        }
         final String fundIdParameterName = "fundId";
         if (this.fromApiJsonHelper.parameterExists(fundIdParameterName, element)) {
             atLeastOneParameterPassedForUpdate = true;

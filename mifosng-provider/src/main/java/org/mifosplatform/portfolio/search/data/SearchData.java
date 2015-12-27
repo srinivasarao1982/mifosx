@@ -19,10 +19,11 @@ public class SearchData {
     private final String entityMobileNo;
     private final EnumOptionData entityStatus;
     private final String entityExternalId2;
+    private final String loanApplicationId;
 
     public SearchData(final Long entityId, final String entityAccountNo, final String entityExternalId, final String entityName,
             final String entityType, final Long parentId, final String parentName,final String entityMobileNo, final EnumOptionData entityStatus,
-            final String entityExternalId2) {
+            final String entityExternalId2,final String loanApplicationId) {
 
         this.entityId = entityId;
         this.entityAccountNo = entityAccountNo;
@@ -34,6 +35,7 @@ public class SearchData {
         this.entityMobileNo=entityMobileNo;
         this.entityStatus = entityStatus;
         this.entityExternalId2=entityExternalId2;
+        this.loanApplicationId=loanApplicationId;
     }
 
     public Long getEntityId() {
@@ -77,5 +79,10 @@ public class SearchData {
 		return entityExternalId2;
 	}
 
+	public String getLoanApplicationId() {
+		return loanApplicationId;
+	}
+
+	
 	
 }

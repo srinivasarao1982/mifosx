@@ -538,7 +538,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     private static final class LoanMapper implements RowMapper<LoanAccountData> {
 
         public String loanSchema() {
-            return "l.id as id, l.account_no as accountNo, l.external_id as externalId, l.fund_id as fundId, f.name as fundName,"
+            return "l.id as id, l.account_no as accountNo, l.external_id as externalId, l.fund_id as fundId, f.name as fundName,ext.loanApplication_Id as loanApplicationId,"
                     + " l.loan_type_enum as loanType, l.loanpurpose_cv_id as loanPurposeId, cv.code_value as loanPurposeName,"
                     + " lp.id as loanProductId, lp.name as loanProductName, lp.description as loanProductDescription,"
                     + " lp.allow_multiple_disbursals as multiDisburseLoan,"
@@ -612,6 +612,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + " lir.compounding_freqency_date as compoundingFrequencyDate, "
                     + " l.create_standing_instruction_at_disbursement as createStandingInstructionAtDisbursement "
                     + " from m_loan l" //
+                    + " left join n_loan_ext ext on ext.loan_id = l.id"
                     + " join m_product_loan lp on lp.id = l.product_id" //
                     + " left join m_loan_recalculation_details lir on lir.loan_id = l.id "
                     + " join m_currency rc on rc.`code` = l.currency_code" //
@@ -645,6 +646,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             final Long id = rs.getLong("id");
             final String accountNo = rs.getString("accountNo");
             final String externalId = rs.getString("externalId");
+            //nirantra
+            final String  loanApplicationId =rs.getString("loanApplicationId");
 
             final Long clientId = JdbcSupport.getLong(rs, "clientId");
             final Long clientOfficeId = JdbcSupport.getLong(rs, "clientOfficeId");
@@ -891,7 +894,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     graceOnInterestCharged, interestChargedFromDate, timeline, loanSummary, feeChargesDueAtDisbursementCharged,
                     syncDisbursementWithMeeting, loanCounter, loanProductCounter, multiDisburseLoan, canDefineInstallmentAmount,
                     fixedEmiAmount, outstandingLoanBalance, inArrears, graceOnArrearsAgeing, isNPA, daysInMonthType, daysInYearType,
-                    isInterestRecalculationEnabled, interestRecalculationData, createStandingInstructionAtDisbursement);
+                    isInterestRecalculationEnabled, interestRecalculationData, createStandingInstructionAtDisbursement,loanApplicationId);
         }
     }
 
