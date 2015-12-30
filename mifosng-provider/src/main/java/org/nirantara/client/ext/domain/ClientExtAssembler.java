@@ -18,6 +18,7 @@ import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifierRepository;
+import org.mifosplatform.portfolio.loanaccount.domain.Loan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -583,6 +584,13 @@ public class ClientExtAssembler {
 			}
 		}
 		return coapplicant;
+	}
+public LoanExt assembleLoantemparyId(final Loan loan ,final String loanApplicationId){
+		
+		
+		return LoanExt.createTemparyId(loan, loanApplicationId);
+		
+		
 	}
 
 }

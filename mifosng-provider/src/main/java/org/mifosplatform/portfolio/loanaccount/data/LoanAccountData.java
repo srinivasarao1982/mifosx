@@ -52,6 +52,8 @@ public class LoanAccountData {
     private final Long id;
     private final String accountNo;
     private final String externalId;
+  //nirantra
+    private final String loanApplicationId;
 
     // status
     private final LoanStatusEnumData status;
@@ -192,6 +194,7 @@ public class LoanAccountData {
         final String accountNo = null;
         final LoanStatusEnumData status = null;
         final String externalId = null;
+        final String loanApplicationId=null;
         final Long clientId = null;
         final String clientName = null;
         final Long clientOfficeId = null;
@@ -300,7 +303,7 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmount, maxOutstandingLoanBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
 
     }
 
@@ -314,6 +317,7 @@ public class LoanAccountData {
         final String accountNo = null;
         final LoanStatusEnumData status = null;
         final String externalId = null;
+        final String loanApplicationId =null;
         final GroupGeneralData group = null;
         final EnumOptionData loanType = null;
         final String groupName = null;
@@ -421,7 +425,7 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmount, maxOutstandingLoanBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
 
     }
 
@@ -447,7 +451,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
     }
 
     /**
@@ -460,6 +464,7 @@ public class LoanAccountData {
         final String accountNo = null;
         final LoanStatusEnumData status = null;
         final String externalId = null;
+        final String loanApplicationId=null;
         final Long clientId = null;
         final String clientName = null;
         final Long clientOfficeId = null;
@@ -568,7 +573,7 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmount, maxOutstandingBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
 
     }
 
@@ -594,7 +599,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
 
     }
 
@@ -613,6 +618,7 @@ public class LoanAccountData {
         final String accountNo = null;
         final LoanStatusEnumData status = null;
         final String externalId = null;
+        final String loanApplicationId=null;
         final Long clientId = null;
         final String clientName = null;
         final Long clientOfficeId = null;
@@ -732,7 +738,7 @@ public class LoanAccountData {
                 product.getOutstandingLoanBalance(), emiAmountVariations, memberVariations, product, inArrears,
                 product.getGraceOnArrearsAgeing(), product.overdueFeeCharges(), isNPA, product.getDaysInMonthType(),
                 product.getDaysInYearType(), product.isInterestRecalculationEnabled(), product.toLoanInterestRecalculationData(),
-                originalSchedule, createStandingInstructionAtDisbursement, paidInAdvance);
+                originalSchedule, createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
     }
 
     public static LoanAccountData populateLoanProductDefaults(final LoanAccountData acc, final LoanProductData product) {
@@ -787,7 +793,7 @@ public class LoanAccountData {
                 product.canDefineInstallmentAmount(), acc.fixedEmiAmount, product.getOutstandingLoanBalance(), acc.emiAmountVariations,
                 acc.memberVariations, product, acc.inArrears, product.getGraceOnArrearsAgeing(), product.overdueFeeCharges(), acc.isNPA,
                 product.getDaysInMonthType(), product.getDaysInYearType(), product.isInterestRecalculationEnabled(),
-                product.toLoanInterestRecalculationData(), acc.originalSchedule, acc.createStandingInstructionAtDisbursement, paidInAdvance);
+                product.toLoanInterestRecalculationData(), acc.originalSchedule, acc.createStandingInstructionAtDisbursement, paidInAdvance,acc.loanApplicationId);
 
     }
 
@@ -813,7 +819,7 @@ public class LoanAccountData {
             final Boolean multiDisburseLoan, Boolean canDefineInstallmentAmount, final BigDecimal fixedEmiAmont,
             final BigDecimal outstandingLoanBalance, final Boolean inArrears, final Integer graceOnArrearsAgeing, final Boolean isNPA,
             final EnumOptionData daysInMonthType, final EnumOptionData daysInYearType, final boolean isInterestRecalculationEnabled,
-            final LoanInterestRecalculationData interestRecalculationData, final Boolean createStandingInstructionAtDisbursement) {
+            final LoanInterestRecalculationData interestRecalculationData, final Boolean createStandingInstructionAtDisbursement,final String loanApplicationId) {
 
         final LoanScheduleData repaymentSchedule = null;
         final Collection<LoanTransactionData> transactions = null;
@@ -865,7 +871,7 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmont, outstandingLoanBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
     }
 
     /*
@@ -913,7 +919,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, paidInAdvance);
+                acc.createStandingInstructionAtDisbursement, paidInAdvance,acc.loanApplicationId);
     }
 
     public static LoanAccountData associationsAndTemplate(final LoanAccountData acc, final Collection<LoanProductData> productOptions,
@@ -949,7 +955,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
     }
 
     public static LoanAccountData associateMemberVariations(final LoanAccountData acc, final Map<Long, Integer> memberLoanCycle) {
@@ -1010,7 +1016,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
 
     }
 
@@ -1039,7 +1045,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
     }
 
     public static LoanAccountData withOriginalSchedule(final LoanAccountData acc, final LoanScheduleData originalSchedule) {
@@ -1064,14 +1070,15 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
     }
 
     private LoanAccountData(
             final Long id, //
             final String accountNo, //
             final LoanStatusEnumData status, //
-            final String externalId, //
+            final String externalId,
+            
             final Long clientId,
             final String clientName,
             final Long clientOfficeId, //
@@ -1125,12 +1132,13 @@ public class LoanAccountData {
             final Integer graceOnArrearsAgeing, final Collection<ChargeData> overdueCharges, final Boolean isNPA,
             final EnumOptionData daysInMonthType, final EnumOptionData daysInYearType, final boolean isInterestRecalculationEnabled,
             final LoanInterestRecalculationData interestRecalculationData, final LoanScheduleData originalSchedule,
-            final Boolean createStandingInstructionAtDisbursement, final PaidInAdvanceData paidInAdvance) {
+            final Boolean createStandingInstructionAtDisbursement, final PaidInAdvanceData paidInAdvance,final String loanApplicationId) {
 
         this.id = id;
         this.accountNo = accountNo;
         this.status = status;
         this.externalId = externalId;
+        this.loanApplicationId=loanApplicationId;
         this.clientId = clientId;
         this.clientName = clientName;
         this.clientOfficeId = clientOfficeId;
