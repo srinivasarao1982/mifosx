@@ -15,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 
 import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.codes.domain.CodeValue;
@@ -24,43 +23,43 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "n_family_details", uniqueConstraints = { @UniqueConstraint(columnNames = { "client_id" }, name = "FK1_n_family_details_client_id") })
+@Table(name = "n_family_details")
 public class FamilyDetails extends AbstractPersistable<Long> {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
 
-	@Column(name = "firstname", length = 50, nullable = false)
+	@Column(name = "firstname", length = 50, nullable = true)
 	private String firstname;
 
-	@Column(name = "middlename", length = 50)
+	@Column(name = "middlename", length = 50, nullable = true)
 	private String middlename;
 
-	@Column(name = "lastname", length = 50)
+	@Column(name = "lastname", length = 50, nullable = true)
 	private String lastname;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "relationship_cv_id", nullable = false)
+	@JoinColumn(name = "relationship_cv_id", nullable = true)
 	private CodeValue relationship;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "gender_cv_id", nullable = false)
+	@JoinColumn(name = "gender_cv_id", nullable = true)
 	private CodeValue gender;
 
 	@Column(name = "date_of_birth", nullable = true)
 	@Temporal(TemporalType.DATE)
 	private Date dateOfBirth;
 
-	@Column(name = "age", length = 3, nullable = false)
+	@Column(name = "age", length = 3, nullable = true)
 	private Integer age;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "occupation_cv_id", nullable = false)
+	@JoinColumn(name = "occupation_cv_id", nullable = true)
 	private CodeValue occupation;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "educational_status_cv_id", nullable = false)
+	@JoinColumn(name = "educational_status_cv_id", nullable = true)
 	private CodeValue educationalStatus;
 
 	public static FamilyDetails createFrom(final Client client,
