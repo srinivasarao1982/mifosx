@@ -28,6 +28,7 @@ import org.mifosplatform.portfolio.calendar.data.CalendarData;
 import org.mifosplatform.portfolio.charge.data.ChargeData;
 import org.mifosplatform.portfolio.collateral.data.CollateralData;
 import org.mifosplatform.portfolio.fund.data.FundData;
+import org.mifosplatform.portfolio.group.data.CenterData;
 import org.mifosplatform.portfolio.group.data.GroupGeneralData;
 import org.mifosplatform.portfolio.loanaccount.domain.LoanStatus;
 import org.mifosplatform.portfolio.loanaccount.guarantor.data.GuarantorData;
@@ -54,6 +55,7 @@ public class LoanAccountData {
     private final String externalId;
   //nirantra
     private final String loanApplicationId;
+    private final String centerName;
 
     // status
     private final LoanStatusEnumData status;
@@ -63,6 +65,7 @@ public class LoanAccountData {
     private final String clientName;
     private final Long clientOfficeId;
     private final GroupGeneralData group;
+    private final CenterData center;
     private final Long loanProductId;
     private final String loanProductName;
     private final String loanProductDescription;
@@ -200,6 +203,8 @@ public class LoanAccountData {
         final Long clientOfficeId = null;
         final GroupGeneralData group = null;
         final EnumOptionData loanType = null;
+        final String centerName=null;
+        final CenterData center=null;
         final Long loanProductId = null;
         final String loanProductName = null;
         final String loanProductDescription = null;
@@ -303,7 +308,7 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmount, maxOutstandingLoanBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId,centerName,center);
 
     }
 
@@ -319,6 +324,8 @@ public class LoanAccountData {
         final String externalId = null;
         final String loanApplicationId =null;
         final GroupGeneralData group = null;
+        final String centerName =null;
+        final CenterData center =null;
         final EnumOptionData loanType = null;
         final String groupName = null;
         final Long loanProductId = null;
@@ -425,7 +432,7 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmount, maxOutstandingLoanBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId,centerName,center);
 
     }
 
@@ -451,7 +458,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
     }
 
     /**
@@ -467,6 +474,8 @@ public class LoanAccountData {
         final String loanApplicationId=null;
         final Long clientId = null;
         final String clientName = null;
+        final String centerName=null;
+        final CenterData center=null;
         final Long clientOfficeId = null;
         final EnumOptionData loanType = null;
         final Long loanProductId = null;
@@ -573,9 +582,131 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmount, maxOutstandingBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId,centerName,center);
 
     }
+
+    public static LoanAccountData centerDefaults(final CenterData  center, final LocalDate expectedDisbursementDate) {
+
+        final Long id = null;
+        final String accountNo = null;
+        final LoanStatusEnumData status = null;
+        final String externalId = null;
+        final String loanApplicationId=null;
+        final Long clientId = null;
+        final String clientName = null;
+        final String centerName=null;
+        final GroupGeneralData group=null;
+        final Long clientOfficeId = null;
+        final EnumOptionData loanType = null;
+        final Long loanProductId = null;
+        final String loanProductName = null;
+        final String loanProductDescription = null;
+        final Long fundId = null;
+        final String fundName = null;
+        final Long loanPurposeId = null;
+        final String loanPurposeName = null;
+        final Long loanOfficerId = null;
+        final String loanOfficerName = null;
+        final CurrencyData currencyData = null;
+        final BigDecimal proposedPrincipal = null;
+        final BigDecimal principal = null;
+        final BigDecimal totalOverpaid = null;
+        final BigDecimal inArrearsTolerance = null;
+        final Integer termFrequency = null;
+        final EnumOptionData termPeriodFrequencyType = null;
+        final Integer numberOfRepayments = null;
+        final Integer repaymentEvery = null;
+        final EnumOptionData repaymentFrequencyType = null;
+        final EnumOptionData repaymentFrequencyNthDayType = null;
+        final EnumOptionData repaymentFrequencyDayOfWeekType = null;
+        final Long transactionProcessingStrategyId = null;
+        final String transactionProcessingStrategyName = null;
+        final EnumOptionData amortizationType = null;
+        final BigDecimal interestRatePerPeriod = null;
+        final EnumOptionData interestRateFrequencyType = null;
+        final BigDecimal annualInterestRate = null;
+        final EnumOptionData interestType = null;
+        final EnumOptionData interestCalculationPeriodType = null;
+        final LocalDate expectedFirstRepaymentOnDate = null;
+        final Integer graceOnPrincipalPayment = null;
+        final Integer graceOnInterestPayment = null;
+        final Integer graceOnInterestCharged = null;
+        final Integer graceOnArrearsAgeing = null;
+        final LocalDate interestChargedFromDate = null;
+        final LoanApplicationTimelineData timeline = LoanApplicationTimelineData.templateDefault(expectedDisbursementDate);
+        final LoanSummaryData summary = null;
+        final BigDecimal feeChargesDueAtDisbursementCharged = null;
+
+        final LoanScheduleData repaymentSchedule = null;
+        final Collection<LoanTransactionData> transactions = null;
+        final Collection<LoanChargeData> charges = null;
+        final Collection<CollateralData> collateral = null;
+        final Collection<GuarantorData> guarantors = null;
+        final Collection<NoteData> notes = null;
+        final CalendarData calendarData = null;
+        final Collection<LoanProductData> productOptions = null;
+        final Collection<EnumOptionData> termFrequencyTypeOptions = null;
+        final Collection<EnumOptionData> repaymentFrequencyTypeOptions = null;
+        final Collection<EnumOptionData> repaymentFrequencyNthDayTypeOptions = null;
+        final Collection<EnumOptionData> repaymentFrequencyDayOfWeekTypeOptions = null;
+        final Collection<TransactionProcessingStrategyData> repaymentStrategyOptions = null;
+        final Collection<EnumOptionData> interestRateFrequencyTypeOptions = null;
+        final Collection<EnumOptionData> amortizationTypeOptions = null;
+        final Collection<EnumOptionData> interestTypeOptions = null;
+        final Collection<EnumOptionData> interestCalculationPeriodTypeOptions = null;
+        final Collection<FundData> fundOptions = null;
+        final Collection<ChargeData> chargeOptions = null;
+        final ChargeData chargeTemplate = null;
+        final Collection<StaffData> loanOfficerOptions = null;
+        final Collection<CodeValueData> loanPurposeOptions = null;
+        final Collection<CodeValueData> loanCollateralOptions = null;
+        final Collection<CalendarData> calendarOptions = null;
+        final Boolean syncDisbursementWithMeeting = null;
+        final Integer loancounter = null;
+        final Integer loanProductCounter = null;
+        final Collection<PortfolioAccountData> accountLinkingOptions = null;
+        final PortfolioAccountData linkedAccount = null;
+        final Collection<DisbursementData> disbursementData = null;
+        final Boolean multiDisburseLoan = null;
+        final Boolean canDefineInstallmentAmount = null;
+        final BigDecimal fixedEmiAmount = null;
+        final BigDecimal maxOutstandingBalance = null;
+        final Collection<LoanTermVariationsData> emiAmountVariations = null;
+        final Map<Long, LoanBorrowerCycleData> memberVariations = null;
+        final LoanProductData product = null;
+        final Boolean inArrears = null;
+        final Boolean isNPA = null;
+        final Collection<ChargeData> overdueCharges = null;
+
+        final EnumOptionData daysInMonthType = null;
+        final EnumOptionData daysInYearType = null;
+        final boolean isInterestRecalculationEnabled = false;
+        final LoanInterestRecalculationData interestRecalculationData = null;
+        final LoanScheduleData originalSchedule = null;
+        final Boolean createStandingInstructionAtDisbursement = null;
+        final PaidInAdvanceData paidInAdvance = null;
+
+        return new LoanAccountData(id, accountNo, status, externalId, clientId, clientName, clientOfficeId, group, loanType, loanProductId,
+                loanProductName, loanProductDescription, fundId, fundName, loanPurposeId, loanPurposeName, loanOfficerId, loanOfficerName,
+                currencyData, proposedPrincipal, principal, principal, totalOverpaid, inArrearsTolerance, termFrequency,
+                termPeriodFrequencyType, numberOfRepayments, repaymentEvery, repaymentFrequencyType, repaymentFrequencyNthDayType,
+                repaymentFrequencyDayOfWeekType, transactionProcessingStrategyId, transactionProcessingStrategyName, amortizationType,
+                interestRatePerPeriod, interestRateFrequencyType, annualInterestRate, interestType, interestCalculationPeriodType,
+                expectedFirstRepaymentOnDate, graceOnPrincipalPayment, graceOnInterestPayment, graceOnInterestCharged,
+                interestChargedFromDate, timeline, summary, feeChargesDueAtDisbursementCharged, repaymentSchedule, transactions, charges,
+                collateral, guarantors, calendarData, productOptions, termFrequencyTypeOptions, repaymentFrequencyTypeOptions,
+                repaymentFrequencyNthDayTypeOptions, repaymentFrequencyDayOfWeekTypeOptions, repaymentStrategyOptions,
+                interestRateFrequencyTypeOptions, amortizationTypeOptions, interestTypeOptions, interestCalculationPeriodTypeOptions,
+                fundOptions, chargeOptions, chargeTemplate, loanOfficerOptions, loanPurposeOptions, loanCollateralOptions, calendarOptions,
+                syncDisbursementWithMeeting, loancounter, loanProductCounter, notes, accountLinkingOptions, linkedAccount,
+                disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmount, maxOutstandingBalance,
+                emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
+                daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId,centerName,center);
+
+    }
+
 
     public static LoanAccountData populateGroupDefaults(final LoanAccountData acc, final LoanAccountData groupAcc) {
 
@@ -599,7 +730,33 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
+
+    }
+
+    public static LoanAccountData populateCenterDefaults(final LoanAccountData acc, final LoanAccountData centerAcc) {
+
+        return new LoanAccountData(acc.id, acc.accountNo, acc.status, acc.externalId, acc.clientId, acc.clientName, acc.clientOfficeId,
+                acc.group, acc.loanType, acc.loanProductId, acc.loanProductName, acc.loanProductDescription, acc.fundId, acc.fundName,
+                acc.loanPurposeId, acc.loanPurposeName, acc.loanOfficerId, acc.loanOfficerName, acc.currency, acc.proposedPrincipal,
+                acc.principal, acc.approvedPrincipal, acc.totalOverpaid, acc.inArrearsTolerance, acc.termFrequency,
+                acc.termPeriodFrequencyType, acc.numberOfRepayments, acc.repaymentEvery, acc.repaymentFrequencyType,
+                acc.repaymentFrequencyNthDayType, acc.repaymentFrequencyDayOfWeekType, acc.transactionProcessingStrategyId,
+                acc.transactionProcessingStrategyName, acc.amortizationType, acc.interestRatePerPeriod, acc.interestRateFrequencyType,
+                acc.annualInterestRate, acc.interestType, acc.interestCalculationPeriodType, acc.expectedFirstRepaymentOnDate,
+                acc.graceOnPrincipalPayment, acc.graceOnInterestPayment, acc.graceOnInterestCharged, acc.interestChargedFromDate,
+                centerAcc.timeline, acc.summary, acc.feeChargesAtDisbursementCharged, acc.repaymentSchedule, acc.transactions, acc.charges,
+                acc.collateral, acc.guarantors, acc.meeting, acc.productOptions, acc.termFrequencyTypeOptions,
+                acc.repaymentFrequencyTypeOptions, acc.repaymentFrequencyNthDayTypeOptions, acc.repaymentFrequencyDaysOfWeekTypeOptions,
+                acc.transactionProcessingStrategyOptions, acc.interestRateFrequencyTypeOptions, acc.amortizationTypeOptions,
+                acc.interestTypeOptions, acc.interestCalculationPeriodTypeOptions, acc.fundOptions, acc.chargeOptions, null,
+                acc.loanOfficerOptions, acc.loanPurposeOptions, acc.loanCollateralOptions, acc.calendarOptions,
+                acc.syncDisbursementWithMeeting, acc.loanCounter, acc.loanProductCounter, acc.notes, acc.accountLinkingOptions,
+                acc.linkedAccount, acc.disbursementDetails, acc.multiDisburseLoan, acc.canDefineInstallmentAmount, acc.fixedEmiAmount,
+                acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
+                acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
+                acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId,acc.centerName,centerAcc.center);
 
     }
 
@@ -622,7 +779,9 @@ public class LoanAccountData {
         final Long clientId = null;
         final String clientName = null;
         final Long clientOfficeId = null;
+        final String centerName =null;
         final GroupGeneralData group = null;
+        final CenterData center =null;
         final EnumOptionData loanType = null;
         final String groupName = null;
         final Long fundId = null;
@@ -738,7 +897,7 @@ public class LoanAccountData {
                 product.getOutstandingLoanBalance(), emiAmountVariations, memberVariations, product, inArrears,
                 product.getGraceOnArrearsAgeing(), product.overdueFeeCharges(), isNPA, product.getDaysInMonthType(),
                 product.getDaysInYearType(), product.isInterestRecalculationEnabled(), product.toLoanInterestRecalculationData(),
-                originalSchedule, createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
+                originalSchedule, createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId,centerName,center);
     }
 
     public static LoanAccountData populateLoanProductDefaults(final LoanAccountData acc, final LoanProductData product) {
@@ -793,7 +952,7 @@ public class LoanAccountData {
                 product.canDefineInstallmentAmount(), acc.fixedEmiAmount, product.getOutstandingLoanBalance(), acc.emiAmountVariations,
                 acc.memberVariations, product, acc.inArrears, product.getGraceOnArrearsAgeing(), product.overdueFeeCharges(), acc.isNPA,
                 product.getDaysInMonthType(), product.getDaysInYearType(), product.isInterestRecalculationEnabled(),
-                product.toLoanInterestRecalculationData(), acc.originalSchedule, acc.createStandingInstructionAtDisbursement, paidInAdvance,acc.loanApplicationId);
+                product.toLoanInterestRecalculationData(), acc.originalSchedule, acc.createStandingInstructionAtDisbursement, paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
 
     }
 
@@ -819,7 +978,8 @@ public class LoanAccountData {
             final Boolean multiDisburseLoan, Boolean canDefineInstallmentAmount, final BigDecimal fixedEmiAmont,
             final BigDecimal outstandingLoanBalance, final Boolean inArrears, final Integer graceOnArrearsAgeing, final Boolean isNPA,
             final EnumOptionData daysInMonthType, final EnumOptionData daysInYearType, final boolean isInterestRecalculationEnabled,
-            final LoanInterestRecalculationData interestRecalculationData, final Boolean createStandingInstructionAtDisbursement,final String loanApplicationId) {
+            final LoanInterestRecalculationData interestRecalculationData, final Boolean createStandingInstructionAtDisbursement,final String loanApplicationId,
+            final String centerName) {
 
         final LoanScheduleData repaymentSchedule = null;
         final Collection<LoanTransactionData> transactions = null;
@@ -827,6 +987,7 @@ public class LoanAccountData {
         final Collection<CollateralData> collateral = null;
         final Collection<GuarantorData> guarantors = null;
         final Collection<NoteData> notes = null;
+        final CenterData center=null;
         final CalendarData calendarData = null;
         final Collection<LoanProductData> productOptions = null;
         final Collection<EnumOptionData> termFrequencyTypeOptions = null;
@@ -871,7 +1032,7 @@ public class LoanAccountData {
                 disbursementData, multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmont, outstandingLoanBalance,
                 emiAmountVariations, memberVariations, product, inArrears, graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
                 daysInYearType, isInterestRecalculationEnabled, interestRecalculationData, originalSchedule,
-                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId);
+                createStandingInstructionAtDisbursement, paidInAdvance,loanApplicationId,centerName,center);
     }
 
     /*
@@ -919,7 +1080,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, paidInAdvance,acc.loanApplicationId);
+                acc.createStandingInstructionAtDisbursement, paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
     }
 
     public static LoanAccountData associationsAndTemplate(final LoanAccountData acc, final Collection<LoanProductData> productOptions,
@@ -955,7 +1116,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
     }
 
     public static LoanAccountData associateMemberVariations(final LoanAccountData acc, final Map<Long, Integer> memberLoanCycle) {
@@ -1016,7 +1177,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
 
     }
 
@@ -1045,7 +1206,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, interestRecalculationData, acc.originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
     }
 
     public static LoanAccountData withOriginalSchedule(final LoanAccountData acc, final LoanScheduleData originalSchedule) {
@@ -1070,7 +1231,7 @@ public class LoanAccountData {
                 acc.maxOutstandingLoanBalance, acc.emiAmountVariations, acc.memberVariations, acc.product, acc.inArrears,
                 acc.graceOnArrearsAgeing, acc.overdueCharges, acc.isNPA, acc.daysInMonthType, acc.daysInYearType,
                 acc.isInterestRecalculationEnabled, acc.interestRecalculationData, originalSchedule,
-                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId);
+                acc.createStandingInstructionAtDisbursement, acc.paidInAdvance,acc.loanApplicationId,acc.centerName,acc.center);
     }
 
     private LoanAccountData(
@@ -1132,7 +1293,8 @@ public class LoanAccountData {
             final Integer graceOnArrearsAgeing, final Collection<ChargeData> overdueCharges, final Boolean isNPA,
             final EnumOptionData daysInMonthType, final EnumOptionData daysInYearType, final boolean isInterestRecalculationEnabled,
             final LoanInterestRecalculationData interestRecalculationData, final LoanScheduleData originalSchedule,
-            final Boolean createStandingInstructionAtDisbursement, final PaidInAdvanceData paidInAdvance,final String loanApplicationId) {
+            final Boolean createStandingInstructionAtDisbursement, final PaidInAdvanceData paidInAdvance,final String loanApplicationId,
+            final String centerName,final CenterData center) {
 
         this.id = id;
         this.accountNo = accountNo;
@@ -1143,6 +1305,8 @@ public class LoanAccountData {
         this.clientName = clientName;
         this.clientOfficeId = clientOfficeId;
         this.group = group;
+        this.centerName=centerName;
+        this.center=center;
         this.loanType = loanType;
         this.loanProductId = loanProductId;
         this.loanProductName = loanProductName;
@@ -1368,6 +1532,12 @@ public class LoanAccountData {
 
     public void setProduct(LoanProductData product) {
         this.product = product;
+    }
+    public Long centerOfficeId() {
+        return this.center == null ? null : this.center.officeId();
+    }
+    public CenterData centerData() {
+        return this.center;
     }
 
     public GroupGeneralData groupData() {

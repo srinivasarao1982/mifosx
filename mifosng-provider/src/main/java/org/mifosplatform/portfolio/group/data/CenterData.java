@@ -162,4 +162,7 @@ public class CenterData {
     public String getStaffName() {
         return this.staffName;
     }
+    public Collection<GroupGeneralData> getGroupMembers() {
+        return groupMembers;
+}
 }

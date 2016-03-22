@@ -109,4 +109,10 @@ public interface LoanReadPlatformService {
     PaidInAdvanceData retrieveTotalPaidInAdvance(Long loanId);
 
     LoanTransactionData retrieveRefundByCashTemplate(Long loanId);
+    
+    LoanAccountData retrieveCenterAndMembersDetailsTemplate(final Long centerId);
+
+    Collection<CalendarData> retrieveCalendarsForCenter(final Long centerId);
+
+
 }

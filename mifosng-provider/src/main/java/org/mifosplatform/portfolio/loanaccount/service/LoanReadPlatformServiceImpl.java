@@ -63,8 +63,10 @@ import org.mifosplatform.portfolio.common.domain.PeriodFrequencyType;
 import org.mifosplatform.portfolio.common.service.CommonEnumerations;
 import org.mifosplatform.portfolio.fund.data.FundData;
 import org.mifosplatform.portfolio.fund.service.FundReadPlatformService;
+import org.mifosplatform.portfolio.group.data.CenterData;
 import org.mifosplatform.portfolio.group.data.GroupGeneralData;
 import org.mifosplatform.portfolio.group.data.GroupRoleData;
+import org.mifosplatform.portfolio.group.service.CenterReadPlatformServiceImpl;
 import org.mifosplatform.portfolio.group.service.GroupReadPlatformService;
 import org.mifosplatform.portfolio.loanaccount.data.DisbursementData;
 import org.mifosplatform.portfolio.loanaccount.data.HolidayDetailDTO;
@@ -142,6 +144,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     private final WorkingDaysRepositoryWrapper workingDaysRepository;
     private final PaymentTypeReadPlatformService paymentTypeReadPlatformService;
     private final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory;
+    private final CenterReadPlatformServiceImpl centerReadPlatformServiceImpl;
 
     @Autowired
     public LoanReadPlatformServiceImpl(final PlatformSecurityContext context, final LoanRepository loanRepository,
@@ -155,7 +158,9 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             final LoanScheduleGeneratorFactory loanScheduleFactory, final CalendarInstanceRepository calendarInstanceRepository,
             final HolidayRepository holidayRepository, final ConfigurationDomainService configurationDomainService,
             final WorkingDaysRepositoryWrapper workingDaysRepository, PaymentTypeReadPlatformService paymentTypeReadPlatformService,
-            final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory) {
+            final LoanRepaymentScheduleTransactionProcessorFactory loanRepaymentScheduleTransactionProcessorFactory,
+            final CenterReadPlatformServiceImpl centerReadPlatformServiceImpl)
+ {
         this.context = context;
         this.loanRepository = loanRepository;
         this.loanTransactionRepository = loanTransactionRepository;
@@ -178,6 +183,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         this.workingDaysRepository = workingDaysRepository;
         this.paymentTypeReadPlatformService = paymentTypeReadPlatformService;
         this.loanRepaymentScheduleTransactionProcessorFactory = loanRepaymentScheduleTransactionProcessorFactory;
+        this.centerReadPlatformServiceImpl=centerReadPlatformServiceImpl;
     }
 
     @Override
@@ -192,6 +198,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
             final StringBuilder sqlBuilder = new StringBuilder();
             sqlBuilder.append("select ");
+            sqlBuilder.append( "null as centerName, ");
             sqlBuilder.append(rm.loanSchema());
             sqlBuilder.append(" join m_office o on (o.id = c.office_id or o.id = g.office_id) ");
             sqlBuilder.append(" left join m_office transferToOffice on transferToOffice.id = c.transfer_to_office_id ");
@@ -248,10 +255,18 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
         final AppUser currentUser = this.context.authenticatedUser();
         final String hierarchy = currentUser.getOffice().getHierarchy();
+        String isgroupSearch = searchParameters.getGroupSearch(); 
         final String hierarchySearchString = hierarchy + "%";
 
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        if(isgroupSearch!=null){
+        	if(isgroupSearch.equalsIgnoreCase("true")){
+            sqlBuilder.append("mg.id as centerId, mg.display_name as centerName,  ");	
+        }}
+        else{
+            sqlBuilder.append(" null as centerId ,null as centerName,  ");
+        }
         sqlBuilder.append(this.loaanLoanMapper.loanSchema());
 
         // TODO - for time being this will data scope list of loans returned to
@@ -259,6 +274,13 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         // to support senario where loan has group_id only OR client_id will
         // probably require a UNION query
         // but that at present is an edge case
+        if(isgroupSearch!=null){
+            if(isgroupSearch.equalsIgnoreCase("true")){
+            	sqlBuilder.append(" left outer join m_group_client mgl on mgl.client_id = c.id  ");            
+                sqlBuilder.append("left outer join  m_group mgc on  mgc.id   = case WHEN mgc.level_id=2 then mgl.group_id END " );
+                sqlBuilder.append("left outer join  m_group mg  on  mg.id  = CASE WHEN mg.level_id = 1 then mgc.parent_id  END ");
+
+            }}
         sqlBuilder.append(" join m_office o on o.id = c.office_id");
         sqlBuilder.append(" left join m_office transferToOffice on transferToOffice.id = c.transfer_to_office_id ");
         sqlBuilder.append(" where ( o.hierarchy like ? or transferToOffice.hierarchy like ?)");
@@ -655,6 +677,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
 
             final Long groupId = JdbcSupport.getLong(rs, "groupId");
             final String groupName = rs.getString("groupName");
+            final String centerName =rs.getString("centerName");
             final String groupExternalId = rs.getString("groupExternalId");
             final Long groupOfficeId = JdbcSupport.getLong(rs, "groupOfficeId");
             final Long groupStaffId = JdbcSupport.getLong(rs, "groupStaffId");
@@ -894,7 +917,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     graceOnInterestCharged, interestChargedFromDate, timeline, loanSummary, feeChargesDueAtDisbursementCharged,
                     syncDisbursementWithMeeting, loanCounter, loanProductCounter, multiDisburseLoan, canDefineInstallmentAmount,
                     fixedEmiAmount, outstandingLoanBalance, inArrears, graceOnArrearsAgeing, isNPA, daysInMonthType, daysInYearType,
-                    isInterestRecalculationEnabled, interestRecalculationData, createStandingInstructionAtDisbursement,loanApplicationId);
+                    isInterestRecalculationEnabled, interestRecalculationData, createStandingInstructionAtDisbursement,loanApplicationId,centerName);
         }
     }
 
@@ -1365,6 +1388,39 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         final GroupGeneralData groupAccount = this.groupReadPlatformService.retrieveOne(groupId);
         final LocalDate expectedDisbursementDate = DateUtils.getLocalDateOfTenant();
         return LoanAccountData.groupDefaults(groupAccount, expectedDisbursementDate);
+    }
+    @Override
+    public LoanAccountData retrieveCenterAndMembersDetailsTemplate(final Long centerId) {
+        Collection<GroupGeneralData> groups = null;
+        CenterData centerAccount = this.centerReadPlatformServiceImpl.retrieveOne(centerId);
+        final LocalDate expectedDisbursementDate = DateUtils.getLocalDateOfTenant();
+        // get group associations
+            groups = this.centerReadPlatformServiceImpl.retrieveAssociatedGroups(centerId);
+            /*attach group members in group */
+            ArrayList<GroupGeneralData> groupsToAssociateClient =(ArrayList<GroupGeneralData>) groups;
+            for(GroupGeneralData groupGeneralData :groupsToAssociateClient){
+            ArrayList<ClientData> membersOfGroup=(ArrayList<ClientData>) clientReadPlatformService.retrieveActiveClientMembersOfGroup(groupGeneralData.getId());
+            groupGeneralData.update(membersOfGroup);
+            if (!CollectionUtils.isEmpty(membersOfGroup)) {
+                membersOfGroup = null;
+                final CalendarData collectionMeetingCalendar = null;
+                centerAccount = CenterData.withAssociations(centerAccount, groups, collectionMeetingCalendar);
+
+            }      
+           
+        }        
+
+        return LoanAccountData.centerDefaults(centerAccount, expectedDisbursementDate);
+    }
+
+  //bulk jlg loan Application center by
+    @Override
+    public Collection<CalendarData> retrieveCalendarsForCenter(final Long centerId) {
+        Collection<CalendarData> calendarsData = new ArrayList<>();
+               calendarsData
+                .addAll(this.calendarReadPlatformService.retrieveCalendarsByEntity(centerId, CalendarEntityType.CENTERS.getValue(), null));
+        calendarsData = this.calendarReadPlatformService.updateWithRecurringDates(calendarsData);
+        return calendarsData;
     }
 
     @Override
