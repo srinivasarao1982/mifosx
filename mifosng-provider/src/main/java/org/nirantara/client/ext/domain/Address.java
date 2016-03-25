@@ -51,7 +51,7 @@ public class Address extends AbstractPersistable<Long> {
 	private String taluka;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "district_cv_id", nullable = false)
+	@JoinColumn(name = "district_cv_id")
 	private CodeValue district;
 
 	@ManyToOne(fetch = FetchType.EAGER)

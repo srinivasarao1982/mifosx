@@ -40,7 +40,7 @@ public class GroupGeneralData {
 
     // associations
     private final Collection<ClientData> clientMembers;
-    private final Collection<ClientData> activeClientMembers;
+    private Collection<ClientData> activeClientMembers;
     private final Collection<GroupRoleData> groupRoles;
     private final Collection<CalendarData> calendarsData;
     private final CalendarData collectionMeetingCalendar;
@@ -233,4 +233,10 @@ public class GroupGeneralData {
     public Collection<ClientData> clientMembers() {
         return this.clientMembers;
     }
+    public void update (Collection<ClientData> activeClientMembers1){
+        this.activeClientMembers=activeClientMembers1;
+    }
+    public Collection<ClientData> getActiveClientMembers() {
+        return activeClientMembers;
+}
 }

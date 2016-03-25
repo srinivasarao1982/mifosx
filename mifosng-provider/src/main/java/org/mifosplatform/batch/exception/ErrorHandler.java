@@ -5,6 +5,7 @@
  */
 package org.mifosplatform.batch.exception;
 
+import org.mifosplatform.infrastructure.core.exception.AbstractPlatformDomainRuleException;
 import org.mifosplatform.infrastructure.core.exception.AbstractPlatformResourceNotFoundException;
 import org.mifosplatform.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityException;
@@ -105,6 +106,13 @@ public class ErrorHandler extends RuntimeException {
 
             final PlatformInternalServerExceptionMapper mapper = new PlatformInternalServerExceptionMapper();
             final String errorBody = jsonHelper.toJson(mapper.toResponse((PlatformInternalServerException) exception).getEntity());
+
+            return new ErrorInfo(500, 5001, errorBody);
+        }
+        else if (exception instanceof AbstractPlatformDomainRuleException) {
+
+            final PlatformDomainRuleExceptionMapper mapper = new PlatformDomainRuleExceptionMapper();
+            final String errorBody = jsonHelper.toJson(mapper.toResponse((AbstractPlatformDomainRuleException) exception).getEntity());
 
             return new ErrorInfo(500, 5001, errorBody);
         }

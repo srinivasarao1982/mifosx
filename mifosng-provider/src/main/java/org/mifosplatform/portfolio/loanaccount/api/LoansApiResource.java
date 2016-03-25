@@ -73,6 +73,7 @@ import org.mifosplatform.portfolio.loanaccount.data.LoanTransactionData;
 import org.mifosplatform.portfolio.loanaccount.data.PaidInAdvanceData;
 import org.mifosplatform.portfolio.loanaccount.data.RepaymentScheduleRelatedLoanData;
 import org.mifosplatform.portfolio.loanaccount.domain.LoanTermVariationType;
+import org.mifosplatform.portfolio.loanaccount.exception.GroupOrCenterIdException;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanTemplateTypeRequiredException;
 import org.mifosplatform.portfolio.loanaccount.exception.NotSupportedLoanTemplateTypeException;
 import org.mifosplatform.portfolio.loanaccount.guarantor.data.GuarantorData;
@@ -226,7 +227,8 @@ public class LoansApiResource {
     public String template(@QueryParam("clientId") final Long clientId, @QueryParam("groupId") final Long groupId,
             @QueryParam("productId") final Long productId, @QueryParam("templateType") final String templateType,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
-            @DefaultValue("false") @QueryParam("activeOnly") final boolean onlyActive, @Context final UriInfo uriInfo) {
+            @DefaultValue("false") @QueryParam("activeOnly") final boolean onlyActive, @Context final UriInfo uriInfo,
+            @QueryParam ("centerId") final Long centerId) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -278,6 +280,28 @@ public class LoansApiResource {
 
             } else if (templateType.equals("jlgbulk")) {
                 // get group details along with members in that group
+            	if(centerId!=null){
+                    final LoanAccountData loanAccountGroupData = this.loanReadPlatformService.retrieveCenterAndMembersDetailsTemplate(centerId);
+                    officeId= loanAccountGroupData.centerOfficeId();
+                    calendarOptions = this.loanReadPlatformService.retrieveCalendarsForCenter(centerId);
+                    newLoanAccount = newLoanAccount == null ? loanAccountGroupData : LoanAccountData.populateCenterDefaults(newLoanAccount,
+                            loanAccountGroupData);
+                    if (productId != null) {
+                        Map<Long, Integer> memberLoanCycle = new HashMap<>();
+                        Collection<GroupGeneralData> groupMembers =  loanAccountGroupData.centerData().getGroupMembers();
+                        if(groupMembers!=null){
+                        for(GroupGeneralData groupGeneralData :groupMembers){
+                            Collection<ClientData> members = groupGeneralData.getActiveClientMembers();
+                            for(ClientData clientData : members){
+                            	Integer loanCounter = this.loanReadPlatformService.retriveLoanCounter(clientData.id(), productId);
+                                memberLoanCycle.put(clientData.id(), loanCounter);
+                            }                        	 
+                        }    
+                        }
+                        newLoanAccount = LoanAccountData.associateMemberVariations(newLoanAccount, memberLoanCycle);
+                    }
+            	}
+            	else if (groupId!=null){
                 final LoanAccountData loanAccountGroupData = this.loanReadPlatformService.retrieveGroupAndMembersDetailsTemplate(groupId);
                 officeId = loanAccountGroupData.groupOfficeId();
                 calendarOptions = this.loanReadPlatformService.retrieveCalendars(groupId);
@@ -285,7 +309,7 @@ public class LoansApiResource {
                         loanAccountGroupData);
                 if (productId != null) {
                     Map<Long, Integer> memberLoanCycle = new HashMap<>();
-                    Collection<ClientData> members = loanAccountGroupData.groupData().clientMembers();
+                    Collection<ClientData> members = loanAccountGroupData.groupData().clientMembers();                    
                     for (ClientData clientData : members) {
                         Integer loanCounter = this.loanReadPlatformService.retriveLoanCounter(clientData.id(), productId);
                         memberLoanCycle.put(clientData.id(), loanCounter);
@@ -293,6 +317,11 @@ public class LoansApiResource {
                     newLoanAccount = LoanAccountData.associateMemberVariations(newLoanAccount, memberLoanCycle);
                 }
 
+            }
+            	else{
+            		throw new GroupOrCenterIdException();
+            	}
+            	
             } else {
                 final String errorMsg = "Loan template type '" + templateType + "' is not supported";
                 throw new NotSupportedLoanTemplateTypeException(errorMsg, templateType);
@@ -549,12 +578,12 @@ public class LoansApiResource {
             // @QueryParam("underHierarchy") final String hierarchy,
             @QueryParam("offset") final Integer offset, @QueryParam("limit") final Integer limit,
             @QueryParam("orderBy") final String orderBy, @QueryParam("sortOrder") final String sortOrder,
-            @QueryParam("accountNo") final String accountNo) {
+            @QueryParam("accountNo") final String accountNo,@QueryParam("groupSearch")final String groupSearch) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         final SearchParameters searchParameters = SearchParameters.forLoans(sqlSearch, externalId, offset, limit, orderBy, sortOrder,
-                accountNo);
+                accountNo,groupSearch);
 
         final Page<LoanAccountData> loanBasicDetails = this.loanReadPlatformService.retrieveAll(searchParameters);
 

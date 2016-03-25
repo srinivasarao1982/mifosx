@@ -285,10 +285,26 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         // this.context.validateAccessRights(searchParameters.getHierarchy());
         // underHierarchySearchString = searchParameters.getHierarchy() + "%";
         // }
-
+        String isgroupSearch = searchParameters.getGroupSearch(); 
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
+        if(isgroupSearch!=null){
+        	if(isgroupSearch.equalsIgnoreCase("true")){
+        	sqlBuilder.append(" mgc.id as groupId,mgc.display_name as groupName, " );
+            sqlBuilder.append(" mg.id as centerId ,mg.display_name as centerName,  ");	
+        }}
+        else{
+        	sqlBuilder.append(" null as groupId,null as groupName, " );
+            sqlBuilder.append(" null as centerId ,null as centerName,  ");
+        }
         sqlBuilder.append(this.clientMapper.schema());
+        if(isgroupSearch!=null){
+            if(isgroupSearch.equalsIgnoreCase("true")){
+            	sqlBuilder.append(" left outer join m_group_client mgl on mgl.client_id = c.id  ");            
+                sqlBuilder.append("left outer join  m_group mgc on  mgc.id   = case WHEN mgc.level_id=2 then mgl.group_id END " );
+                sqlBuilder.append("left outer join  m_group mg  on  mg.id  = CASE WHEN mg.level_id = 1 then mgc.parent_id  END ");
+
+            }}
         sqlBuilder.append(" where (o.hierarchy like ? or transferToOffice.hierarchy like ?) ");
 
         final String extraCriteria = buildSqlStringFromClientCriteria(searchParameters);
@@ -371,7 +387,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             final String hierarchy = this.context.officeHierarchy();
             final String hierarchySearchString = hierarchy + "%";
 
-            final String sql = "select " + this.clientMapper.schema()
+            final String sql = "select null as centerId,null as groupId,null as centerName,null as groupName ," + this.clientMapper.schema()
                     + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
             final ClientData clientData = this.jdbcTemplate.queryForObject(sql, this.clientMapper, new Object[] { hierarchySearchString,
                     hierarchySearchString, clientId });
@@ -568,7 +584,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
                     firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate,
                     imageId, staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
-                    classification);
+                    classification,null,null,null,null);
 
         }
     }
@@ -701,6 +717,11 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             final String closedByUsername = rs.getString("closedByUsername");
             final String closedByFirstname = rs.getString("closedByFirstname");
             final String closedByLastname = rs.getString("closedByLastname");
+            final String groupName = rs.getString("groupName");
+            final String centerName =rs.getString("centerName");
+            final Long groupId =JdbcSupport.getLong(rs, "groupId"); 
+            final Long centerId =JdbcSupport.getLong(rs, "centerId");
+
 
             final LocalDate submittedOnDate = JdbcSupport.getLocalDate(rs, "submittedOnDate");
             final String submittedByUsername = rs.getString("submittedByUsername");
@@ -718,7 +739,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
                     firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate,
                     imageId, staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
-                    classification);
+                    classification,groupName,centerName,groupId,centerId);
 
         }
     }
