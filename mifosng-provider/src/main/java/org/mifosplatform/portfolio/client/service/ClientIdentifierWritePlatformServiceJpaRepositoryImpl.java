@@ -192,19 +192,20 @@ public class ClientIdentifierWritePlatformServiceJpaRepositoryImpl implements Cl
     }
 
     @Transactional
-	@Override
-	public List<ClientIdentifier> addClientIdentifierService(final Client client, final JsonCommand command) {
-		final JsonObject clientIdentifierDataObject = new JsonParser().parse(command.json()).getAsJsonObject();    		
-		final JsonArray clientIdentifierDataArray = clientIdentifierDataObject.get("clientIdentifierData").getAsJsonArray();
-		if(clientIdentifierDataArray != null && clientIdentifierDataArray.isJsonArray()){
-			final List<ClientIdentifier> clientIdentifiers = this.clientExtAssembler.assembleDoumentIdentifiersDetails(clientIdentifierDataArray, client);
-			if(clientIdentifiers != null && clientIdentifiers.size() > 0){
-				for(ClientIdentifier clientIdentifier: clientIdentifiers){
-					this.clientIdentifierRepository.save(clientIdentifier);									
-				}
+    @Override
+    public List<ClientIdentifier> addClientIdentifierService(final Client client, final JsonCommand command) {
+        final JsonObject clientIdentifierDataObject = new JsonParser().parse(command.json()).getAsJsonObject();
+        final JsonArray clientIdentifierDataArray = clientIdentifierDataObject.get("clientIdentifierData").getAsJsonArray();
+        if (clientIdentifierDataArray != null && clientIdentifierDataArray.isJsonArray()) {
+            final List<ClientIdentifier> clientIdentifiers = this.clientExtAssembler
+                    .assembleDoumentIdentifiersDetails(clientIdentifierDataArray, client);
+            if (clientIdentifiers != null && clientIdentifiers.size() > 0) {
+                for (ClientIdentifier clientIdentifier : clientIdentifiers) {
+                    this.clientIdentifierRepository.save(clientIdentifier);
+                }
             }
-			return clientIdentifiers;
-		}
-		return null;
-	}
+            return clientIdentifiers;
+        }
+        return null;
+    }
 }

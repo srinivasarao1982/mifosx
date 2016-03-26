@@ -70,8 +70,7 @@ public class ClientsApiResource {
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final AccountDetailsReadPlatformService accountDetailsReadPlatformService,
             final SavingsAccountReadPlatformService savingsAccountReadPlatformService,
-            final ToApiJsonSerializer<ClientDetailedData> clientDetailedDatatoApiJsonSerializer
-    		) {
+            final ToApiJsonSerializer<ClientDetailedData> clientDetailedDatatoApiJsonSerializer) {
         this.context = context;
         this.clientReadPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -96,7 +95,7 @@ public class ClientsApiResource {
         ClientData clientData = null;
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        
+
         if (is(commandParam, "close")) {
             clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_CLOSURE_REASON);
         } else if (is(commandParam, "acceptTransfer")) {
@@ -106,20 +105,21 @@ public class ClientsApiResource {
         } else if (is(commandParam, "withdraw")) {
             clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_WITHDRAW_REASON);
         } else {
-        	ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(officeId, staffInSelectedOfficeOnly, null);
-            return this.clientDetailedDatatoApiJsonSerializer.serialize(settings, clientDetailedData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
+            ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(officeId,
+                    staffInSelectedOfficeOnly, null);
+            return this.clientDetailedDatatoApiJsonSerializer.serialize(settings, clientDetailedData,
+                    ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
         }
 
-        
         return this.toApiJsonSerializer.serialize(settings, clientData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }
 
     private ClientDetailedData buildClientDetailedData() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@GET
+    @GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveAll(@Context final UriInfo uriInfo, @QueryParam("sqlSearch") final String sqlSearch,
@@ -162,11 +162,12 @@ public class ClientsApiResource {
                 clientData = ClientData.templateWithSavingAccountOptions(clientData, savingAccountOptions);
             }
         }
-        /*Nirantara Changes*/
-        ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(clientData.getOfficeId(), staffInSelectedOfficeOnly, clientId);        
-        if(clientDetailedData != null){
-        	clientData = ClientData.templateOnTopClientDetailedData(clientData, clientDetailedData);    	
-        }        
+        /* Nirantara Changes */
+        ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(clientData.getOfficeId(),
+                staffInSelectedOfficeOnly, clientId);
+        if (clientDetailedData != null) {
+            clientData = ClientData.templateOnTopClientDetailedData(clientData, clientDetailedData);
+        }
         return this.toApiJsonSerializer.serialize(settings, clientData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }
 
@@ -270,9 +271,9 @@ public class ClientsApiResource {
             result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         }
 
-        if (result == null) { throw new UnrecognizedQueryParamException("command", commandParam, new Object[] { "activate",
-                "unassignStaff", "assignStaff", "close", "proposeTransfer", "withdrawTransfer", "acceptTransfer", "rejectTransfer",
-                "updateSavingsAccount", "reject", "withdraw", "reactivate" }); }
+        if (result == null) { throw new UnrecognizedQueryParamException("command", commandParam,
+                new Object[] { "activate", "unassignStaff", "assignStaff", "close", "proposeTransfer", "withdrawTransfer", "acceptTransfer",
+                        "rejectTransfer", "updateSavingsAccount", "reject", "withdraw", "reactivate" }); }
 
         return this.toApiJsonSerializer.serialize(result);
     }
