@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -117,7 +118,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final SavingsAccountRepository savingsRepository, final SavingsProductRepository savingsProductRepository,
             final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService,
             final CommandProcessingService commandProcessingService, final ConfigurationDomainService configurationDomainService,
-            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,final ClientExtAssembler clientExtAssembler,
+            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientExtAssembler clientExtAssembler,
             final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService) {
         this.context = context;
         this.clientRepository = clientRepository;
@@ -169,18 +170,20 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         if (realCause.getMessage().contains("external_id")) {
 
             final String externalId = command.stringValueOfParameterNamed("externalId");
-            throw new PlatformDataIntegrityException("error.msg.client.duplicate.externalId", "Client with externalId `" + externalId
-                    + "` already exists", "externalId", externalId);
+            throw new PlatformDataIntegrityException("error.msg.client.duplicate.externalId",
+                    "Client with externalId `" + externalId + "` already exists", "externalId", externalId);
         } else if (realCause.getMessage().contains("account_no_UNIQUE")) {
             final String accountNo = command.stringValueOfParameterNamed("accountNo");
-            throw new PlatformDataIntegrityException("error.msg.client.duplicate.accountNo", "Client with accountNo `" + accountNo
-                    + "` already exists", "accountNo", accountNo);
+            throw new PlatformDataIntegrityException("error.msg.client.duplicate.accountNo",
+                    "Client with accountNo `" + accountNo + "` already exists", "accountNo", accountNo);
         } else if (realCause.getMessage().contains("mobile_no")) {
             final String mobileNo = command.stringValueOfParameterNamed("mobileNo");
-            throw new PlatformDataIntegrityException("error.msg.client.duplicate.mobileNo", "Client with mobileNo `" + mobileNo
-                    + "` already exists", "mobileNo", mobileNo);
+            throw new PlatformDataIntegrityException("error.msg.client.duplicate.mobileNo",
+                    "Client with mobileNo `" + mobileNo + "` already exists", "mobileNo", mobileNo);
+        } else if (realCause.getMessage().contains("UQ_client_id_address_type")) {
+            throw new PlatformDataIntegrityException("error.msg.client.address.type.duplicated",
+                    "Client address type duplicated");
         }
-
         logAsErrorUnexpectedDataIntegrityException(dve);
         throw new PlatformDataIntegrityException("error.msg.client.unknown.data.integrity.issue",
                 "Unknown data integrity issue with resource.");
@@ -230,8 +233,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             CodeValue clientClassification = null;
             final Long clientClassificationId = command.longValueOfParameterNamed(ClientApiConstants.clientClassificationIdParamName);
             if (clientClassificationId != null) {
-                clientClassification = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
-                        ClientApiConstants.CLIENT_CLASSIFICATION, clientClassificationId);
+                clientClassification = this.codeValueRepository
+                        .findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.CLIENT_CLASSIFICATION, clientClassificationId);
             }
 
             SavingsProduct savingsProduct = null;
@@ -259,59 +262,60 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 this.clientRepository.save(newClient);
             }
 
-            //For nirantara
+            // For nirantara
             final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
             ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, newClient);
-            if(clientExt != null){
-            	newClient.updateClientExt(clientExt);
+            if (clientExt != null) {
+                newClient.updateClientExt(clientExt);
             }
-            
-            //For nirantara Address   		
-    		final JsonArray addressArray = object.get("naddress").getAsJsonArray();
-    		if(addressArray != null){
-    			List<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
-    			if(address != null && address.size() > 0){
-                	newClient.updateAddressExt(address);
+
+            // For nirantara Address
+            final JsonArray addressArray = object.get("naddress").getAsJsonArray();
+            if (addressArray != null && addressArray.size()>0) {
+                final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
+                if (address != null && address.size() > 0) {
+                    newClient.updateAddressExt(address);
                 }
-    		}
-            
-    		//For nirantara familyDetails    		
-    		final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
-    		if(familyDetailsArray != null){
-    			List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, newClient);
-    			if(familyDetails != null){
-                	newClient.updateFamilyDetails(familyDetails);
+            }
+
+            // For nirantara familyDetails
+            final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
+            if (familyDetailsArray != null && familyDetailsArray.size() > 0) {
+                List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, newClient);
+                if (familyDetails != null && familyDetails.size() > 0) {
+                    newClient.updateFamilyDetails(familyDetails);
                 }
-    		}
-    		
-    		//For nirantara ClientIdentifierWritePlatformService
-    		this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);    		
-            
-    		//Occupation Details 
-    		final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
-    		if(occupationDetailsArray != null){
-    			List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray, newClient);
-    			if(occupationDetails != null){
-                	newClient.updateOccupationDetails(occupationDetails);
+            }
+
+            // For nirantara ClientIdentifierWritePlatformService
+            this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);
+
+            // Occupation Details
+            final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
+            if (occupationDetailsArray != null && occupationDetailsArray.size() > 0) {
+                List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray,
+                        newClient);
+                if (occupationDetails != null && occupationDetails.size() > 0) {
+                    newClient.updateOccupationDetails(occupationDetails);
                 }
-    		}
-    		
-    		//For nirantara Nominee Details    		
-    		final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
-    		if(nomineeDetailsArray != null){
-    			List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, newClient);
-    			if(nomineeDetails != null){
-    				newClient.updateNomineeDetails(nomineeDetails);
+            }
+
+            // For nirantara Nominee Details
+            final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
+            if (nomineeDetailsArray != null && nomineeDetailsArray.size() > 0) {
+                List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, newClient);
+                if (nomineeDetails != null && nomineeDetails.size() > 0) {
+                    newClient.updateNomineeDetails(nomineeDetails);
                 }
-    		}
-            
+            }
+
             final Locale locale = command.extractLocale();
             final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);
             CommandProcessingResult result = openSavingsAccount(newClient, fmt);
             if (result.getSavingsId() != null) {
                 this.clientRepository.save(newClient);
             }
-            
+
             this.clientRepository.save(newClient);
 
             return new CommandProcessingResultBuilder() //
@@ -349,8 +353,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.staffIdParamName);
                 Staff newStaff = null;
                 if (newValue != null) {
-                    newStaff = this.staffRepository.findByOfficeHierarchyWithNotFoundDetection(newValue, clientForUpdate.getOffice()
-                            .getHierarchy());
+                    newStaff = this.staffRepository.findByOfficeHierarchyWithNotFoundDetection(newValue,
+                            clientForUpdate.getOffice().getHierarchy());
                 }
                 clientForUpdate.updateStaff(newStaff);
             }
@@ -366,8 +370,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             if (changes.containsKey(ClientApiConstants.savingsProductIdParamName)) {
-                if (clientForUpdate.isActive()) { throw new ClientActiveForUpdateException(clientId,
-                        ClientApiConstants.savingsProductIdParamName); }
+                if (clientForUpdate
+                        .isActive()) { throw new ClientActiveForUpdateException(clientId, ClientApiConstants.savingsProductIdParamName); }
                 SavingsProduct savingsProduct = null;
                 final Long savingsProductId = command.longValueOfParameterNamed(ClientApiConstants.savingsProductIdParamName);
                 if (savingsProductId != null) {
@@ -400,71 +404,73 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 final Long newValue = command.longValueOfParameterNamed(ClientApiConstants.clientClassificationIdParamName);
                 CodeValue newCodeVal = null;
                 if (newValue != null) {
-                    newCodeVal = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
-                            ClientApiConstants.CLIENT_CLASSIFICATION, newValue);
+                    newCodeVal = this.codeValueRepository
+                            .findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.CLIENT_CLASSIFICATION, newValue);
                 }
                 clientForUpdate.updateClientClassification(newCodeVal);
             }
-            
+
             /** Update For Nirantara **/
-            final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();  
-            //For nirantara
+            final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
+            // For nirantara
             ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, clientForUpdate);
-            if(clientExt != null){
-            	clientForUpdate.updateClientExt(clientExt);
+            if (clientExt != null) {
+                clientForUpdate.updateClientExt(clientExt);
             }
-            
-            //For nirantara Address
-              		
-    		final JsonArray addressArray = object.get("naddress").getAsJsonArray();
-    		if(addressArray != null){
-    			List<Address> address = this.clientExtAssembler.assembleAddress(addressArray, clientForUpdate);
-    			if(address != null && address.size() > 0){
-    				clientForUpdate.updateAddressExt(address);
+
+            // For nirantara Address
+
+            final JsonArray addressArray = object.get("naddress").getAsJsonArray();
+            if (addressArray != null && addressArray.size() > 0) {
+                final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, clientForUpdate);
+                if (address != null && address.size() > 0) {
+                    //clientForUpdate.clearAddressExt();
+                    clientForUpdate.updateAddressExt(address);
                 }
-    		}
-            
-    		//For nirantara familyDetails    		
-    		final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
-    		if(familyDetailsArray != null){
-    			List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, clientForUpdate);
-    			if(familyDetails != null){
-    				clientForUpdate.updateFamilyDetails(familyDetails);
+            }
+
+            // For nirantara familyDetails
+            final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
+            if (familyDetailsArray != null && familyDetailsArray.size() > 0) {
+                List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, clientForUpdate);
+                if (familyDetails != null && familyDetails.size() > 0) {
+                    clientForUpdate.updateFamilyDetails(familyDetails);
                 }
-    		}
-    		
-    		//For nirantara ClientIdentifierWritePlatformService
-    		this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
-    		
-    		//For nirantara Occupation Details
-    		final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
-    		if(occupationDetailsArray != null){
-    			List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray, clientForUpdate);
-    			if(occupationDetails != null){
-    				clientForUpdate.updateOccupationDetails(occupationDetails);
+            }
+
+            // For nirantara ClientIdentifierWritePlatformService
+            this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
+
+            // For nirantara Occupation Details
+            final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
+            if (occupationDetailsArray != null && occupationDetailsArray.size() > 0) {
+                List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray,
+                        clientForUpdate);
+                if (occupationDetails != null && occupationDetails.size() > 0) {
+                    clientForUpdate.updateOccupationDetails(occupationDetails);
                 }
-    		}
-    		
-    		//For nirantara Nominee Details    		
-    		final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
-    		if(nomineeDetailsArray != null){
-    			List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, clientForUpdate);
-    			if(nomineeDetails != null){
-    				clientForUpdate.updateNomineeDetails(nomineeDetails);
+            }
+
+            // For nirantara Nominee Details
+            final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
+            if (nomineeDetailsArray != null && nomineeDetailsArray.size() > 0) {
+                List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, clientForUpdate);
+                if (nomineeDetails != null && nomineeDetails.size() > 0) {
+                    clientForUpdate.updateNomineeDetails(nomineeDetails);
                 }
-    		}
-    		
-    		//Co Applicant Details
-    		final JsonArray coClientDataArray = object.get("coClientData").getAsJsonArray();
-    		if(coClientDataArray != null){
-    			List<Coapplicant> coapplicant = this.clientExtAssembler.assembleCoClientDataArray(coClientDataArray, clientForUpdate);
-    			if(coapplicant != null && coapplicant.size() > 0){
-    				clientForUpdate.updateCoapplicant(coapplicant);
+            }
+
+            // Co Applicant Details
+            final JsonArray coClientDataArray = object.get("coClientData").getAsJsonArray();
+            if (coClientDataArray != null && coClientDataArray.size() > 0) {
+                List<Coapplicant> coapplicant = this.clientExtAssembler.assembleCoClientDataArray(coClientDataArray, clientForUpdate);
+                if (coapplicant != null && coapplicant.size() > 0) {
+                    clientForUpdate.updateCoapplicant(coapplicant);
                 }
-    		}
-    		
-    		this.clientRepository.saveAndFlush(clientForUpdate);
-    		
+            }
+
+            this.clientRepository.saveAndFlush(clientForUpdate);
+
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withOfficeId(clientForUpdate.officeId()) //
@@ -610,8 +616,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final LocalDate closureDate = command.localDateValueOfParameterNamed(ClientApiConstants.closureDateParamName);
             final Long closureReasonId = command.longValueOfParameterNamed(ClientApiConstants.closureReasonIdParamName);
 
-            final CodeValue closureReason = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
-                    ClientApiConstants.CLIENT_CLOSURE_REASON, closureReasonId);
+            final CodeValue closureReason = this.codeValueRepository
+                    .findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.CLIENT_CLOSURE_REASON, closureReasonId);
 
             if (ClientStatus.fromInt(client.getStatus()).isClosed()) {
                 final String errorMessage = "Client is already closed.";
@@ -732,8 +738,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         final LocalDate rejectionDate = command.localDateValueOfParameterNamed(ClientApiConstants.rejectionDateParamName);
         final Long rejectionReasonId = command.longValueOfParameterNamed(ClientApiConstants.rejectionReasonIdParamName);
 
-        final CodeValue rejectionReason = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
-                ClientApiConstants.CLIENT_REJECT_REASON, rejectionReasonId);
+        final CodeValue rejectionReason = this.codeValueRepository
+                .findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.CLIENT_REJECT_REASON, rejectionReasonId);
 
         if (client.isNotPending()) {
             final String errorMessage = "Only clients pending activation may be withdrawn.";
@@ -763,8 +769,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         final LocalDate withdrawalDate = command.localDateValueOfParameterNamed(ClientApiConstants.withdrawalDateParamName);
         final Long withdrawalReasonId = command.longValueOfParameterNamed(ClientApiConstants.withdrawalReasonIdParamName);
 
-        final CodeValue withdrawalReason = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(
-                ClientApiConstants.CLIENT_WITHDRAW_REASON, withdrawalReasonId);
+        final CodeValue withdrawalReason = this.codeValueRepository
+                .findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.CLIENT_WITHDRAW_REASON, withdrawalReasonId);
 
         if (client.isNotPending()) {
             final String errorMessage = "Only clients pending activation may be withdrawn.";

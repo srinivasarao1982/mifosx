@@ -18,44 +18,51 @@ import org.springframework.stereotype.Service;
 @Service
 public class CoapplicantReadPlatformServiceImpl implements CoapplicantReadPlatformService {
 
-	private final CodeValueReadPlatformService codeValueReadPlatformService;
-	
-	@Autowired
-	public CoapplicantReadPlatformServiceImpl(final CodeValueReadPlatformService codeValueReadPlatformService){
-		this.codeValueReadPlatformService = codeValueReadPlatformService;
-	}
-	
-	@Override
-	public CoapplicantDetailsData retrieveCoapplicantDetailsDataTemplate(final Client client) {
+    private final CodeValueReadPlatformService codeValueReadPlatformService;
 
-		Collection<CodeValueData> spouseRelationShip = new ArrayList<>(
-				this.codeValueReadPlatformService
-						.retrieveCodeValuesByCode(CoapplicantApiConstants.SPOUSE_RELATIONSHIP));
+    @Autowired
+    public CoapplicantReadPlatformServiceImpl(final CodeValueReadPlatformService codeValueReadPlatformService) {
+        this.codeValueReadPlatformService = codeValueReadPlatformService;
+    }
 
-		Collection<CodeValueData> addressTypes = new ArrayList<>(
-				this.codeValueReadPlatformService
-						.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_ADDRESS_TYPE));
+    @Override
+    public CoapplicantDetailsData retrieveCoapplicantDetailsDataTemplate(final Client client) {
 
-		Collection<CodeValueData> state = new ArrayList<>(
-				this.codeValueReadPlatformService
-						.retrieveCodeValuesByCode(ClientApiConstants.STATE));
+        Collection<CodeValueData> spouseRelationShip = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(CoapplicantApiConstants.SPOUSE_RELATIONSHIP));
 
-		Collection<CodeValueData> district = new ArrayList<>(
-				this.codeValueReadPlatformService
-						.retrieveCodeValuesByCode(ClientApiConstants.DISTRICT));
+        Collection<CodeValueData> addressTypes = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_ADDRESS_TYPE));
 
-		List<CoapplicantData> coapplicantData = new ArrayList<>();
-		if(client != null){
-			if(client.coapplicant() != null){
-				for(Coapplicant ca : client.coapplicant()){
-					coapplicantData.add(CoapplicantData.formCoapplicantData(ca));
-				}
-			}
-		}
-		
-		return CoapplicantDetailsData.fromCoapplicantDetailsData(
-				spouseRelationShip, addressTypes, state, district,
-				coapplicantData);
-	}
+        Collection<CodeValueData> state = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.STATE));
+
+        Collection<CodeValueData> district = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.DISTRICT));
+
+        Collection<CodeValueData> salutations = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_SALUTATION));
+
+        Collection<CodeValueData> genderOptions = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.GENDER));
+
+        Collection<CodeValueData> identityProof = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.IDENTITY_PROOF));
+
+        Collection<CodeValueData> addressProof = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.ADDRESS_PROOF));
+
+        List<CoapplicantData> coapplicantData = new ArrayList<>();
+        if (client != null) {
+            if (client.coapplicant() != null) {
+                for (Coapplicant ca : client.coapplicant()) {
+                    coapplicantData.add(CoapplicantData.formCoapplicantData(ca));
+                }
+            }
+        }
+
+        return CoapplicantDetailsData.fromCoapplicantDetailsData(spouseRelationShip, addressTypes, state, district, coapplicantData,
+                salutations, genderOptions, identityProof, addressProof);
+    }
 
 }

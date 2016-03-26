@@ -5,6 +5,6 @@ import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 
 public interface CoClientWritePlatformService {
 
-	CommandProcessingResult createCoClient(final JsonCommand command);
+    CommandProcessingResult createCoClient(final JsonCommand command);
 
 }

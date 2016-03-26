@@ -31,39 +31,38 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 public class CoapplicantApiResource {
 
-	private final PlatformSecurityContext context;
-	private final ApiRequestParameterHelper apiRequestParameterHelper;
-	private final ToApiJsonSerializer<CoapplicantDetailsData> toApiJsonSerializer;
-	private final CoapplicantReadPlatformService coapplicantReadPlatformService;
-	private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final PlatformSecurityContext context;
+    private final ApiRequestParameterHelper apiRequestParameterHelper;
+    private final ToApiJsonSerializer<CoapplicantDetailsData> toApiJsonSerializer;
+    private final CoapplicantReadPlatformService coapplicantReadPlatformService;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
-	@Autowired
-	public CoapplicantApiResource(
-			final PlatformSecurityContext context,final ApiRequestParameterHelper apiRequestParameterHelper,
-			final ToApiJsonSerializer<CoapplicantDetailsData> toApiJsonSerializer,
-			final CoapplicantReadPlatformService coapplicantReadPlatformService,
-			final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
-		this.context = context;
-		this.apiRequestParameterHelper = apiRequestParameterHelper;
-		this.toApiJsonSerializer = toApiJsonSerializer;
-		this.coapplicantReadPlatformService = coapplicantReadPlatformService;
-		this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
-	}
+    @Autowired
+    public CoapplicantApiResource(final PlatformSecurityContext context, final ApiRequestParameterHelper apiRequestParameterHelper,
+            final ToApiJsonSerializer<CoapplicantDetailsData> toApiJsonSerializer,
+            final CoapplicantReadPlatformService coapplicantReadPlatformService,
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+        this.context = context;
+        this.apiRequestParameterHelper = apiRequestParameterHelper;
+        this.toApiJsonSerializer = toApiJsonSerializer;
+        this.coapplicantReadPlatformService = coapplicantReadPlatformService;
+        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
+    }
 
-	@GET
-	@Path("template")
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_JSON })
-	public String retrieveCoapplicantTemplate(@Context final UriInfo uriInfo,@QueryParam("commandParam") final String commandParam) {
+    @GET
+    @Path("template")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String retrieveCoapplicantTemplate(@Context final UriInfo uriInfo, @QueryParam("commandParam") final String commandParam) {
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        
+
         CoapplicantDetailsData coapplicantDetailsData = this.coapplicantReadPlatformService.retrieveCoapplicantDetailsDataTemplate(null);
-        
+
         return this.toApiJsonSerializer.serialize(settings, coapplicantDetailsData);
-	}
-	
-	@POST
+    }
+
+    @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String create(final String apiRequestBodyAsJson) {
@@ -77,26 +76,29 @@ public class CoapplicantApiResource {
 
         return this.toApiJsonSerializer.serialize(result);
     }
-	@GET
+
+    @GET
     @Path("{coapplicantId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveOneCoapplicantById(@PathParam("coapplicantId") final Long coapplicantId,@Context final UriInfo uriInfo,@QueryParam("commandParam") final String commandParam){
-		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+    public String retrieveOneCoapplicantById(@PathParam("coapplicantId") final Long coapplicantId, @Context final UriInfo uriInfo,
+            @QueryParam("commandParam") final String commandParam) {
+        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-		
-		return null;
-	}
-	
-	@GET
-	@Path("{clientId}/coapplicants")
+
+        return null;
+    }
+
+    @GET
+    @Path("{clientId}/coapplicants")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveAllCoapplicantByClientId(@PathParam("clientId") final Long clientId,@Context final UriInfo uriInfo,@QueryParam("commandParam") final String commandParam){
-		this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
+    public String retrieveAllCoapplicantByClientId(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo,
+            @QueryParam("commandParam") final String commandParam) {
+        this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-		
-		return null;
-	}
+
+        return null;
+    }
 
 }
