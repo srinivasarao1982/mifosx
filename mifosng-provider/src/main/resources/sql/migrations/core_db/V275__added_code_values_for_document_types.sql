@@ -1,3 +1,8 @@
+INSERT IGNORE INTO `m_code` (`code_name`, `is_system_defined`) VALUES 
+('salutation', 1),
+('identityProof', 0),
+('addressProof', 0);
+
 INSERT INTO `m_code_value` (`code_id`, `code_value`, `code_description`, `order_position`, `code_score`) VALUES 
 ((SELECT c.id FROM m_code c WHERE c.code_name = 'identityProof'), 'Coapplicant-Aadhaar', '', 0, NULL),
 ((SELECT c.id FROM m_code c WHERE c.code_name = 'identityProof'), 'Coapplicant-Votor ID', '', 1, NULL),
