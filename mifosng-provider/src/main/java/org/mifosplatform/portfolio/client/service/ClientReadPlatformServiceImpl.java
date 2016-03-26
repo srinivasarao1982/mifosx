@@ -88,8 +88,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     public ClientReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
             final OfficeReadPlatformService officeReadPlatformService, final StaffReadPlatformService staffReadPlatformService,
             final CodeValueReadPlatformService codeValueReadPlatformService,
-            final SavingsProductReadPlatformService savingsProductReadPlatformService,
-            final ClientRepositoryWrapper clientRepository,
+            final SavingsProductReadPlatformService savingsProductReadPlatformService, final ClientRepositoryWrapper clientRepository,
             final CoapplicantReadPlatformService coapplicantReadPlatformService) {
         this.context = context;
         this.officeReadPlatformService = officeReadPlatformService;
@@ -100,144 +99,135 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         this.clientRepository = clientRepository;
         this.coapplicantReadPlatformService = coapplicantReadPlatformService;
     }
-    
+
     @Override
-    public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly, final Long clientId) {
+    public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly,
+            final Long clientId) {
         this.context.authenticatedUser();
 
         ClientData clientBasicDetails = retrieveTemplate(officeId, staffInSelectedOfficeOnly);
-        
-    	final ClientAdditionalDetails additionalDetails = null;
-    	final ClientAddress address = null;
-    	final ClientFamilyDetails familyDetails = null;
-    	final ClientCFADetails cfaDetails = null;
-    	final AgriOccupationDetails agriOccupation = null;
-    	final ClientIdentifierData identifier = null;
-    	final ClientKYCData kycDetails = null;
-    	
-    	Collection<CodeValueData> spouseRelationShip = new ArrayList<>(
-				this.codeValueReadPlatformService
-						.retrieveCodeValuesByCode(ClientApiConstants.SPOUSE_RELATIONSHIP));
-    	
+
+        final ClientAdditionalDetails additionalDetails = null;
+        final ClientAddress address = null;
+        final ClientFamilyDetails familyDetails = null;
+        final ClientCFADetails cfaDetails = null;
+        final AgriOccupationDetails agriOccupation = null;
+        final ClientIdentifierData identifier = null;
+        final ClientKYCData kycDetails = null;
+
+        Collection<CodeValueData> spouseRelationShip = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.SPOUSE_RELATIONSHIP));
+
         Collection<CodeValueData> salutation = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_SALUTATION));
-        
-    	Collection<CodeValueData> maritalStatus = new ArrayList<>(
+
+        Collection<CodeValueData> maritalStatus = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.MARITAL_STATUS));
-    	
-    	Collection<CodeValueData> profession = new ArrayList<>(
+
+        Collection<CodeValueData> profession = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PROFESSION));
-    	
-    	Collection<CodeValueData> educationQualification = new ArrayList<>(
+
+        Collection<CodeValueData> educationQualification = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.EDUCATION_QUALIFICATION));
-    	
-    	Collection<CodeValueData> annualIncome = new ArrayList<>(
+
+        Collection<CodeValueData> annualIncome = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.ANNUAL_INCOME));
-    	
-    	Collection<CodeValueData> landHolding = new ArrayList<>(
+
+        Collection<CodeValueData> landHolding = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.LAND_HOLDING));
-    	
-    	Collection<CodeValueData> houseType = new ArrayList<>(
+
+        Collection<CodeValueData> houseType = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.HOUSE_TYPE));
-    	
-    	Collection<CodeValueData> state = new ArrayList<>(
+
+        Collection<CodeValueData> state = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.STATE));
-    	
-    	Collection<CodeValueData> district = new ArrayList<>(
+
+        Collection<CodeValueData> district = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.DISTRICT));
-    	
-    	Collection<CodeValueData> identityProof = new ArrayList<>(
+
+        Collection<CodeValueData> identityProof = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.IDENTITY_PROOF));
-    	
-    	Collection<CodeValueData> addressProof = new ArrayList<>(
+
+        Collection<CodeValueData> addressProof = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.ADDRESS_PROOF));
-    	
-    	Collection<CodeValueData> familyrelationShip = new ArrayList<>(
+
+        Collection<CodeValueData> familyrelationShip = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.FAMILY_RELATIONSHIP));
-    	
-    	Collection<CodeValueData> familyOccupation = new ArrayList<>(
+
+        Collection<CodeValueData> familyOccupation = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.FAMILY_OCCUPATION));
-    	
-    	
-    	Collection<CodeValueData> yesOrNo = new ArrayList<>(
-              this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.YES_NO));
-    	
-    	Collection<CodeValueData> cfaOccupation = new ArrayList<>(
+
+        Collection<CodeValueData> yesOrNo = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.YES_NO));
+
+        Collection<CodeValueData> cfaOccupation = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.FIN_OCCUPATION));
-    	
-    	Collection<CodeValueData> externalLoanstatus = new ArrayList<>(
+
+        Collection<CodeValueData> externalLoanstatus = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.EXTERNALLOAN_STATUS));
-    	
-    	Collection<CodeValueData> addressTypes = new ArrayList<>(
+
+        Collection<CodeValueData> addressTypes = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_ADDRESS_TYPE));
-    	
-    	Collection<CodeValueData> presentLoanSourceTypes = new ArrayList<>(
+
+        Collection<CodeValueData> presentLoanSourceTypes = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PRESETLOANSOURCETYPES));
-    	
-    	Collection<CodeValueData> presentLoanPurposeTypes = new ArrayList<>(
+
+        Collection<CodeValueData> presentLoanPurposeTypes = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PRESETLOANPURPOSETYPES));
-    	
-    	
-    	ClientDataExt clientDataExt = null;
-		List<AddressExtData> addressExtData = new ArrayList<>();
-		List<FamilyDetailsExtData> familyDetailsExtData = new ArrayList<>();
-		List<ClientIdentifierData> clientIdentifierData = new ArrayList<>();
-		List<OccupationDetailsData> occupationDetailsDatas = new ArrayList<>();
-		List<NomineeDetailsData> nomineeDetailsData = new ArrayList<>();
-		CoapplicantDetailsData coapplicantDetailsData = null;
-    	if(clientId != null){
-    		final Client client = this.clientRepository
-    				.findOneWithNotFoundDetection(clientId);
-    		if (client != null) {
-    			if(client.clientExt() != null){
-    				clientDataExt = ClientDataExt.formClientDataExt(client.clientExt());
-    			}    			
-    			if(client.addressExt() != null){
-    				for(Address addressExt : client.addressExt()){
-    					addressExtData.add(AddressExtData.formAddressExtData(addressExt));
-    				}
-    			}   
-    			if(client.familyDetails() != null){
-    				for(FamilyDetails familyDetailsExt : client.familyDetails()){
-    					familyDetailsExtData.add(FamilyDetailsExtData.formFamilyDetailsExtData(familyDetailsExt));
-    				}
-    			}
-    			if(client.clientIdentifiers() != null){
-    				for(ClientIdentifier clientIdentifier : client.clientIdentifiers()){
-    					clientIdentifierData.add(ClientIdentifierData.fromData(clientIdentifier));
-    				}
-    			}
-    			if(client.occupationDetails() != null){
-    				for(OccupationDetails occupationDeatails : client.occupationDetails()){
-    					occupationDetailsDatas.add(OccupationDetailsData.formOccupationDetailsData(occupationDeatails));
-    				}
-    			}
-    			if(client.nomineeDetails() != null){
-    				for(NomineeDetails nomineeDetail : client.nomineeDetails()){
-    					nomineeDetailsData.add(NomineeDetailsData.formNomineeDetailsData(nomineeDetail));
-    				}
-    			}
-    			
-    			if(client.coapplicant() != null){
-    				coapplicantDetailsData = this.coapplicantReadPlatformService.retrieveCoapplicantDetailsDataTemplate(client);
-    			}
-    		}
-    	}
-    	
-		return new ClientDetailedData(clientBasicDetails, additionalDetails,
-				address, familyDetails, cfaDetails, agriOccupation, identifier,
-				kycDetails, salutation, maritalStatus, profession,
-				educationQualification, annualIncome, landHolding, houseType,
-				state, district, identityProof, addressProof,
-				familyrelationShip, familyOccupation, yesOrNo, cfaOccupation,
-				externalLoanstatus, addressTypes, presentLoanSourceTypes,
-				presentLoanPurposeTypes, clientDataExt, addressExtData,
-				familyDetailsExtData, clientIdentifierData,
-				occupationDetailsDatas, nomineeDetailsData,coapplicantDetailsData,spouseRelationShip);
-        
+
+        ClientDataExt clientDataExt = null;
+        List<AddressExtData> addressExtData = new ArrayList<>();
+        List<FamilyDetailsExtData> familyDetailsExtData = new ArrayList<>();
+        List<ClientIdentifierData> clientIdentifierData = new ArrayList<>();
+        List<OccupationDetailsData> occupationDetailsDatas = new ArrayList<>();
+        List<NomineeDetailsData> nomineeDetailsData = new ArrayList<>();
+        CoapplicantDetailsData coapplicantDetailsData = null;
+        if (clientId != null) {
+            final Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
+            if (client != null) {
+                if (client.clientExt() != null) {
+                    clientDataExt = ClientDataExt.formClientDataExt(client.clientExt());
+                }
+                if (client.addressExt() != null) {
+                    for (Address addressExt : client.addressExt()) {
+                        addressExtData.add(AddressExtData.formAddressExtData(addressExt));
+                    }
+                }
+                if (client.familyDetails() != null) {
+                    for (FamilyDetails familyDetailsExt : client.familyDetails()) {
+                        familyDetailsExtData.add(FamilyDetailsExtData.formFamilyDetailsExtData(familyDetailsExt));
+                    }
+                }
+                if (client.clientIdentifiers() != null) {
+                    for (ClientIdentifier clientIdentifier : client.clientIdentifiers()) {
+                        clientIdentifierData.add(ClientIdentifierData.fromData(clientIdentifier));
+                    }
+                }
+                if (client.occupationDetails() != null) {
+                    for (OccupationDetails occupationDeatails : client.occupationDetails()) {
+                        occupationDetailsDatas.add(OccupationDetailsData.formOccupationDetailsData(occupationDeatails));
+                    }
+                }
+                if (client.nomineeDetails() != null) {
+                    for (NomineeDetails nomineeDetail : client.nomineeDetails()) {
+                        nomineeDetailsData.add(NomineeDetailsData.formNomineeDetailsData(nomineeDetail));
+                    }
+                }
+
+                if (client.coapplicant() != null) {
+                    coapplicantDetailsData = this.coapplicantReadPlatformService.retrieveCoapplicantDetailsDataTemplate(client);
+                }
+            }
+        }
+
+        return new ClientDetailedData(clientBasicDetails, additionalDetails, address, familyDetails, cfaDetails, agriOccupation, identifier,
+                kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, houseType, state,
+                district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, externalLoanstatus,
+                addressTypes, presentLoanSourceTypes, presentLoanPurposeTypes, clientDataExt, addressExtData, familyDetailsExtData,
+                clientIdentifierData, occupationDetailsDatas, nomineeDetailsData, coapplicantDetailsData, spouseRelationShip);
+
     }
-    
-    
+
     @Override
     public ClientData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly) {
         this.context.authenticatedUser();
@@ -269,9 +259,9 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         final List<CodeValueData> clientClassificationOptions = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.CLIENT_CLASSIFICATION));
 
-        ClientData clientData =  ClientData.template(defaultOfficeId, new LocalDate(), offices, staffOptions, null, genderOptions, savingsProductDatas,
-                clientTypeOptions, clientClassificationOptions);
-        
+        ClientData clientData = ClientData.template(defaultOfficeId, new LocalDate(), offices, staffOptions, null, genderOptions,
+                savingsProductDatas, clientTypeOptions, clientClassificationOptions);
+
         return clientData;
     }
 
@@ -329,8 +319,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         }
 
         final String sqlCountRows = "SELECT FOUND_ROWS()";
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), new Object[] {
-                underHierarchySearchString, underHierarchySearchString }, this.clientMapper);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(),
+                new Object[] { underHierarchySearchString, underHierarchySearchString }, this.clientMapper);
     }
 
     private String buildSqlStringFromClientCriteria(final SearchParameters searchParameters) {
@@ -389,8 +379,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
             final String sql = "select null as centerId,null as groupId,null as centerName,null as groupName ," + this.clientMapper.schema()
                     + " where ( o.hierarchy like ? or transferToOffice.hierarchy like ?) and c.id = ?";
-            final ClientData clientData = this.jdbcTemplate.queryForObject(sql, this.clientMapper, new Object[] { hierarchySearchString,
-                    hierarchySearchString, clientId });
+            final ClientData clientData = this.jdbcTemplate.queryForObject(sql, this.clientMapper,
+                    new Object[] { hierarchySearchString, hierarchySearchString, clientId });
 
             final String clientGroupsSql = "select " + this.clientGroupsMapper.parentGroupsSchema();
 
@@ -457,10 +447,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         public ClientMembersOfGroupMapper() {
             final StringBuilder sqlBuilder = new StringBuilder(200);
 
-            sqlBuilder
-                    .append("c.id as id, c.account_no as accountNo, c.external_id as externalId, c.status_enum as statusEnum,c.sub_status as subStatus, ");
-            sqlBuilder
-                    .append("cvSubStatus.code_value as subStatusValue,cvSubStatus.code_description as subStatusDesc,c.office_id as officeId, o.name as officeName, ");
+            sqlBuilder.append(
+                    "c.id as id, c.account_no as accountNo, c.external_id as externalId, c.status_enum as statusEnum,c.sub_status as subStatus, ");
+            sqlBuilder.append(
+                    "cvSubStatus.code_value as subStatusValue,cvSubStatus.code_description as subStatusDesc,c.office_id as officeId, o.name as officeName, ");
             sqlBuilder.append("c.transfer_to_office_id as transferToOfficeId, transferToOffice.name as transferToOfficeName, ");
             sqlBuilder.append("c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, ");
             sqlBuilder.append("c.fullname as fullname, c.display_name as displayName, ");
@@ -596,8 +586,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         final String hierarchy = currentUser.getOffice().getHierarchy();
         final String hierarchySearchString = hierarchy + "%";
 
-        final String sql = "select "
-                + this.membersOfGroupMapper.schema()
+        final String sql = "select " + this.membersOfGroupMapper.schema()
                 + " left join m_group g on pgc.group_id=g.id where o.hierarchy like ? and g.parent_id = ? and c.status_enum = ? group by c.id";
 
         return this.jdbcTemplate.query(sql, this.membersOfGroupMapper,
@@ -611,8 +600,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         public ClientMapper() {
             final StringBuilder builder = new StringBuilder(400);
 
-            builder.append("c.id as id, c.account_no as accountNo, c.external_id as externalId, c.status_enum as statusEnum,c.sub_status as subStatus, ");
-            builder.append("cvSubStatus.code_value as subStatusValue,cvSubStatus.code_description as subStatusDesc,c.office_id as officeId, o.name as officeName, ");
+            builder.append(
+                    "c.id as id, c.account_no as accountNo, c.external_id as externalId, c.status_enum as statusEnum,c.sub_status as subStatus, ");
+            builder.append(
+                    "cvSubStatus.code_value as subStatusValue,cvSubStatus.code_description as subStatusDesc,c.office_id as officeId, o.name as officeName, ");
             builder.append("c.transfer_to_office_id as transferToOfficeId, transferToOffice.name as transferToOfficeName, ");
             builder.append("c.firstname as firstname, c.middlename as middlename, c.lastname as lastname, ");
             builder.append("c.fullname as fullname, c.display_name as displayName, ");
@@ -843,7 +834,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
     @Override
     public ClientData retrieveAllNarrations(final String clientNarrations) {
-        final List<CodeValueData> narrations = new ArrayList<>(this.codeValueReadPlatformService.retrieveCodeValuesByCode(clientNarrations));
+        final List<CodeValueData> narrations = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(clientNarrations));
         final Collection<CodeValueData> clientTypeOptions = null;
         final Collection<CodeValueData> clientClassificationOptions = null;
         return ClientData.template(null, null, null, null, narrations, null, null, clientTypeOptions, clientClassificationOptions);

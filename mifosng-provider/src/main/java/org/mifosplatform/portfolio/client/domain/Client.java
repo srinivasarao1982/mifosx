@@ -88,7 +88,7 @@ public final class Client extends AbstractPersistable<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_status", nullable = true)
     private CodeValue subStatus;
-    
+
     @Column(name = "activation_date", nullable = true)
     @Temporal(TemporalType.DATE)
     private Date activationDate;
@@ -132,7 +132,7 @@ public final class Client extends AbstractPersistable<Long> {
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @ManyToMany
-    @JoinTable(name = "m_group_client", joinColumns = @JoinColumn(name = "client_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
+    @JoinTable(name = "m_group_client", joinColumns = @JoinColumn(name = "client_id") , inverseJoinColumns = @JoinColumn(name = "group_id") )
     private Set<Group> groups;
 
     @Transient
@@ -217,34 +217,34 @@ public final class Client extends AbstractPersistable<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_classification_cv_id", nullable = true)
     private CodeValue clientClassification;
-    
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "client", optional = true, orphanRemoval = true)
     private ClientExt clientExt;
-    
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
-    private List<Address> addressExt;
-    
+    private Set<Address> addressExt = new HashSet<>();
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
-    private List<FamilyDetails> familyDetails;
-    
+    private List<FamilyDetails> familyDetails = new ArrayList<>();
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
     private List<ClientIdentifier> clientIdentifiers;
-    
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
-    private List<OccupationDetails> occupationDetails;
-    
+    private List<OccupationDetails> occupationDetails = new ArrayList<>();
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
-    private List<NomineeDetails> nomineeDetails;
-    
+    private List<NomineeDetails> nomineeDetails = new ArrayList<>();
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
-    private List<Coapplicant> coapplicant;
+    private List<Coapplicant> coapplicant = new ArrayList<>();
 
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
@@ -781,11 +781,11 @@ public final class Client extends AbstractPersistable<Long> {
     public Integer getStatus() {
         return this.status;
     }
-    
+
     public CodeValue subStatus() {
         return this.subStatus;
     }
-    
+
     public Long subStatusId() {
         Long subStatusId = null;
         if (this.subStatus != null) {
@@ -932,109 +932,89 @@ public final class Client extends AbstractPersistable<Long> {
 
     }
 
-	public void updateClientExt(final ClientExt clientExt) {
-		this.clientExt = clientExt;		
-	}
-	
-	public ClientExt clientExt() {
-		return this.clientExt;		
-	}
+    public void updateClientExt(final ClientExt clientExt) {
+        this.clientExt = clientExt;
+    }
 
-	public void updateAddressExt(final List<Address> address) {
-		if(this.addressExt != null){
-			this.addressExt.clear();
-			this.addressExt.addAll(address);	        
-		}else{
-			this.addressExt = address;
-		}
-		for (Address add : this.addressExt) {
-        	add.updateClient(this);
-        }
-	}
-	
-	public List<Address> addressExt() {
-		return this.addressExt;		
-	}
-	
-	public void updateFamilyDetails(final List<FamilyDetails> familyDetails) {
-		if(this.familyDetails != null){
-			this.familyDetails.clear();
-			this.familyDetails.addAll(familyDetails);
-		}else{
-			this.familyDetails = familyDetails;
-		}
-        for (FamilyDetails fd : this.familyDetails) {
-        	fd.updateClient(this);
-        }	
-	}
-	
-	public void updateOccupationDetails(final List<OccupationDetails> occupationDetails) {
-		if(this.occupationDetails != null){
-			this.occupationDetails.clear();
-			this.occupationDetails.addAll(occupationDetails);
-		}else{
-			this.occupationDetails = occupationDetails;
-		}
-        for (OccupationDetails cd : this.occupationDetails) {
-        	cd.updateClient(this);
-        }	
-	}
-	
-	public List<FamilyDetails> familyDetails() {
-		return this.familyDetails;		
-	}
-	
-	public List<ClientIdentifier> clientIdentifiers() {
-		return this.clientIdentifiers;		
-	}
-	
-	public List<OccupationDetails> occupationDetails(){
-		return this.occupationDetails;
-	}
-	
-	public List<NomineeDetails> nomineeDetails(){
-		return this.nomineeDetails;
-	}
-	
-	public void updateNomineeDetails(final List<NomineeDetails> nomineeDetails) {
-		if(this.nomineeDetails != null){
-			this.nomineeDetails.clear();
-			this.nomineeDetails.addAll(nomineeDetails);
-		}else{
-			this.nomineeDetails = nomineeDetails;
-		}
-        for (NomineeDetails nd : this.nomineeDetails) {
-        	nd.updateClient(this);
-        }	
-	}
+    public ClientExt clientExt() {
+        return this.clientExt;
+    }
 
-	public void addAddressExt(final List<Address> address) {
-		if(this.addressExt != null){
-			for (Address add : address) {
-				this.addressExt.add(add);
-			}      
-		}else{
-			this.addressExt = address;
-		}
-		for (Address add : this.addressExt) {
-        	add.updateClient(this);
-        }		
-	}
-	
-	public void updateCoapplicant(final List<Coapplicant> coapplicant) {
-		if(this.coapplicant != null){
-			this.coapplicant.clear();
-			this.coapplicant.addAll(coapplicant);	        
-		}else{
-			this.coapplicant = coapplicant;
-		}
-		for (Coapplicant ca : this.coapplicant) {
-			ca.updateClient(this);
+    public void updateAddressExt(final Set<Address> address) {
+        this.addressExt.clear();
+        if (address != null && address.size() > 0) {
+            this.addressExt.addAll(address);
+            for (Address ad : this.addressExt) {
+                // ad.updateClient(this);
+             }
         }
-	}
-	
-	public List<Coapplicant> coapplicant(){
-		return this.coapplicant;
-	}
-	
+    }
+
+    public Set<Address> addressExt() {
+        return this.addressExt;
+    }
+
+    public void updateFamilyDetails(final List<FamilyDetails> familyDetails) {
+        this.familyDetails.clear();
+        this.familyDetails.addAll(familyDetails);
+        for (final FamilyDetails fd : this.familyDetails) {
+            fd.updateClient(this);
+        }
+    }
+
+    public void updateOccupationDetails(final List<OccupationDetails> occupationDetails) {
+        this.occupationDetails.clear();
+        this.occupationDetails.addAll(occupationDetails);
+        for (final OccupationDetails cd : this.occupationDetails) {
+            cd.updateClient(this);
+        }
+    }
+
+    public List<FamilyDetails> familyDetails() {
+        return this.familyDetails;
+    }
+
+    public List<ClientIdentifier> clientIdentifiers() {
+        return this.clientIdentifiers;
+    }
+
+    public List<OccupationDetails> occupationDetails() {
+        return this.occupationDetails;
+    }
+
+    public List<NomineeDetails> nomineeDetails() {
+        return this.nomineeDetails;
+    }
+
+    public void updateNomineeDetails(final List<NomineeDetails> nomineeDetails) {
+        this.nomineeDetails.clear();
+        this.nomineeDetails.addAll(nomineeDetails);
+        for (final NomineeDetails nd : this.nomineeDetails) {
+            nd.updateClient(this);
+        }
+    }
+
+    public void addAddressExt(final Set<Address> address) {
+        this.addressExt.addAll(address);
+        for (Address ad : this.addressExt) {
+            ad.updateClient(this);
+        }
+    }
+
+    public void updateCoapplicant(final List<Coapplicant> coapplicant) {
+        this.coapplicant.clear();
+        this.coapplicant.addAll(coapplicant);
+        for (final Coapplicant ca : this.coapplicant) {
+            ca.updateClient(this);
+        }
+    }
+
+    public List<Coapplicant> coapplicant() {
+        return this.coapplicant;
+    }
+
+    public void clearAddressExt() {
+        this.addressExt.clear();
+    }
+
 }

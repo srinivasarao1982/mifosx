@@ -1,6 +1,7 @@
 package org.nirantara.client.ext.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
@@ -8,6 +9,7 @@ import org.mifosplatform.infrastructure.core.data.CommandProcessingResultBuilder
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
+import org.mifosplatform.portfolio.client.service.ClientIdentifierWritePlatformService;
 import org.nirantara.client.ext.api.CoapplicantApiConstants;
 import org.nirantara.client.ext.data.CoClientDataValidator;
 import org.nirantara.client.ext.domain.Address;
@@ -23,60 +25,62 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 @Service
-public class CoClientWritePlatformServiceImpl implements CoClientWritePlatformService{
+public class CoClientWritePlatformServiceImpl implements CoClientWritePlatformService {
 
-	private final static Logger logger = LoggerFactory.getLogger(CoClientWritePlatformServiceImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(CoClientWritePlatformServiceImpl.class);
 
     private final PlatformSecurityContext context;
     private final CoClientDataValidator fromApiJsonDeserializer;
     private final ClientRepositoryWrapper clientRepository;
     private final ClientExtAssembler clientExtAssembler;
-    
-    
-	@Autowired
-	public CoClientWritePlatformServiceImpl(
-			final PlatformSecurityContext context,
-			final CoClientDataValidator fromApiJsonDeserializer,
-			final ClientRepositoryWrapper clientRepository,
-			final ClientExtAssembler clientExtAssembler) {
-		this.context = context;
-		this.fromApiJsonDeserializer = fromApiJsonDeserializer;
-		this.clientRepository = clientRepository;
-		this.clientExtAssembler = clientExtAssembler;
-	}
-	
-	public CommandProcessingResult createCoClient(final JsonCommand command) {
+    private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
+
+    @Autowired
+    public CoClientWritePlatformServiceImpl(final PlatformSecurityContext context, final CoClientDataValidator fromApiJsonDeserializer,
+            final ClientRepositoryWrapper clientRepository, final ClientExtAssembler clientExtAssembler,
+            final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService) {
+        this.context = context;
+        this.fromApiJsonDeserializer = fromApiJsonDeserializer;
+        this.clientRepository = clientRepository;
+        this.clientExtAssembler = clientExtAssembler;
+        this.clientIdentifierWritePlatformService = clientIdentifierWritePlatformService;
+    }
+
+    @Override
+    public CommandProcessingResult createCoClient(final JsonCommand command) {
 
         this.fromApiJsonDeserializer.validateForCreateCoClient(command.json());
-        
+
         final Long clientId = command.longValueOfParameterNamed(CoapplicantApiConstants.clientId);
         final Client clientForUpdate = this.clientRepository.findOneWithNotFoundDetection(clientId);
-        
+
         final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
-        
+
         final JsonArray coClientDataArray = object.get("coClientData").getAsJsonArray();
-		if(coClientDataArray != null){
-			List<Coapplicant> coapplicant = this.clientExtAssembler.assembleCoClientDataArray(coClientDataArray, clientForUpdate);
-			if(coapplicant != null && coapplicant.size() > 0){
-				clientForUpdate.updateCoapplicant(coapplicant);
+        if (coClientDataArray != null) {
+            List<Coapplicant> coapplicant = this.clientExtAssembler.assembleCoClientDataArray(coClientDataArray, clientForUpdate);
+            if (coapplicant != null && coapplicant.size() > 0) {
+                clientForUpdate.updateCoapplicant(coapplicant);
             }
-		}
-        
+        }
+
         final JsonArray addressArray = object.get("naddress").getAsJsonArray();
-		if(addressArray != null){
-			List<Address> address = this.clientExtAssembler.assembleAddress(addressArray, clientForUpdate);
-			if(address != null && address.size() > 0){
-				clientForUpdate.addAddressExt(address);
+        if (addressArray != null && addressArray.size() > 0) {
+            final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, clientForUpdate);
+            if (address != null && address.size() > 0) {
+                clientForUpdate.addAddressExt(address);
             }
-		}
-		
-		
-		this.clientRepository.saveAndFlush(clientForUpdate);
-        
-		return new CommandProcessingResultBuilder() //
-        .withCommandId(command.commandId()) //
-        .withEntityId(clientForUpdate.getId()) //
-        .build();
-	}
+        }
+
+        // For nirantara ClientIdentifierWritePlatformService
+        this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
+
+        this.clientRepository.saveAndFlush(clientForUpdate);
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(clientForUpdate.getId()) //
+                .build();
+    }
 
 }
