@@ -183,6 +183,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         } else if (realCause.getMessage().contains("UQ_client_id_address_type")) {
             throw new PlatformDataIntegrityException("error.msg.client.address.type.duplicated",
                     "Client address type duplicated");
+        }else if (realCause.getMessage().contains("unique_identifier_key")) {
+            throw new PlatformDataIntegrityException("error.msg.duplicate.document.type.and.document.key",
+                    "Duplicate type and key already exists");
         }
         logAsErrorUnexpectedDataIntegrityException(dve);
         throw new PlatformDataIntegrityException("error.msg.client.unknown.data.integrity.issue",
