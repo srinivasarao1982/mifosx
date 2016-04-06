@@ -88,7 +88,9 @@ public class ClientsApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String retrieveTemplate(@Context final UriInfo uriInfo, @QueryParam("officeId") final Long officeId,
             @QueryParam("commandParam") final String commandParam,
-            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
+            @DefaultValue("false") @QueryParam("loanOfficersOnly") final boolean loanOfficersOnly
+) {
 
         this.context.authenticatedUser().validateHasReadPermission(ClientApiConstants.CLIENT_RESOURCE_NAME);
 
@@ -106,7 +108,7 @@ public class ClientsApiResource {
             clientData = this.clientReadPlatformService.retrieveAllNarrations(ClientApiConstants.CLIENT_WITHDRAW_REASON);
         } else {
             ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(officeId,
-                    staffInSelectedOfficeOnly, null);
+                    staffInSelectedOfficeOnly, null,loanOfficersOnly);
             return this.clientDetailedDatatoApiJsonSerializer.serialize(settings, clientDetailedData,
                     ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
         }
@@ -155,7 +157,7 @@ public class ClientsApiResource {
         ClientData clientData = this.clientReadPlatformService.retrieveOne(clientId);
         if (settings.isTemplate()) {
             final ClientData templateData = this.clientReadPlatformService.retrieveTemplate(clientData.officeId(),
-                    staffInSelectedOfficeOnly);
+                    staffInSelectedOfficeOnly,false);
             clientData = ClientData.templateOnTop(clientData, templateData);
             Collection<SavingsAccountData> savingAccountOptions = this.savingsAccountReadPlatformService.retrieveForLookup(clientId, null);
             if (savingAccountOptions != null && savingAccountOptions.size() > 0) {
@@ -164,7 +166,7 @@ public class ClientsApiResource {
         }
         /* Nirantara Changes */
         ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(clientData.getOfficeId(),
-                staffInSelectedOfficeOnly, clientId);
+                staffInSelectedOfficeOnly, clientId,false);
         if (clientDetailedData != null) {
             clientData = ClientData.templateOnTopClientDetailedData(clientData, clientDetailedData);
         }
