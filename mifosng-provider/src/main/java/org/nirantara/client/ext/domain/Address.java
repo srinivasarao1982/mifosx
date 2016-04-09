@@ -29,10 +29,10 @@ public class Address extends AbstractPersistable<Long> {
     @JoinColumn(name = "address_type_cv_id", nullable = false)
     private CodeValue addressType;
 
-    @Column(name = "house_no", length = 20)
+    @Column(name = "house_no", length = 50)
     private String houseNo;
 
-    @Column(name = "street_no", length = 20)
+    @Column(name = "street_no", length = 50)
     private String streetNo;
 
     @Column(name = "area_locality", length = 100)

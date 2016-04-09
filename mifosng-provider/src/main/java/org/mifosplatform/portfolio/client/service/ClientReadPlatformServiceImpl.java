@@ -102,10 +102,10 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
     @Override
     public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly,
-            final Long clientId) {
+            final Long clientId,final boolean loanOfficersOnly) {
         this.context.authenticatedUser();
 
-        ClientData clientBasicDetails = retrieveTemplate(officeId, staffInSelectedOfficeOnly);
+        ClientData clientBasicDetails = retrieveTemplate(officeId, staffInSelectedOfficeOnly,loanOfficersOnly);
 
         final ClientAdditionalDetails additionalDetails = null;
         final ClientAddress address = null;
@@ -229,7 +229,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     }
 
     @Override
-    public ClientData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly) {
+    public ClientData retrieveTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly,final boolean loanOfficersOnly) {
         this.context.authenticatedUser();
 
         final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
@@ -239,14 +239,18 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         final Collection<SavingsProductData> savingsProductDatas = this.savingsProductReadPlatformService.retrieveAllForLookupByType(null);
 
         Collection<StaffData> staffOptions = null;
-
-        final boolean loanOfficersOnly = false;
+        if(loanOfficersOnly){
+        	staffOptions = this.staffReadPlatformService.retrieveAllStaffInOfficeAndItsParentOfficeHierarchy(defaultOfficeId,
+                    loanOfficersOnly);
+        }
+        else
+        {
         if (staffInSelectedOfficeOnly) {
             staffOptions = this.staffReadPlatformService.retrieveAllStaffForDropdown(defaultOfficeId);
         } else {
             staffOptions = this.staffReadPlatformService.retrieveAllStaffInOfficeAndItsParentOfficeHierarchy(defaultOfficeId,
                     loanOfficersOnly);
-        }
+        }}
         if (CollectionUtils.isEmpty(staffOptions)) {
             staffOptions = null;
         }

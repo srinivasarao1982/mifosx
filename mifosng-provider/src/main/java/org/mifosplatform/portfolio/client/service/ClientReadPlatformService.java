@@ -15,7 +15,7 @@ import org.nirantara.client.ext.data.ClientDataExt;
 
 public interface ClientReadPlatformService {
 
-    ClientData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly);
+    ClientData retrieveTemplate(Long officeId, boolean staffInSelectedOfficeOnly,boolean loanOfficersOnly);
 
     Page<ClientData> retrieveAll(SearchParameters searchParameters);
 
@@ -36,5 +36,5 @@ public interface ClientReadPlatformService {
     ClientData retrieveAllNarrations(String clientNarrations);
 
     ClientDetailedData retrieveClientDetailedTemplate(Long officeId,
-			boolean staffInSelectedOfficeOnly, Long clientId);
+			boolean staffInSelectedOfficeOnly, Long clientId,boolean loanOfficersOnly);
 }
