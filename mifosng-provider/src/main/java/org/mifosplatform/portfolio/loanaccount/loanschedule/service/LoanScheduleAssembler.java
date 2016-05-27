@@ -238,6 +238,9 @@ public class LoanScheduleAssembler {
 
         final BigDecimal emiAmount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.emiAmountParameterName,
                 element);
+        final BigDecimal firstInstallmentEmiAmount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.firstInstallmentEmiAmountParameterName,
+                element);
+        
         final BigDecimal maxOutstandingBalance = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(
                 LoanApiConstants.maxOutstandingBalanceParameterName, element);
 
@@ -299,10 +302,10 @@ public class LoanScheduleAssembler {
                 interestRatePerPeriod, interestRatePeriodFrequencyType, annualNominalInterestRate, interestCalculationPeriodMethod,
                 principalMoney, expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
                 graceOnPrincipalPayment, graceOnInterestPayment, graceOnInterestCharged, interestChargedFromDate, inArrearsToleranceMoney,
-                loanProduct.isMultiDisburseLoan(), emiAmount, disbursementDatas, maxOutstandingBalance, loanVariationTermsData,
-                graceOnArrearsAgeing, daysInMonthType, daysInYearType, isInterestRecalculationEnabled, recalculationFrequencyType,
-                restCalendarInstance, compoundingCalendarInstance, compoundingFrequencyType, principalThresholdForLastInstalment,
-                installmentAmountInMultiplesOf, loanProduct.preCloseInterestCalculationStrategy());
+                loanProduct.isMultiDisburseLoan(), emiAmount, firstInstallmentEmiAmount, disbursementDatas, maxOutstandingBalance,
+                loanVariationTermsData, graceOnArrearsAgeing, daysInMonthType, daysInYearType, isInterestRecalculationEnabled,
+                recalculationFrequencyType, restCalendarInstance, compoundingCalendarInstance, compoundingFrequencyType,
+                principalThresholdForLastInstalment, installmentAmountInMultiplesOf, loanProduct.preCloseInterestCalculationStrategy());
     }
 
     private CalendarInstance createInterestRecalculationCalendarInstance(final LocalDate calendarStartDate,

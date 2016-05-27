@@ -616,6 +616,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + " l.total_outstanding_derived as totalOutstanding,"
                     + " l.total_overpaid_derived as totalOverpaid,"
                     + " l.fixed_emi_amount as fixedEmiAmount,"
+                    + " l.first_installment_emi_amount as firstInstallmentEmiAmount,"
                     + " l.max_outstanding_loan_balance as outstandingLoanBalance,"
                     + " la.principal_overdue_derived as principalOverdue,"
                     + " la.interest_overdue_derived as interestOverdue,"
@@ -869,6 +870,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             final Integer loanCounter = JdbcSupport.getInteger(rs, "loanCounter");
             final Integer loanProductCounter = JdbcSupport.getInteger(rs, "loanProductCounter");
             final BigDecimal fixedEmiAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "fixedEmiAmount");
+            final BigDecimal firstInstallmentEmiAmount = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "firstInstallmentEmiAmount");
             final Boolean isNPA = rs.getBoolean("isNPA");
 
             final int daysInMonth = JdbcSupport.getInteger(rs, "daysInMonth");
@@ -916,8 +918,8 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     interestCalculationPeriodType, expectedFirstRepaymentOnDate, graceOnPrincipalPayment, graceOnInterestPayment,
                     graceOnInterestCharged, interestChargedFromDate, timeline, loanSummary, feeChargesDueAtDisbursementCharged,
                     syncDisbursementWithMeeting, loanCounter, loanProductCounter, multiDisburseLoan, canDefineInstallmentAmount,
-                    fixedEmiAmount, outstandingLoanBalance, inArrears, graceOnArrearsAgeing, isNPA, daysInMonthType, daysInYearType,
-                    isInterestRecalculationEnabled, interestRecalculationData, createStandingInstructionAtDisbursement,loanApplicationId,centerName);
+                    fixedEmiAmount, firstInstallmentEmiAmount, outstandingLoanBalance, inArrears, graceOnArrearsAgeing, isNPA, daysInMonthType,
+                    daysInYearType, isInterestRecalculationEnabled, interestRecalculationData,createStandingInstructionAtDisbursement,loanApplicationId, centerName);
         }
     }
 

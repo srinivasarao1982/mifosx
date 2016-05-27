@@ -76,7 +76,8 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             "linkAccountId", LoanApiConstants.disbursementDataParameterName, LoanApiConstants.emiAmountParameterName,
             LoanApiConstants.maxOutstandingBalanceParameterName, LoanProductConstants.graceOnArrearsAgeingParameterName,
             LoanProductConstants.recalculationRestFrequencyDateParamName,
-            LoanProductConstants.recalculationCompoundingFrequencyDateParamName, "createStandingInstructionAtDisbursement"));
+            LoanProductConstants.recalculationCompoundingFrequencyDateParamName, "createStandingInstructionAtDisbursement",
+            LoanApiConstants.firstInstallmentEmiAmountParameterName));
 
     private final FromJsonHelper fromApiJsonHelper;
     private final CalculateLoanScheduleQueryFromApiJsonHelper apiJsonHelper;
@@ -387,6 +388,12 @@ public final class LoanApplicationCommandFromApiJsonHelper {
                     element);
             baseDataValidator.reset().parameter(LoanApiConstants.emiAmountParameterName).value(emiAnount).ignoreIfNull().positiveAmount();
         }
+        if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.firstInstallmentEmiAmountParameterName, element)) {
+            final BigDecimal emiAnount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.firstInstallmentEmiAmountParameterName,
+                    element);
+            baseDataValidator.reset().parameter(LoanApiConstants.firstInstallmentEmiAmountParameterName).value(emiAnount).ignoreIfNull().positiveAmount();
+        }
+        
         if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.maxOutstandingBalanceParameterName, element)) {
             final BigDecimal maxOutstandingBalance = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(
                     LoanApiConstants.maxOutstandingBalanceParameterName, element);
@@ -739,6 +746,12 @@ public final class LoanApplicationCommandFromApiJsonHelper {
             final BigDecimal emiAnount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.emiAmountParameterName,
                     element);
             baseDataValidator.reset().parameter(LoanApiConstants.emiAmountParameterName).value(emiAnount).ignoreIfNull().positiveAmount();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.firstInstallmentEmiAmountParameterName, element)) {
+            final BigDecimal emiAnount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.firstInstallmentEmiAmountParameterName,
+                    element);
+            baseDataValidator.reset().parameter(LoanApiConstants.firstInstallmentEmiAmountParameterName).value(emiAnount).ignoreIfNull().positiveAmount();
         }
 
         if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.maxOutstandingBalanceParameterName, element)) {
