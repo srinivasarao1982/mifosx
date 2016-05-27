@@ -320,6 +320,9 @@ public class Loan extends AbstractPersistable<Long> {
 
     @Column(name = "fixed_emi_amount", scale = 6, precision = 19, nullable = true)
     private BigDecimal fixedEmiAmount;
+    
+    @Column(name = "first_installment_emi_amount", scale = 6, precision = 19, nullable = true)
+    private BigDecimal firstInstallmentEmiAmount;
 
     @Column(name = "max_outstanding_loan_balance", scale = 6, precision = 19, nullable = false)
     private BigDecimal maxOutstandingLoanBalance;
@@ -361,14 +364,15 @@ public class Loan extends AbstractPersistable<Long> {
             final LoanProduct loanProduct, final Fund fund, final Staff officer, final CodeValue loanPurpose,
             final LoanTransactionProcessingStrategy transactionProcessingStrategy,
             final LoanProductRelatedDetail loanRepaymentScheduleDetail, final Set<LoanCharge> loanCharges,
-            final Set<LoanCollateral> collateral, final BigDecimal fixedEmiAmount, final Set<LoanDisbursementDetails> disbursementDetails,
-            final BigDecimal maxOutstandingLoanBalance, final Boolean createStandingInstructionAtDisbursement) {
+            final Set<LoanCollateral> collateral, final BigDecimal fixedEmiAmount, BigDecimal firstInstallmentEmiAmount,
+            final Set<LoanDisbursementDetails> disbursementDetails, final BigDecimal maxOutstandingLoanBalance,
+            final Boolean createStandingInstructionAtDisbursement) {
         final LoanStatus status = null;
         final Group group = null;
         final Boolean syncDisbursementWithMeeting = null;
         return new Loan(accountNo, client, group, loanType, fund, officer, loanPurpose, transactionProcessingStrategy, loanProduct,
                 loanRepaymentScheduleDetail, status, loanCharges, collateral, syncDisbursementWithMeeting, fixedEmiAmount,
-                disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
+                firstInstallmentEmiAmount, disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
     }
 
     public static Loan newGroupLoanApplication(final String accountNo, final Group group, final Integer loanType,
@@ -376,13 +380,13 @@ public class Loan extends AbstractPersistable<Long> {
             final LoanTransactionProcessingStrategy transactionProcessingStrategy,
             final LoanProductRelatedDetail loanRepaymentScheduleDetail, final Set<LoanCharge> loanCharges,
             final Set<LoanCollateral> collateral, final Boolean syncDisbursementWithMeeting, final BigDecimal fixedEmiAmount,
-            final Set<LoanDisbursementDetails> disbursementDetails, final BigDecimal maxOutstandingLoanBalance,
-            final Boolean createStandingInstructionAtDisbursement) {
+            final BigDecimal firstInstallmentEmiAmount, final Set<LoanDisbursementDetails> disbursementDetails,
+            final BigDecimal maxOutstandingLoanBalance, final Boolean createStandingInstructionAtDisbursement) {
         final LoanStatus status = null;
         final Client client = null;
         return new Loan(accountNo, client, group, loanType, fund, officer, loanPurpose, transactionProcessingStrategy, loanProduct,
                 loanRepaymentScheduleDetail, status, loanCharges, collateral, syncDisbursementWithMeeting, fixedEmiAmount,
-                disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
+                firstInstallmentEmiAmount, disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
     }
 
     public static Loan newIndividualLoanApplicationFromGroup(final String accountNo, final Client client, final Group group,
@@ -390,12 +394,12 @@ public class Loan extends AbstractPersistable<Long> {
             final LoanTransactionProcessingStrategy transactionProcessingStrategy,
             final LoanProductRelatedDetail loanRepaymentScheduleDetail, final Set<LoanCharge> loanCharges,
             final Set<LoanCollateral> collateral, final Boolean syncDisbursementWithMeeting, final BigDecimal fixedEmiAmount,
-            final Set<LoanDisbursementDetails> disbursementDetails, final BigDecimal maxOutstandingLoanBalance,
-            final Boolean createStandingInstructionAtDisbursement) {
+            BigDecimal firstInstallmentEmiAmount, final Set<LoanDisbursementDetails> disbursementDetails,
+            final BigDecimal maxOutstandingLoanBalance, final Boolean createStandingInstructionAtDisbursement) {
         final LoanStatus status = null;
         return new Loan(accountNo, client, group, loanType, fund, officer, loanPurpose, transactionProcessingStrategy, loanProduct,
                 loanRepaymentScheduleDetail, status, loanCharges, collateral, syncDisbursementWithMeeting, fixedEmiAmount,
-                disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
+                firstInstallmentEmiAmount, disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
     }
 
     protected Loan() {
@@ -406,8 +410,9 @@ public class Loan extends AbstractPersistable<Long> {
             final Staff loanOfficer, final CodeValue loanPurpose, final LoanTransactionProcessingStrategy transactionProcessingStrategy,
             final LoanProduct loanProduct, final LoanProductRelatedDetail loanRepaymentScheduleDetail, final LoanStatus loanStatus,
             final Set<LoanCharge> loanCharges, final Set<LoanCollateral> collateral, final Boolean syncDisbursementWithMeeting,
-            final BigDecimal fixedEmiAmount, final Set<LoanDisbursementDetails> disbursementDetails,
-            final BigDecimal maxOutstandingLoanBalance, final Boolean createStandingInstructionAtDisbursement) {
+            final BigDecimal fixedEmiAmount, final BigDecimal firstInstallmentEmiAmount,
+            final Set<LoanDisbursementDetails> disbursementDetails, final BigDecimal maxOutstandingLoanBalance,
+            final Boolean createStandingInstructionAtDisbursement) {
 
         this.loanRepaymentScheduleDetail = loanRepaymentScheduleDetail;
         this.loanRepaymentScheduleDetail.validateRepaymentPeriodWithGraceSettings();
@@ -448,6 +453,7 @@ public class Loan extends AbstractPersistable<Long> {
 
         this.syncDisbursementWithMeeting = syncDisbursementWithMeeting;
         this.fixedEmiAmount = fixedEmiAmount;
+        this.firstInstallmentEmiAmount = firstInstallmentEmiAmount;
         this.maxOutstandingLoanBalance = maxOutstandingLoanBalance;
         this.disbursementDetails = disbursementDetails;
         this.approvedPrincipal = this.loanRepaymentScheduleDetail.getPrincipal().getAmount();
@@ -1422,6 +1428,12 @@ public class Loan extends AbstractPersistable<Long> {
             }
         } else {
             this.fixedEmiAmount = null;
+        }
+        
+        if (command.isChangeInBigDecimalParameterNamed(LoanApiConstants.firstInstallmentEmiAmountParameterName, this.fixedEmiAmount)) {
+            this.firstInstallmentEmiAmount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.firstInstallmentEmiAmountParameterName);
+            actualChanges.put(LoanApiConstants.firstInstallmentEmiAmountParameterName, this.firstInstallmentEmiAmount);
+            actualChanges.put("recalculateLoanSchedule", true);
         }
 
         return actualChanges;
@@ -2410,11 +2422,12 @@ public class Loan extends AbstractPersistable<Long> {
         final LoanApplicationTerms loanApplicationTerms = LoanApplicationTerms.assembleFrom(scheduleGeneratorDTO.getApplicationCurrency(),
                 loanTermFrequency, loanTermPeriodFrequencyType, nthDayType, dayOfWeekType, getDisbursementDate(),
                 getExpectedFirstRepaymentOnDate(), scheduleGeneratorDTO.getCalculatedRepaymentsStartingFromDate(), getInArrearsTolerance(),
-                this.loanRepaymentScheduleDetail, this.loanProduct.isMultiDisburseLoan(), this.fixedEmiAmount, disbursementData,
-                this.maxOutstandingLoanBalance, loanVariationTermsData, getInterestChargedFromDate(),
-                this.loanProduct.getPrincipalThresholdForLastInstallment(), this.loanProduct.getInstallmentAmountInMultiplesOf(),
-                recalculationFrequencyType, restCalendarInstance, compoundingMethod, compoundingCalendarInstance, compoundingFrequencyType,
-                this.loanProduct.preCloseInterestCalculationStrategy(), rescheduleStrategyMethod);
+                this.loanRepaymentScheduleDetail, this.loanProduct.isMultiDisburseLoan(), this.fixedEmiAmount,
+                this.firstInstallmentEmiAmount, disbursementData, this.maxOutstandingLoanBalance, loanVariationTermsData,
+                getInterestChargedFromDate(), this.loanProduct.getPrincipalThresholdForLastInstallment(),
+                this.loanProduct.getInstallmentAmountInMultiplesOf(), recalculationFrequencyType, restCalendarInstance, compoundingMethod,
+                compoundingCalendarInstance, compoundingFrequencyType, this.loanProduct.preCloseInterestCalculationStrategy(),
+                rescheduleStrategyMethod);
 
         final LoanScheduleModel loanSchedule = loanScheduleGenerator.generate(mc, loanApplicationTerms, charges(),
                 scheduleGeneratorDTO.getHolidayDetailDTO());
@@ -4758,10 +4771,10 @@ public class Loan extends AbstractPersistable<Long> {
         final LoanApplicationTerms loanApplicationTerms = LoanApplicationTerms.assembleFrom(applicationCurrency, loanTermFrequency,
                 loanTermPeriodFrequencyType, getDisbursementDate(), getExpectedFirstRepaymentOnDate(),
                 calculatedRepaymentsStartingFromDate, getInArrearsTolerance(), this.loanRepaymentScheduleDetail,
-                this.loanProduct.isMultiDisburseLoan(), this.fixedEmiAmount, disbursementData, this.maxOutstandingLoanBalance,
-                loanVariationTermsData, getInterestChargedFromDate(), this.loanInterestRecalculationDetails,
-                calendarInstanceForInterestRecalculation, recalculationFrequencyType, compoundingCalendarInstance,
-                compoundingFrequencyType, this.loanProduct.getPrincipalThresholdForLastInstallment(),
+                this.loanProduct.isMultiDisburseLoan(), this.fixedEmiAmount, this.firstInstallmentEmiAmount, disbursementData,
+                this.maxOutstandingLoanBalance, loanVariationTermsData, getInterestChargedFromDate(),
+                this.loanInterestRecalculationDetails, calendarInstanceForInterestRecalculation, recalculationFrequencyType,
+                compoundingCalendarInstance, compoundingFrequencyType, this.loanProduct.getPrincipalThresholdForLastInstallment(),
                 this.loanProduct.getInstallmentAmountInMultiplesOf(), this.loanProduct.preCloseInterestCalculationStrategy());
         return loanApplicationTerms;
     }
@@ -4818,10 +4831,11 @@ public class Loan extends AbstractPersistable<Long> {
             final LoanApplicationTerms loanApplicationTerms = LoanApplicationTerms.assembleFrom(null, loanTermFrequency,
                     loanTermPeriodFrequencyType, nthDayType, dayOfWeekType, getDisbursementDate(), getExpectedFirstRepaymentOnDate(), null,
                     getInArrearsTolerance(), this.loanRepaymentScheduleDetail, this.loanProduct.isMultiDisburseLoan(), this.fixedEmiAmount,
-                    disbursementData, this.maxOutstandingLoanBalance, loanVariationTermsData, getInterestChargedFromDate(),
-                    this.loanProduct.getPrincipalThresholdForLastInstallment(), this.loanProduct.getInstallmentAmountInMultiplesOf(),
-                    recalculationFrequencyType, restCalendarInstance, compoundingMethod, compoundingCalendarInstance,
-                    compoundingFrequencyType, this.loanProduct.preCloseInterestCalculationStrategy(), rescheduleStrategyMethod);
+                    this.firstInstallmentEmiAmount, disbursementData, this.maxOutstandingLoanBalance, loanVariationTermsData,
+                    getInterestChargedFromDate(), this.loanProduct.getPrincipalThresholdForLastInstallment(),
+                    this.loanProduct.getInstallmentAmountInMultiplesOf(), recalculationFrequencyType, restCalendarInstance,
+                    compoundingMethod, compoundingCalendarInstance, compoundingFrequencyType,
+                    this.loanProduct.preCloseInterestCalculationStrategy(), rescheduleStrategyMethod);
             final LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor = this.transactionProcessorFactory
                     .determineProcessor(this.transactionProcessingStrategy);
             installment = loanScheduleGenerator.calculatePrepaymentAmount(this.repaymentScheduleInstallments, getCurrency(), onDate,
@@ -5039,8 +5053,8 @@ public class Loan extends AbstractPersistable<Long> {
 
         return LoanApplicationTerms.assembleFrom(applicationCurrency, loanTermFrequency, loanTermPeriodFrequencyType, nthDayType,
                 dayOfWeekType, expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
-                inArrearsToleranceMoney, this.loanRepaymentScheduleDetail, loanProduct.isMultiDisburseLoan(), emiAmount, disbursementData,
-                maxOutstandingBalance, loanVariationTermsData, interestChargedFromDate,
+                inArrearsToleranceMoney, this.loanRepaymentScheduleDetail, loanProduct.isMultiDisburseLoan(), emiAmount,
+                this.firstInstallmentEmiAmount, disbursementData, maxOutstandingBalance, loanVariationTermsData, interestChargedFromDate,
                 this.loanProduct.getPrincipalThresholdForLastInstallment(), this.loanProduct.getInstallmentAmountInMultiplesOf(),
                 recalculationFrequencyType, restCalendarInstance, compoundingMethod, compoundingCalendarInstance, compoundingFrequencyType,
                 this.loanProduct.preCloseInterestCalculationStrategy(), rescheduleStrategyMethod);
