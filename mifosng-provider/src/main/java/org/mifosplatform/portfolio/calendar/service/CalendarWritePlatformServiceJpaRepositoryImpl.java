@@ -24,6 +24,7 @@ import org.mifosplatform.infrastructure.core.data.DataValidatorBuilder;
 import org.mifosplatform.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.mifosplatform.infrastructure.core.service.DateUtils;
 import org.mifosplatform.portfolio.calendar.CalendarConstants.CALENDAR_SUPPORTED_PARAMETERS;
+import org.mifosplatform.portfolio.calendar.data.CalendarData;
 import org.mifosplatform.portfolio.calendar.domain.Calendar;
 import org.mifosplatform.portfolio.calendar.domain.CalendarEntityType;
 import org.mifosplatform.portfolio.calendar.domain.CalendarHistory;
@@ -33,6 +34,7 @@ import org.mifosplatform.portfolio.calendar.domain.CalendarInstanceRepository;
 import org.mifosplatform.portfolio.calendar.domain.CalendarRepository;
 import org.mifosplatform.portfolio.calendar.domain.CalendarType;
 import org.mifosplatform.portfolio.calendar.exception.CalendarNotFoundException;
+import org.mifosplatform.portfolio.calendar.exception.MeetingDateBeforeLastMeetingDateException;
 import org.mifosplatform.portfolio.calendar.serialization.CalendarCommandFromApiJsonDeserializer;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
@@ -46,6 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.google.gson.JsonElement;
+
 @Service
 public class CalendarWritePlatformServiceJpaRepositoryImpl implements CalendarWritePlatformService {
 
@@ -58,6 +62,8 @@ public class CalendarWritePlatformServiceJpaRepositoryImpl implements CalendarWr
     private final GroupRepositoryWrapper groupRepository;
     private final LoanRepository loanRepository;
     private final ClientRepositoryWrapper clientRepository;
+    private final CalendarReadPlatformService readPlatformService;
+
 
     @Autowired
     public CalendarWritePlatformServiceJpaRepositoryImpl(final CalendarRepository calendarRepository,
@@ -65,7 +71,9 @@ public class CalendarWritePlatformServiceJpaRepositoryImpl implements CalendarWr
             final CalendarCommandFromApiJsonDeserializer fromApiJsonDeserializer,
             final CalendarInstanceRepository calendarInstanceRepository, final LoanWritePlatformService loanWritePlatformService,
             final ConfigurationDomainService configurationDomainService, final GroupRepositoryWrapper groupRepository,
-            final LoanRepository loanRepository, final ClientRepositoryWrapper clientRepository) {
+            final LoanRepository loanRepository, final ClientRepositoryWrapper clientRepository,
+            final CalendarReadPlatformService readPlatformService
+) {
         this.calendarRepository = calendarRepository;
         this.calendarHistoryRepository = calendarHistoryRepository;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
@@ -75,6 +83,7 @@ public class CalendarWritePlatformServiceJpaRepositoryImpl implements CalendarWr
         this.groupRepository = groupRepository;
         this.loanRepository = loanRepository;
         this.clientRepository = clientRepository;
+        this.readPlatformService=readPlatformService;
     }
 
     @Override
@@ -159,15 +168,25 @@ public class CalendarWritePlatformServiceJpaRepositoryImpl implements CalendarWr
         /*
          * Validate all the data for updating the calendar
          */
-        
+       
+    	String[] parameterForCalendarData=command.getUrl().split("/");
+        final Integer entityTypeId = CalendarEntityType.valueOf(parameterForCalendarData[1].toUpperCase()).getValue();
+        final Long entityId = Long.parseLong(parameterForCalendarData[2]);
+        CalendarData calendarData = this.readPlatformService.retrieveCalendar(command.entityId(), entityId, entityTypeId);
+        final boolean withHistory = true;
+        final LocalDate tillDate = null;
+        final ArrayList<LocalDate> recurringDates = (ArrayList<LocalDate>) this.readPlatformService.generateRecurringDates(calendarData, withHistory, tillDate);
+
+     
         this.fromApiJsonDeserializer.validateForUpdate(command.json());
         
         Boolean areActiveEntitiesSynced = false;
         final Long calendarId = command.entityId();
-
+        
         final Collection<Integer> loanStatuses = new ArrayList<>(Arrays.asList(LoanStatus.SUBMITTED_AND_PENDING_APPROVAL.getValue(),
                 LoanStatus.APPROVED.getValue(), LoanStatus.ACTIVE.getValue()));
-
+        
+        
         final Integer numberOfActiveLoansSyncedWithThisCalendar = this.calendarInstanceRepository.countOfLoansSyncedWithCalendar(
                 calendarId, loanStatuses);
 
@@ -175,8 +194,7 @@ public class CalendarWritePlatformServiceJpaRepositoryImpl implements CalendarWr
          * areActiveEntitiesSynced is set to true, if there are any active loans
          * synced to this calendar.
          */
-        
-        if(numberOfActiveLoansSyncedWithThisCalendar > 0){
+          if(numberOfActiveLoansSyncedWithThisCalendar > 0){
             areActiveEntitiesSynced = true;
         }
 
@@ -219,7 +237,19 @@ public class CalendarWritePlatformServiceJpaRepositoryImpl implements CalendarWr
 
             newMeetingDate = command.localDateValueOfParameterNamed(CALENDAR_SUPPORTED_PARAMETERS.NEW_MEETING_DATE.getValue());
             presentMeetingDate = command.localDateValueOfParameterNamed(CALENDAR_SUPPORTED_PARAMETERS.PRESENT_MEETING_DATE.getValue());
-
+            if(recurringDates.contains(presentMeetingDate)){
+            	int index =recurringDates.indexOf(presentMeetingDate);
+            	if(index>0){
+            		LocalDate previousmeetingdate =recurringDates.get(index-1);
+            		if(newMeetingDate.isBefore(previousmeetingdate)||newMeetingDate.isEqual(previousmeetingdate)){
+            			throw new  MeetingDateBeforeLastMeetingDateException(previousmeetingdate);
+            		}
+            		
+            	}
+            	
+            }
+            
+            //nextTenRecurringDates.
             /*
              * New meeting date proposed will become the new start date for the
              * updated calendar
