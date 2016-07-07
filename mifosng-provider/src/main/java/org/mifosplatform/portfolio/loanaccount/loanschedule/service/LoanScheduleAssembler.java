@@ -238,8 +238,7 @@ public class LoanScheduleAssembler {
 
         final BigDecimal emiAmount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.emiAmountParameterName,
                 element);
-        final BigDecimal firstInstallmentEmiAmount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.firstInstallmentEmiAmountParameterName,
-                element);
+        final BigDecimal firstInstallmentEmiAmount = null;
         
         final BigDecimal maxOutstandingBalance = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(
                 LoanApiConstants.maxOutstandingBalanceParameterName, element);
@@ -302,10 +301,11 @@ public class LoanScheduleAssembler {
                 interestRatePerPeriod, interestRatePeriodFrequencyType, annualNominalInterestRate, interestCalculationPeriodMethod,
                 principalMoney, expectedDisbursementDate, repaymentsStartingFromDate, calculatedRepaymentsStartingFromDate,
                 graceOnPrincipalPayment, graceOnInterestPayment, graceOnInterestCharged, interestChargedFromDate, inArrearsToleranceMoney,
-                loanProduct.isMultiDisburseLoan(), emiAmount, firstInstallmentEmiAmount, disbursementDatas, maxOutstandingBalance,
-                loanVariationTermsData, graceOnArrearsAgeing, daysInMonthType, daysInYearType, isInterestRecalculationEnabled,
-                recalculationFrequencyType, restCalendarInstance, compoundingCalendarInstance, compoundingFrequencyType,
-                principalThresholdForLastInstalment, installmentAmountInMultiplesOf, loanProduct.preCloseInterestCalculationStrategy());
+                loanProduct.isMultiDisburseLoan(), emiAmount, disbursementDatas, maxOutstandingBalance, loanVariationTermsData,
+                graceOnArrearsAgeing, daysInMonthType, daysInYearType, isInterestRecalculationEnabled, recalculationFrequencyType,
+                restCalendarInstance, compoundingCalendarInstance, compoundingFrequencyType, principalThresholdForLastInstalment,
+                installmentAmountInMultiplesOf, loanProduct.preCloseInterestCalculationStrategy(), firstInstallmentEmiAmount,
+                loanProduct.getFirstInstallmentAmountInMultiplesOf(), loanProduct.adjustFirstEMIAmount());
     }
 
     private CalendarInstance createInterestRecalculationCalendarInstance(final LocalDate calendarStartDate,
@@ -451,6 +451,10 @@ public class LoanScheduleAssembler {
         final MathContext mc = new MathContext(8, roundingMode);
 
         HolidayDetailDTO detailDTO = new HolidayDetailDTO(isHolidayEnabled, holidays, workingDays);
+        
+        BigDecimal firstEmiAmount = loanScheduleGenerator.calculateFirstInstallmentAmount(mc, loanApplicationTerms, loanCharges, detailDTO);
+        loanApplicationTerms.setFirstInstallmentEmiAmount(firstEmiAmount);
+        loanApplicationTerms.setAdjustLastInstallmentInterestForRounding(true);
 
         return loanScheduleGenerator.generate(mc, loanApplicationTerms, loanCharges, detailDTO);
     }

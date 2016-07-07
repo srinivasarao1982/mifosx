@@ -40,4 +40,8 @@ public enum InterestMethod {
         }
         return repaymentMethod;
     }
+    
+    public boolean isDecliningBalanceMethod(){
+        return this.value.equals(DECLINING_BALANCE.getValue());
+    }
 }
