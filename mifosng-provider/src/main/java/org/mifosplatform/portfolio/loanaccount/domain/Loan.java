@@ -321,7 +321,7 @@ public class Loan extends AbstractPersistable<Long> {
     @Column(name = "fixed_emi_amount", scale = 6, precision = 19, nullable = true)
     private BigDecimal fixedEmiAmount;
     
-    @Column(name = "first_installment_emi_amount", scale = 6, precision = 19, nullable = true)
+    @Column(name = "first_emi_amount", scale = 6, precision = 19, nullable = true)
     private BigDecimal firstInstallmentEmiAmount;
 
     @Column(name = "max_outstanding_loan_balance", scale = 6, precision = 19, nullable = false)
