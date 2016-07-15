@@ -177,6 +177,7 @@ public class LoanProductReadPlatformServiceImpl implements LoanProductReadPlatfo
                     + "lca.id as lcaId, lca.amortization_method_enum as amortizationBoolean, lca.interest_method_enum as interestMethodConfigBoolean, "
                     + "lca.loan_transaction_strategy_id as transactionProcessingStrategyBoolean,lca.interest_calculated_in_period_enum as interestCalcPeriodBoolean, lca.arrearstolerance_amount as arrearsToleranceBoolean, "
                     + "lca.repay_every as repaymentFrequencyBoolean, lca.moratorium as graceOnPrincipalAndInterestBoolean, lca.grace_on_arrears_ageing as graceOnArrearsAgingBoolean "
+                    + ", lp.first_instalment_amount_in_multiples_of as firstInstallmentAmountInMultiplesOf, lp.adjust_first_emi_amount as adjustFirstEMIAmount "
                     + " from m_product_loan lp "
                     + " left join m_fund f on f.id = lp.fund_id "
                     + " left join m_product_loan_recalculation_details lpr on lpr.product_id=lp.id "
@@ -349,6 +350,8 @@ public class LoanProductReadPlatformServiceImpl implements LoanProductReadPlatfo
 
             final BigDecimal principalThresholdForLastInstallment = rs.getBigDecimal("principalThresholdForLastInstallment");
             final boolean accountMovesOutOfNPAOnlyOnArrearsCompletion = rs.getBoolean("accountMovesOutOfNPAOnlyOnArrearsCompletion");
+            final Integer firstInstallmentAmountInMultiplesOf = JdbcSupport.getInteger(rs,"firstInstallmentAmountInMultiplesOf");
+            final boolean adjustFirstEMIAmount = rs.getBoolean("adjustFirstEMIAmount");
 
             return new LoanProductData(id, name, shortName, description, currency, principal, minPrincipal, maxPrincipal, tolerance,
                     numberOfRepayments, minNumberOfRepayments, maxNumberOfRepayments, repaymentEvery, interestRatePerPeriod,
@@ -361,7 +364,7 @@ public class LoanProductReadPlatformServiceImpl implements LoanProductReadPlatfo
                     graceOnArrearsAgeing, overdueDaysForNPA, daysInMonthType, daysInYearType, isInterestRecalculationEnabled,
                     interestRecalculationData, minimumDaysBetweenDisbursalAndFirstRepayment, holdGuaranteeFunds, loanProductGuaranteeData,
                     principalThresholdForLastInstallment, accountMovesOutOfNPAOnlyOnArrearsCompletion, canDefineInstallmentAmount,
-                    installmentAmountInMultiplesOf, allowAttributeOverrides);
+                    installmentAmountInMultiplesOf, allowAttributeOverrides, firstInstallmentAmountInMultiplesOf, adjustFirstEMIAmount);
         }
     }
 

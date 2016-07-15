@@ -7,6 +7,7 @@ package org.mifosplatform.portfolio.loanaccount.loanschedule.domain;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,13 +57,17 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
         final Collection<RecalculationDetail> diffAmt = null;
         final LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor = null;
         final LocalDate scheduleTillDate = null;
+        EmiDetails emiDetails  = new EmiDetails();
+        
         return generate(mc, loanApplicationTerms, loanCharges, holidayDetailDTO, diffAmt, loanRepaymentScheduleTransactionProcessor,
-                scheduleTillDate);
+                scheduleTillDate, emiDetails);
     }
+
+ 
 
     private LoanScheduleModel generate(final MathContext mc, final LoanApplicationTerms loanApplicationTerms,
             final Set<LoanCharge> loanCharges, final HolidayDetailDTO holidayDetailDTO, final Collection<RecalculationDetail> transactions,
-            final LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor, final LocalDate scheduleTillDate) {
+            final LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor, final LocalDate scheduleTillDate,final EmiDetails emiDetails) {
 
         final ApplicationCurrency applicationCurrency = loanApplicationTerms.getApplicationCurrency();
         // 1. generate list of proposed schedule due dates
@@ -638,6 +643,8 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
             }
 
             periods.add(installment);
+            emiDetails.setEmiAmount(loanApplicationTerms.getFixedEmiAmount());
+            emiDetails.setLastEmiAmount(principalForThisPeriod.plus(interestForThisinstallment).getAmount());
 
             // Updates principal paid map with efective date for reducing
             // the amount from outstanding balance(interest calculation)
@@ -664,6 +671,7 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
             instalmentNumber++;
             periodNumber++;
             compoundingDateVariations.clear();
+            adjustInterestForRoundingEMIAmount(loanApplicationTerms, emiDetails, periodNumber, outstandingBalance, installment);
         }
 
         // this condition is to add the interest from grace period if not
@@ -716,6 +724,8 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
                 totalCumulativePrincipal.getAmount(), totalPrincipalPaid, totalCumulativeInterest.getAmount(), totalFeeChargesCharged,
                 totalPenaltyChargesCharged, totalRepaymentExpected, totalOutstanding);
     }
+
+
 
     private Money fetchCompoundedArrears(final LoanApplicationTerms loanApplicationTerms, final MonetaryCurrency currency,
             final LoanTransaction transaction) {
@@ -1699,8 +1709,9 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
                     .copyTransactionProperties(loanTransaction)));
         }
         final LocalDate scheduleTillDate = null;
+        EmiDetails emiDetails  = new EmiDetails();
         return generate(mc, loanApplicationTerms, loanCharges, holidayDetailDTO, recalculationDetails,
-                loanRepaymentScheduleTransactionProcessor, scheduleTillDate);
+                loanRepaymentScheduleTransactionProcessor, scheduleTillDate, emiDetails);
     }
 
     private List<LoanRepaymentScheduleInstallment> fetchInstallmentsFromScheduleModel(final LoanScheduleModel loanScheduleModel) {
@@ -1770,8 +1781,9 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
             recalculationDetails.add(new RecalculationDetail(loanTransaction.getTransactionDate(), LoanTransaction
                     .copyTransactionProperties(loanTransaction)));
         }
+        EmiDetails emiDetails  = new EmiDetails();
         LoanScheduleModel loanScheduleModel = generate(mc, loanApplicationTerms, charges, holidayDetailDTO, recalculationDetails,
-                loanRepaymentScheduleTransactionProcessor, calculateTill);
+                loanRepaymentScheduleTransactionProcessor, calculateTill, emiDetails);
         installments = fetchInstallmentsFromScheduleModel(loanScheduleModel);
         loanRepaymentScheduleTransactionProcessor.handleTransaction(loanApplicationTerms.getExpectedDisbursementDate(), loanTransactions,
                 currency, installments, charges);
@@ -1800,5 +1812,137 @@ public abstract class AbstractLoanScheduleGenerator implements LoanScheduleGener
     private Integer defaultToZeroIfNull(Integer value) {
 
         return (value != null) ? value : 0;
+    }
+    
+    /**
+     * Method calculates first Installment amount if the configuration to adjust first Installment amount enabled
+     */
+    @Override
+    public BigDecimal calculateFirstInstallmentAmount(final MathContext mc, final LoanApplicationTerms loanApplicationTerms,
+            final Set<LoanCharge> loanCharges, final HolidayDetailDTO holidayDetailDTO) {
+        BigDecimal firstEmiAmount = null;
+        if (loanApplicationTerms.adjustFirstEMIAmount()) {
+            final Collection<RecalculationDetail> diffAmt = null;
+            final LoanRepaymentScheduleTransactionProcessor loanRepaymentScheduleTransactionProcessor = null;
+            final LocalDate scheduleTillDate = null;
+            EmiDetails emiDetails = new EmiDetails();
+            BigDecimal lastDiffAmount = BigDecimal.ZERO;
+            BigDecimal extraInterest = BigDecimal.ZERO;
+            boolean isFirstRepayment = true;
+            LocalDate firstRepaymentdate = this.scheduledDateGenerator.generateNextRepaymentDate(
+                    loanApplicationTerms.getExpectedDisbursementDate(), loanApplicationTerms, isFirstRepayment);
+            final LocalDate idealDisbursementDate = this.scheduledDateGenerator.idealDisbursementDateBasedOnFirstRepaymentDate(
+                    loanApplicationTerms.getLoanTermPeriodFrequencyType(), loanApplicationTerms.getRepaymentEvery(), firstRepaymentdate);
+            LocalDate periodStartDateApplicableForInterest = calculateInterestStartDateForPeriod(loanApplicationTerms,
+                    loanApplicationTerms.getExpectedDisbursementDate(), idealDisbursementDate,
+                    loanApplicationTerms.getExpectedDisbursementDate());
+            int totalInterestDays = Days.daysBetween(periodStartDateApplicableForInterest, firstRepaymentdate).getDays() - 30;
+            if (totalInterestDays > 0) {
+
+                Money outstandingBalance = loanApplicationTerms.getPrincipal();
+                if (loanApplicationTerms.isMultiDisburseLoan()) {
+                    outstandingBalance = outstandingBalance.zero();
+                    for (DisbursementData disbursementData : loanApplicationTerms.getDisbursementDatas()) {
+                        if (disbursementData.disbursementDate().equals(loanApplicationTerms.getExpectedDisbursementDate())) {
+                            outstandingBalance = outstandingBalance.plus(disbursementData.amount());
+                        }
+                    }
+                }
+
+                extraInterest = extraInterest.add(loanApplicationTerms.calculateDecliningInterestDueForInstallmentBeforeApplyingGrace(
+                        paymentPeriodsInOneYearCalculator, mc, totalInterestDays, outstandingBalance).getAmount());
+            }
+            BigDecimal addDiff = BigDecimal.ONE;
+
+            while (true) {
+                generate(mc, loanApplicationTerms, loanCharges, holidayDetailDTO, diffAmt, loanRepaymentScheduleTransactionProcessor,
+                        scheduleTillDate, emiDetails);
+                if (firstEmiAmount == null) {
+                    firstEmiAmount = emiDetails.getEmiAmount();
+                }
+                BigDecimal amountLeft = emiDetails.lastEmiAmount.subtract(emiDetails.getEmiAmount());
+                if (amountLeft.compareTo(BigDecimal.ZERO) == 0
+                        || (addDiff.compareTo(BigDecimal.valueOf(.01)) == 0 && ((lastDiffAmount.compareTo(BigDecimal.ZERO) == 1 && amountLeft
+                                .compareTo(BigDecimal.ZERO) == -1) || (lastDiffAmount.compareTo(BigDecimal.ZERO) == -1 && amountLeft
+                                .compareTo(BigDecimal.ZERO) == 1)))) {
+
+                    firstEmiAmount = firstEmiAmount.add(amountLeft).setScale(2, RoundingMode.HALF_EVEN);
+                    loanApplicationTerms.setFirstInstallmentEmiAmount(firstEmiAmount);
+                    break;
+                }
+                if (lastDiffAmount.compareTo(BigDecimal.ZERO) == 0 && extraInterest.compareTo(BigDecimal.ZERO) == 0) {
+                    lastDiffAmount = amountLeft;
+                    addDiff = BigDecimal.ONE;
+                    if (lastDiffAmount.compareTo(BigDecimal.ZERO) == -1) {
+                        addDiff = addDiff.negate();
+                    }
+                } else if (lastDiffAmount.compareTo(BigDecimal.ZERO) == 1 && amountLeft.compareTo(BigDecimal.ZERO) == -1) {
+                    lastDiffAmount = amountLeft;
+                    addDiff = BigDecimal.valueOf(.01).negate();
+
+                } else if (lastDiffAmount.compareTo(BigDecimal.ZERO) == -1 && amountLeft.compareTo(BigDecimal.ZERO) == 1) {
+                    lastDiffAmount = amountLeft;
+                    addDiff = BigDecimal.valueOf(.01);
+                }
+
+                if (extraInterest.compareTo(BigDecimal.ZERO) == 1) {
+                    firstEmiAmount = firstEmiAmount.add(extraInterest).setScale(2, RoundingMode.HALF_EVEN);
+                    extraInterest = BigDecimal.ZERO;
+                } else {
+                    firstEmiAmount = firstEmiAmount.add(addDiff).setScale(2, RoundingMode.HALF_EVEN);
+                }
+                loanApplicationTerms.setFirstInstallmentEmiAmount(firstEmiAmount);
+            }
+        }
+        return firstEmiAmount;
+
+    }
+
+    /**
+     * Method will adjust first and last interest amounts for rounding EMI
+     */
+    private void adjustInterestForRoundingEMIAmount(final LoanApplicationTerms loanApplicationTerms, final EmiDetails emiDetails,
+            int periodNumber, Money outstandingBalance, LoanScheduleModelPeriod installment) {
+        if (loanApplicationTerms.isAdjustFirstEMIAmount()) {
+            final MonetaryCurrency currency = outstandingBalance.getCurrency();
+            if (loanApplicationTerms.isAdjustLastInstallmentInterestForRounding() && outstandingBalance.isZero()) {
+                if (emiDetails.getEmiAmount().compareTo(emiDetails.getLastEmiAmount()) != 0) {
+                    installment.addInterestAmount(Money.of(currency, emiDetails.getEmiAmount().subtract(emiDetails.getLastEmiAmount())));
+                }
+            } else if (periodNumber == 2 && loanApplicationTerms.getFirstInstallmentEmiAmount() != null) {
+                BigDecimal roundedFirstEmiAmount = loanApplicationTerms.roundFirstEmiAmount(loanApplicationTerms.getFirstInstallmentEmiAmount());
+                if (roundedFirstEmiAmount.compareTo(loanApplicationTerms.getFirstInstallmentEmiAmount()) != 0) {
+                    installment.addInterestAmount(Money.of(currency,
+                            roundedFirstEmiAmount.subtract(loanApplicationTerms.getFirstInstallmentEmiAmount())));
+                }
+            }
+        }
+    }
+    
+    private class EmiDetails{
+        
+        private BigDecimal emiAmount;
+        private BigDecimal lastEmiAmount;
+        
+        public BigDecimal getEmiAmount() {
+            return this.emiAmount;
+        }
+        
+        public void setEmiAmount(BigDecimal emiAmount) {
+            if (this.emiAmount == null) {
+                this.emiAmount = emiAmount;
+            }
+        }
+        
+        public BigDecimal getLastEmiAmount() {
+            return this.lastEmiAmount;
+        }
+        
+        public void setLastEmiAmount(BigDecimal lastEmiAmount) {
+            this.lastEmiAmount = lastEmiAmount;
+        }
+        
+        
+       
     }
 }

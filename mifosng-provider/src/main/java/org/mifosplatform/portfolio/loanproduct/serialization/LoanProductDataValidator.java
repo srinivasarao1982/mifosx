@@ -85,6 +85,7 @@ public final class LoanProductDataValidator {
             LoanProductConstants.minimumGuaranteeFromOwnFundsParamName, LoanProductConstants.principalThresholdForLastInstallmentParamName,
             LoanProductConstants.accountMovesOutOfNPAOnlyOnArrearsCompletionParamName, LoanProductConstants.canDefineEmiAmountParamName,
             LoanProductConstants.installmentAmountInMultiplesOfParamName,
+            LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName, LoanProductConstants.adjustFirstEMIAmountParamName,
             LoanProductConstants.preClosureInterestCalculationStrategyParamName, LoanProductConstants.allowAttributeOverridesParamName));
 
     private final FromJsonHelper fromApiJsonHelper;
@@ -354,11 +355,25 @@ public final class LoanProductDataValidator {
             baseDataValidator.reset().parameter(LoanProductConstants.canDefineEmiAmountParamName).value(canDefineInstallmentAmount)
                     .isOneOfTheseValues(true, false);
         }
+        
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.adjustFirstEMIAmountParamName, element)) {
+            final Boolean adjustFirstEMIAmount = this.fromApiJsonHelper.extractBooleanNamed(
+                    LoanProductConstants.adjustFirstEMIAmountParamName, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.adjustFirstEMIAmountParamName).value(adjustFirstEMIAmount)
+                    .isOneOfTheseValues(true, false);
+        }
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.installmentAmountInMultiplesOfParamName, element)) {
             final Integer installmentAmountInMultiplesOf = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(
                     LoanProductConstants.installmentAmountInMultiplesOfParamName, element);
             baseDataValidator.reset().parameter(LoanProductConstants.installmentAmountInMultiplesOfParamName)
+                    .value(installmentAmountInMultiplesOf).ignoreIfNull().integerGreaterThanZero();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName, element)) {
+            final Integer installmentAmountInMultiplesOf = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(
+                    LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName)
                     .value(installmentAmountInMultiplesOf).ignoreIfNull().integerGreaterThanZero();
         }
 
@@ -933,11 +948,25 @@ public final class LoanProductDataValidator {
             baseDataValidator.reset().parameter(LoanProductConstants.canDefineEmiAmountParamName).value(canDefineInstallmentAmount)
                     .isOneOfTheseValues(true, false);
         }
+        
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.adjustFirstEMIAmountParamName, element)) {
+            final Boolean adjustFirstEMIAmount = this.fromApiJsonHelper.extractBooleanNamed(
+                    LoanProductConstants.adjustFirstEMIAmountParamName, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.adjustFirstEMIAmountParamName).value(adjustFirstEMIAmount)
+                    .isOneOfTheseValues(true, false);
+        }
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.installmentAmountInMultiplesOfParamName, element)) {
             final Integer installmentAmountInMultiplesOf = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(
                     LoanProductConstants.installmentAmountInMultiplesOfParamName, element);
             baseDataValidator.reset().parameter(LoanProductConstants.installmentAmountInMultiplesOfParamName)
+                    .value(installmentAmountInMultiplesOf).ignoreIfNull().integerGreaterThanZero();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName, element)) {
+            final Integer installmentAmountInMultiplesOf = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(
+                    LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName)
                     .value(installmentAmountInMultiplesOf).ignoreIfNull().integerGreaterThanZero();
         }
 

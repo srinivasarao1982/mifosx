@@ -203,7 +203,6 @@ public class LoanAssembler {
             fixedEmiAmount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.emiAmountParameterName, element);
         }
         
-        BigDecimal firstInstallmentEmiAmount = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(LoanApiConstants.firstInstallmentEmiAmountParameterName, element);
         BigDecimal maxOutstandingLoanBalance = null;
         if (loanProduct.isMultiDisburseLoan()) {
             disbursementDetails = fetchDisbursementData(element.getAsJsonObject());
@@ -239,21 +238,21 @@ public class LoanAssembler {
 
             loanApplication = Loan.newIndividualLoanApplicationFromGroup(accountNo, client, group, loanType.getId().intValue(),
                     loanProduct, fund, loanOfficer, loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges,
-                    collateral, syncDisbursementWithMeeting, fixedEmiAmount, firstInstallmentEmiAmount, disbursementDetails,
-                    maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
+                    collateral, syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
+                    createStandingInstructionAtDisbursement);
 
         } else if (group != null) {
 
             loanApplication = Loan.newGroupLoanApplication(accountNo, group, loanType.getId().intValue(), loanProduct, fund, loanOfficer,
                     loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges, collateral,
-                    syncDisbursementWithMeeting, fixedEmiAmount, firstInstallmentEmiAmount, disbursementDetails,
-                    maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
+                    syncDisbursementWithMeeting, fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance,
+                    createStandingInstructionAtDisbursement);
 
         } else if (client != null) {
 
             loanApplication = Loan.newIndividualLoanApplication(accountNo, client, loanType.getId().intValue(), loanProduct, fund,
                     loanOfficer, loanPurpose, loanTransactionProcessingStrategy, loanProductRelatedDetail, loanCharges, collateral,
-                    fixedEmiAmount, firstInstallmentEmiAmount, disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
+                    fixedEmiAmount, disbursementDetails, maxOutstandingLoanBalance, createStandingInstructionAtDisbursement);
 
         }
 

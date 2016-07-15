@@ -42,7 +42,7 @@ public final class CalculateLoanScheduleQueryFromApiJsonHelper {
             "collateral", "syncDisbursementWithMeeting", "linkAccountId", LoanApiConstants.disbursementDataParameterName,
             LoanApiConstants.emiAmountParameterName, LoanApiConstants.maxOutstandingBalanceParameterName,
             LoanProductConstants.graceOnArrearsAgeingParameterName, LoanProductConstants.recalculationRestFrequencyDateParamName,
-            "createStandingInstructionAtDisbursement", LoanApiConstants.firstInstallmentEmiAmountParameterName));
+            "createStandingInstructionAtDisbursement"));
 
     private final FromJsonHelper fromApiJsonHelper;
 

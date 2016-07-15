@@ -616,7 +616,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     + " l.total_outstanding_derived as totalOutstanding,"
                     + " l.total_overpaid_derived as totalOverpaid,"
                     + " l.fixed_emi_amount as fixedEmiAmount,"
-                    + " l.first_installment_emi_amount as firstInstallmentEmiAmount,"
+                    + " l.first_emi_amount as firstInstallmentEmiAmount,"
                     + " l.max_outstanding_loan_balance as outstandingLoanBalance,"
                     + " la.principal_overdue_derived as principalOverdue,"
                     + " la.interest_overdue_derived as interestOverdue,"

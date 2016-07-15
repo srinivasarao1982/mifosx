@@ -151,6 +151,12 @@ public class LoanProduct extends AbstractPersistable<Long> {
 
     @Column(name = "instalment_amount_in_multiples_of", nullable = true)
     private Integer installmentAmountInMultiplesOf;
+    
+    @Column(name = "adjust_first_emi_amount", nullable = true)
+    private boolean adjustFirstEMIAmount;
+    
+    @Column(name = "first_instalment_amount_in_multiples_of", nullable = true)
+    private Integer firstInstallmentAmountInMultiplesOf;
 
     public static LoanProduct assembleFromJson(final Fund fund, final LoanTransactionProcessingStrategy loanTransactionProcessingStrategy,
             final List<Charge> productCharges, final JsonCommand command, final AprCalculator aprCalculator) {
@@ -258,6 +264,9 @@ public class LoanProduct extends AbstractPersistable<Long> {
         final boolean accountMovesOutOfNPAOnlyOnArrearsCompletion = command
                 .booleanPrimitiveValueOfParameterNamed(LoanProductConstants.accountMovesOutOfNPAOnlyOnArrearsCompletionParamName);
         final boolean canDefineEmiAmount = command.booleanPrimitiveValueOfParameterNamed(LoanProductConstants.canDefineEmiAmountParamName);
+        final boolean adjustFirstEMIAmount = command.booleanPrimitiveValueOfParameterNamed(LoanProductConstants.adjustFirstEMIAmountParamName);
+        final Integer firstInstallmentAmountInMultiplesOf = command
+                .integerValueOfParameterNamed(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName);
         final Integer installmentAmountInMultiplesOf = command
                 .integerValueOfParameterNamed(LoanProductConstants.installmentAmountInMultiplesOfParamName);
 
@@ -270,7 +279,7 @@ public class LoanProduct extends AbstractPersistable<Long> {
                 outstandingLoanBalance, graceOnArrearsAgeing, overdueDaysForNPA, daysInMonthType, daysInYearType,
                 isInterestRecalculationEnabled, interestRecalculationSettings, minimumDaysBetweenDisbursalAndFirstRepayment,
                 holdGuarantorFunds, loanProductGuaranteeDetails, principalThresholdForLastInstallment,
-                accountMovesOutOfNPAOnlyOnArrearsCompletion, canDefineEmiAmount, installmentAmountInMultiplesOf, loanConfigurableAttributes);
+                accountMovesOutOfNPAOnlyOnArrearsCompletion, canDefineEmiAmount, installmentAmountInMultiplesOf, loanConfigurableAttributes, firstInstallmentAmountInMultiplesOf, adjustFirstEMIAmount);
 
     }
 
@@ -497,7 +506,8 @@ public class LoanProduct extends AbstractPersistable<Long> {
             final Integer minimumDaysBetweenDisbursalAndFirstRepayment, final boolean holdGuarantorFunds,
             final LoanProductGuaranteeDetails loanProductGuaranteeDetails, final BigDecimal principalThresholdForLastInstallment,
             final boolean accountMovesOutOfNPAOnlyOnArrearsCompletion, final boolean canDefineEmiAmount,
-            final Integer installmentAmountInMultiplesOf, final LoanProductConfigurableAttributes loanProductConfigurableAttributes) {
+            final Integer installmentAmountInMultiplesOf, final LoanProductConfigurableAttributes loanProductConfigurableAttributes,
+            final Integer firstInstallmentAmountInMultiplesOf, final boolean adjustFirstEMIAmount) {
         this.fund = fund;
         this.transactionProcessingStrategy = transactionProcessingStrategy;
         this.name = name.trim();
@@ -557,6 +567,8 @@ public class LoanProduct extends AbstractPersistable<Long> {
         this.principalThresholdForLastInstallment = principalThresholdForLastInstallment;
         this.accountMovesOutOfNPAOnlyOnArrearsCompletion = accountMovesOutOfNPAOnlyOnArrearsCompletion;
         this.canDefineInstallmentAmount = canDefineEmiAmount;
+        this.adjustFirstEMIAmount = adjustFirstEMIAmount;
+        this.firstInstallmentAmountInMultiplesOf = firstInstallmentAmountInMultiplesOf;
         this.installmentAmountInMultiplesOf = installmentAmountInMultiplesOf;
     }
 
@@ -891,6 +903,19 @@ public class LoanProduct extends AbstractPersistable<Long> {
             this.canDefineInstallmentAmount = newValue;
         }
 
+        if (command.isChangeInBooleanParameterNamed(LoanProductConstants.adjustFirstEMIAmountParamName, this.adjustFirstEMIAmount)) {
+            final boolean newValue = command.booleanPrimitiveValueOfParameterNamed(LoanProductConstants.adjustFirstEMIAmountParamName);
+            actualChanges.put(LoanProductConstants.adjustFirstEMIAmountParamName, newValue);
+            this.adjustFirstEMIAmount = newValue;
+        }
+        
+        if (command.isChangeInIntegerParameterNamedWithNullCheck(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName,
+                this.firstInstallmentAmountInMultiplesOf)) {
+            final Integer newValue = command.integerValueOfParameterNamed(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName);
+            actualChanges.put(LoanProductConstants.firstInstallmentAmountInMultiplesOfParamName, newValue);
+            this.firstInstallmentAmountInMultiplesOf = newValue;
+        }
+        
         if (command.isChangeInIntegerParameterNamedWithNullCheck(LoanProductConstants.installmentAmountInMultiplesOfParamName,
                 this.installmentAmountInMultiplesOf)) {
             final Integer newValue = command.integerValueOfParameterNamed(LoanProductConstants.installmentAmountInMultiplesOfParamName);
@@ -1181,5 +1206,14 @@ public class LoanProduct extends AbstractPersistable<Long> {
 
     public LoanProductRelatedDetail getLoanProductRelatedDetail() {
         return loanProductRelatedDetail;
+    }
+
+    
+    public boolean adjustFirstEMIAmount() {
+        return this.adjustFirstEMIAmount;
+    }
+
+    public Integer getFirstInstallmentAmountInMultiplesOf() {
+        return this.firstInstallmentAmountInMultiplesOf;
     }
 }
