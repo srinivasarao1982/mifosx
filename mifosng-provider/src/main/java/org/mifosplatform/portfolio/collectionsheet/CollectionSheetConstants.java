@@ -27,7 +27,6 @@ public class CollectionSheetConstants {
     public static final String calendarIdParamName = "calendarId";
     public static final String officeIdParamName = "officeId";
     public static final String staffIdParamName = "staffId";
-    public static final String forcedSubmitOfCollectionSheet = "forcedSubmitOfCollectionSheet";
 
     // attendance parameters
     public static final String clientsAttendanceParamName = "clientsAttendance";
@@ -44,7 +43,7 @@ public class CollectionSheetConstants {
             bulkSavingsDueTransactionsParamName, PaymentDetailConstants.paymentTypeParamName,
             PaymentDetailConstants.accountNumberParamName, PaymentDetailConstants.checkNumberParamName,
             PaymentDetailConstants.routingCodeParamName, PaymentDetailConstants.receiptNumberParamName,
-            PaymentDetailConstants.bankNumberParamName, forcedSubmitOfCollectionSheet));
+            PaymentDetailConstants.bankNumberParamName));
 
     public static final Set<String> INDIVIDUAL_COLLECTIONSHEET_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, transactionDateParamName, actualDisbursementDateParamName, bulkRepaymentTransactionsParamName,

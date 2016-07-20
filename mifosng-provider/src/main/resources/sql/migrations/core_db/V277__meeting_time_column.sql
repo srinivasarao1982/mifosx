@@ -1,1 +1,0 @@
-alter table m_calendar add meeting_time Time

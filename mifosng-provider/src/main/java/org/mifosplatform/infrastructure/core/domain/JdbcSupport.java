@@ -13,7 +13,6 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.springframework.jdbc.support.JdbcUtils;
 
 /**
@@ -38,15 +37,6 @@ public class JdbcSupport {
             localDate = new LocalDate(dateValue);
         }
         return localDate;
-    }
-
-    public static LocalTime getLocalTime(final ResultSet rs, final String columnName) throws SQLException {
-        LocalTime localTime = null;
-        final Date timeValue = rs.getTime(columnName);
-        if (timeValue != null) {
-            localTime = new LocalTime(timeValue);
-        }
-        return localTime;
     }
 
     public static Long getLong(final ResultSet rs, final String columnName) throws SQLException {

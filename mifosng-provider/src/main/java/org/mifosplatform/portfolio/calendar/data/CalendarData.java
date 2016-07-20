@@ -16,7 +16,6 @@ import org.mifosplatform.portfolio.calendar.domain.CalendarType;
 import org.mifosplatform.portfolio.calendar.domain.CalendarWeekDaysType;
 import org.mifosplatform.portfolio.calendar.service.CalendarEnumerations;
 import org.mifosplatform.portfolio.calendar.service.CalendarUtils;
-import org.joda.time.LocalTime;
 
 /**
  * Immutable data object representing a Calendar.
@@ -32,7 +31,6 @@ public class CalendarData {
     private final String location;
     private final LocalDate startDate;
     private final LocalDate endDate;
-    private final LocalTime meetingTime;
     private final Integer duration;
     private final EnumOptionData type;
     private final boolean repeating;
@@ -68,7 +66,7 @@ public class CalendarData {
             final EnumOptionData frequency, final Integer interval, final EnumOptionData repeatsOnDay, final EnumOptionData remindBy,
             final Integer firstReminder, final Integer secondReminder, final String humanReadable, final LocalDate createdDate,
             final LocalDate lastUpdatedDate, final Long createdByUserId, final String createdByUsername, final Long lastUpdatedByUserId,
-            final String lastUpdatedByUsername, final LocalTime meetingTime) {
+            final String lastUpdatedByUsername) {
 
         final Collection<LocalDate> recurringDates = null;
         final Collection<LocalDate> nextTenRecurringDates = null;
@@ -84,7 +82,7 @@ public class CalendarData {
                 type, repeating, recurrence, frequency, interval, repeatsOnDay, remindBy, firstReminder, secondReminder, recurringDates,
                 nextTenRecurringDates, humanReadable, recentEligibleMeetingDate, createdDate, lastUpdatedDate, createdByUserId,
                 createdByUsername, lastUpdatedByUserId, lastUpdatedByUsername, entityTypeOptions, calendarTypeOptions, remindByOptions,
-                frequencyOptions, repeatsOnDayOptions, meetingTime);
+                frequencyOptions, repeatsOnDayOptions);
     }
 
     public static CalendarData withRecurringDates(final CalendarData calendarData, final Collection<LocalDate> recurringDates,
@@ -97,7 +95,7 @@ public class CalendarData {
                 calendarData.createdDate, calendarData.lastUpdatedDate, calendarData.createdByUserId, calendarData.createdByUsername,
                 calendarData.lastUpdatedByUserId, calendarData.lastUpdatedByUsername, calendarData.entityTypeOptions,
                 calendarData.calendarTypeOptions, calendarData.remindByOptions, calendarData.frequencyOptions,
-                calendarData.repeatsOnDayOptions,  calendarData.meetingTime);
+                calendarData.repeatsOnDayOptions);
     }
 
     public static CalendarData withRecentEligibleMeetingDate(final CalendarData calendarData, final LocalDate recentEligibleMeetingDate) {
@@ -109,7 +107,7 @@ public class CalendarData {
                 recentEligibleMeetingDate, calendarData.createdDate, calendarData.lastUpdatedDate, calendarData.createdByUserId,
                 calendarData.createdByUsername, calendarData.lastUpdatedByUserId, calendarData.lastUpdatedByUsername,
                 calendarData.entityTypeOptions, calendarData.calendarTypeOptions, calendarData.remindByOptions,
-                calendarData.frequencyOptions, calendarData.repeatsOnDayOptions, calendarData.meetingTime);
+                calendarData.frequencyOptions, calendarData.repeatsOnDayOptions);
     }
 
     public static CalendarData sensibleDefaultsForNewCalendarCreation() {
@@ -149,13 +147,12 @@ public class CalendarData {
         final String createdByUsername = null;
         final Long lastUpdatedByUserId = null;
         final String lastUpdatedByUsername = null;
-        final LocalTime meetingTime = null;
 
         return new CalendarData(id, calendarInstanceId, entityId, entityType, title, description, location, startDate, endDate, duration,
                 type, repeating, recurrence, frequency, interval, repeatsOnDay, remindBy, firstReminder, secondReminder, recurringDates,
                 nextTenRecurringDates, humanReadable, recentEligibleMeetingDate, createdDate, lastUpdatedDate, createdByUserId,
                 createdByUsername, lastUpdatedByUserId, lastUpdatedByUsername, entityTypeOptions, calendarTypeOptions, remindByOptions,
-                frequencyOptions, repeatsOnDayOptions, meetingTime);
+                frequencyOptions, repeatsOnDayOptions);
     }
 
     public static CalendarData withTemplateOptions(final CalendarData calendarData, final List<EnumOptionData> entityTypeOptions,
@@ -170,7 +167,7 @@ public class CalendarData {
                 calendarData.recentEligibleMeetingDate, calendarData.createdDate, calendarData.lastUpdatedDate,
                 calendarData.createdByUserId, calendarData.createdByUsername, calendarData.lastUpdatedByUserId,
                 calendarData.lastUpdatedByUsername, entityTypeOptions, calendarTypeOptions, remindByOptions, repeatsOptions,
-                repeatsOnDayOptions, calendarData.meetingTime);
+                repeatsOnDayOptions);
     }
 
     private CalendarData(final Long id, final Long calendarInstanceId, final Long entityId, final EnumOptionData entityType,
@@ -182,7 +179,7 @@ public class CalendarData {
             final LocalDate createdDate, final LocalDate lastUpdatedDate, final Long createdByUserId, final String createdByUsername,
             final Long lastUpdatedByUserId, final String lastUpdatedByUsername, final List<EnumOptionData> entityTypeOptions,
             final List<EnumOptionData> calendarTypeOptions, final List<EnumOptionData> remindByOptions,
-            final List<EnumOptionData> repeatsOptions, final List<EnumOptionData> repeatsOnDayOptions, final LocalTime meetingTime) {
+            final List<EnumOptionData> repeatsOptions, final List<EnumOptionData> repeatsOnDayOptions) {
         this.id = id;
         this.calendarInstanceId = calendarInstanceId;
         this.entityId = entityId;
@@ -217,7 +214,6 @@ public class CalendarData {
         this.remindByOptions = remindByOptions;
         this.frequencyOptions = repeatsOptions;
         this.repeatsOnDayOptions = repeatsOnDayOptions;
-        this.meetingTime = meetingTime;
     }
 
     public Long getId() {
