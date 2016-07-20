@@ -12,12 +12,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.joda.time.MonthDay;
 import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.infrastructure.security.domain.BasicPasswordEncodablePlatformUser;
@@ -164,18 +162,6 @@ public final class JsonCommand {
         return this.productId;
     }
 
-    private boolean differenceExistsTime(final LocalDateTime baseValue, final LocalDateTime workingCopyValue) {
-        boolean differenceExists = false;
-
-        if (baseValue != null) {
-            differenceExists = !baseValue.equals(workingCopyValue);
-        } else {
-            differenceExists = workingCopyValue != null;
-        }
-
-        return differenceExists;
-    }
-    
     private boolean differenceExists(final LocalDate baseValue, final LocalDate workingCopyValue) {
         boolean differenceExists = false;
 
@@ -286,25 +272,7 @@ public final class JsonCommand {
         }
         return isChangeInLocalDateParameterNamed(parameterName, localDate);
     }
-    
-    public boolean isChangeInTimeParameterNamed(final String parameterName, final Date existingValue, final String timeFormat) {
-        LocalDateTime time = null;
-        if (existingValue != null) {
-            DateTimeFormatter timeFormtter = DateTimeFormat.forPattern(timeFormat);
-            time = LocalDateTime.parse(existingValue.toString(), timeFormtter);
-        }
-        return isChangeInLocalTimeParameterNamed(parameterName, time);
-    }
 
-    public boolean isChangeInLocalTimeParameterNamed(final String parameterName, final LocalDateTime existingValue) {
-        boolean isChanged = false;
-        if (parameterExists(parameterName)) {
-            final LocalDateTime workingValue = localTimeValueOfParameterNamed(parameterName);
-            isChanged = differenceExistsTime(existingValue, workingValue);
-        }
-        return isChanged;
-    }
-    
     public boolean isChangeInLocalDateParameterNamed(final String parameterName, final LocalDate existingValue) {
         boolean isChanged = false;
         if (parameterExists(parameterName)) {
@@ -316,10 +284,6 @@ public final class JsonCommand {
 
     public LocalDate localDateValueOfParameterNamed(final String parameterName) {
         return this.fromApiJsonHelper.extractLocalDateNamed(parameterName, this.parsedCommand);
-    }
-    
-    public LocalDateTime localTimeValueOfParameterNamed(final String parameterName) {
-        return this.fromApiJsonHelper.extractLocalTimeNamed(parameterName, this.parsedCommand);
     }
 
     public MonthDay extractMonthDayNamed(final String parameterName) {
