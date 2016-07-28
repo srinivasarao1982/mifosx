@@ -32,9 +32,11 @@ import org.mifosplatform.portfolio.calendar.exception.CalendarInstanceNotFoundEx
 import org.mifosplatform.portfolio.calendar.exception.CalendarNotFoundException;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepository;
+import org.mifosplatform.portfolio.collectionsheet.CollectionSheetConstants;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.group.domain.GroupRepository;
 import org.mifosplatform.portfolio.group.exception.ClientNotInGroupException;
+import org.mifosplatform.portfolio.group.exception.CollectionSheetHasAlreadyBeenSubmittedException;
 import org.mifosplatform.portfolio.meeting.attendance.domain.ClientAttendance;
 import org.mifosplatform.portfolio.meeting.data.MeetingDataValidator;
 import org.mifosplatform.portfolio.meeting.domain.Meeting;
@@ -262,12 +264,20 @@ public class MeetingWritePlatformServiceJpaRepositoryImpl implements MeetingWrit
     public void updateCollectionSheetAttendance(final JsonCommand command) {
         final Date meetingDate = command.DateValueOfParameterNamed(transactionDateParamName);
 
+        final Boolean forcedSubmitOfCollectionSheet=command.booleanPrimitiveValueOfParameterNamed(CollectionSheetConstants.forcedSubmitOfCollectionSheet);
         try {
             final CalendarInstance calendarInstance = getCalendarInstance(command);
             final Meeting meeting = this.meetingRepository.findByCalendarInstanceIdAndMeetingDate(calendarInstance.getId(), meetingDate);
 
             // create new meeting
-            final Meeting newMeeting = (meeting != null) ? meeting : Meeting.createNew(calendarInstance, meetingDate);
+            Meeting newMeeting = null;
+            if (meeting == null) {
+                newMeeting = Meeting.createNew(calendarInstance, meetingDate);
+            } else {
+                if (!forcedSubmitOfCollectionSheet) { throw new CollectionSheetHasAlreadyBeenSubmittedException(new LocalDate(meetingDate)); }
+                newMeeting = meeting;
+            }
+          //  final Meeting newMeeting = (meeting != null) ? meeting : Meeting.createNew(calendarInstance, meetingDate);
 
             final Collection<ClientAttendance> clientsAttendance = getClientsAttendance(newMeeting, command);
             if (clientsAttendance != null && !clientsAttendance.isEmpty()) {
