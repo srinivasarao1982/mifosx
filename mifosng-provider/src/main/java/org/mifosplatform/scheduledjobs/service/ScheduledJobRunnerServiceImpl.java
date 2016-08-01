@@ -351,4 +351,15 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
 
     }
 
+    @Transactional
+    @Override
+    @CronTarget(jobName = JobName.GENERATE_CENTER_MEETING_SCHEDULE)
+    public void generateCenterMeetingSchedule() {
+
+        final JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSourceServiceFactory.determineDataSourceService().retrieveDataSource());
+
+        final int result = jdbcTemplate.update("CALL ct_futuremeeting()");
+
+        logger.info(ThreadLocalContextUtil.getTenant().getName() + ": Results affected by update: " + result);
+    }
 }
