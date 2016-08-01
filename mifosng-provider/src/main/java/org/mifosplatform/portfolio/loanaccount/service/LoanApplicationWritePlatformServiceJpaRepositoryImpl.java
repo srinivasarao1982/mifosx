@@ -8,6 +8,7 @@ package org.mifosplatform.portfolio.loanaccount.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,9 @@ import org.mifosplatform.portfolio.loanaccount.domain.LoanRepaymentScheduleTrans
 import org.mifosplatform.portfolio.loanaccount.domain.LoanRepository;
 import org.mifosplatform.portfolio.loanaccount.domain.LoanStatus;
 import org.mifosplatform.portfolio.loanaccount.domain.LoanSummaryWrapper;
+import org.mifosplatform.portfolio.loanaccount.domain.LoanTransaction;
+import org.mifosplatform.portfolio.loanaccount.domain.LoanTransactionRepository;
+import org.mifosplatform.portfolio.loanaccount.exception.DeleteLoanException;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanApplicationDateException;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanApplicationNotInSubmittedAndPendingApprovalStateCannotBeDeleted;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanApplicationNotInSubmittedAndPendingApprovalStateCannotBeModified;
@@ -143,6 +147,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
     private final ConfigurationDomainService configurationDomainService;
     private final LoanScheduleAssembler loanScheduleAssembler;
     private final ClientExtAssembler clientExtAssembler;
+    private final LoanTransactionRepository loanTransactionRepository;
 
     @Autowired
     public LoanApplicationWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final FromJsonHelper fromJsonHelper,
@@ -162,7 +167,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository,
             final BusinessEventNotifierService businessEventNotifierService, final ConfigurationDomainService configurationDomainService,
             final LoanScheduleAssembler loanScheduleAssembler,
-            final ClientExtAssembler clientExtAssembler) {
+            final ClientExtAssembler clientExtAssembler,
+            final LoanTransactionRepository loanTransactionRepository) {
         this.context = context;
         this.fromJsonHelper = fromJsonHelper;
         this.loanApplicationTransitionApiJsonValidator = loanApplicationTransitionApiJsonValidator;
@@ -193,6 +199,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         this.configurationDomainService = configurationDomainService;
         this.loanScheduleAssembler = loanScheduleAssembler;
         this.clientExtAssembler= clientExtAssembler;
+        this.loanTransactionRepository=loanTransactionRepository;
     }
 
     private LoanLifecycleStateMachine defaultLoanLifecycleStateMachine() {
@@ -834,7 +841,10 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         checkClientOrGroupActive(loan);
 
         if (loan.isNotSubmittedAndPendingApproval()) { throw new LoanApplicationNotInSubmittedAndPendingApprovalStateCannotBeDeleted(loanId); }
-
+        Collection<LoanTransaction> loanTransaction=loanTransactionRepository.findLoanTransactionByLoanId(loanId);
+        if(!loanTransaction.isEmpty()){
+        	throw new DeleteLoanException();
+        }
         final List<Note> relatedNotes = this.noteRepository.findByLoanId(loan.getId());
         this.noteRepository.deleteInBatch(relatedNotes);
 
