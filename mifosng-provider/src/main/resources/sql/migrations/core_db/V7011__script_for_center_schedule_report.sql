@@ -3,7 +3,7 @@ CREATE TABLE `ct_meeting_schedule` (
 	`officeId` BIGINT(20) NOT NULL,
 	`center_id` BIGINT(20) NULL DEFAULT NULL,
 	`center_name` VARCHAR(100) NULL DEFAULT NULL,
-	`staff_name` VARCHAR(100) NOT NULL,
+	`staff_name` VARCHAR(100) NULL DEFAULT NULL,
 	`no_of_clients` INT(11) NULL DEFAULT NULL,
 	`installment_no` INT(11) NULL DEFAULT NULL,
 	`demand_Amount` DECIMAL(10,0) NULL DEFAULT NULL,
@@ -17,7 +17,7 @@ AUTO_INCREMENT=0;
 
 INSERT INTO `job` (`name`, `display_name`, `cron_expression`, `create_time`, `task_priority`, `group_name`, `previous_run_start_time`, `next_run_time`, `job_key`, `initializing_errorlog`, `is_active`, `currently_running`, `updates_allowed`, `scheduler_group`, `is_misfired`) VALUES ('Generate Center Meeting Schedule', 'Generate Center Meeting Schedule', '0 0 1 1/1 * ? *', '2016-07-28 23:42:54', 5, NULL, '2016-07-29 00:33:23', '2016-07-29 12:00:00', 'Generate Center Meeting ScheduleJobDetail1 _ DEFAULT', NULL, 1, 1, 1, 0, 0);
 
-INSERT INTO `stretchy_report` (`report_name`, `report_type`, `report_subtype`, `report_category`, `report_sql`, `description`, `core_report`, `use_report`) VALUES ('Center Schedule As On Date', 'Pentaho', NULL, NULL, NULL, NULL, 0, 0);
+INSERT INTO `stretchy_report` (`report_name`, `report_type`, `report_subtype`, `report_category`, `report_sql`, `description`, `core_report`, `use_report`) VALUES ('Center Schedule As On Date', 'Pentaho', NULL, NULL, NULL, NULL, 0, 1);
 
 INSERT INTO `stretchy_report_parameter` (`report_id`, `parameter_id`, `report_parameter_name`) VALUES 
 ((select id from stretchy_report where report_name='Center Schedule As On Date'), 
@@ -61,7 +61,7 @@ Declare  calenderInstance Cursor for
 	       FROM  m_calendar_instance mcal	  
 	       INNER JOIN m_group center on center.id=mcal.entity_id and mcal.entity_type_enum=4 and center.level_id=1 
 	       LEFT JOIN m_calendar mc on mc.id =mcal.calendar_id 
-	       LEFT JOIN m_staff staff on staff.id=center.staff_id;
+	       LEFT JOIN m_staff staff on staff.id=center.staff_id; 
  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
      
  TRUNCATE table  ct_meeting_schedule;
@@ -78,11 +78,10 @@ END IF;
 SET nextmeetiingDate := startDate;
 IF freq ='MONTHLY' THEN             
 WHILE nextmeetiingDate < curdate() DO         
-SET nextmeetiingDate := DATE_ADD(nextmeetiingDate,INTERVAL intervals MONTH);	         	
+SET nextmeetiingDate := DATE_ADD(nextmeetiingDate,INTERVAL intervals MONTH);        	
 END WHILE;
 IF   nextmeetiingDate =curdate() THEN
-SET futuremeetingDate:= DATE_ADD(nextmeetiingDate,INTERVAL intervals MONTH);	
-SET nextmeetiingDate:= futuremeetingDate;
+SET futuremeetingDate:= DATE_ADD(nextmeetiingDate,INTERVAL intervals MONTH);
 END IF;   
             
 ELSEIF freq ='WEEKLY' THEN 			       
@@ -112,17 +111,15 @@ IF DAYOFWEEK(nextmeetiingDate) >  days THEN
  SET nextmeetiingDate := DATE_ADD(nextmeetiingDate,INTERVAL (DAYOFWEEK(nextmeetiingDate)-days+7) day);
  ELSEIF  nextmeetiingDate = CURDATE() THEN
  SET futuremeetingDate:= DATE_ADD(nextmeetiingDate,INTERVAL intervals WEEK);
- SET nextmeetiingDate := nextmeetiingDate;
  END IF;					  
  END IF;
- ELSE
+ ELSEIF freq ='DAILY' THEN
        
  WHILE nextmeetiingDate < curdate() DO
  SET nextmeetiingDate := DATE_ADD(nextmeetiingDate,INTERVAL intervals DAY);		         
   END WHILE;	
   IF   nextmeetiingDate =curdate() THEN
-  SET futuremeetingDate:= DATE_ADD(nextmeetiingDate,INTERVAL intervals DAY);	
-  SET nextmeetiingDate:= futuremeetingDate;
+  SET futuremeetingDate:= DATE_ADD(nextmeetiingDate,INTERVAL intervals DAY);   
    END IF;
   END IF; 
 			     select count(mgc.client_id) into noofClients from m_group_client mgc where mgc.group_id in (select id from m_group mg where mg.parent_id=centerId);
@@ -142,7 +139,9 @@ IF DAYOFWEEK(nextmeetiingDate) >  days THEN
                 SET noofClients:=NULL;
                 SET demandAmount:=NULL;
                 SET installments:=NULL;
-                SET staffName:=NULL;
+                SET staffName:=NULL;               
+               SET intervals :=1;
+	
 IF done=1 THEN
 LEAVE getCalenderId;
 END IF;     
