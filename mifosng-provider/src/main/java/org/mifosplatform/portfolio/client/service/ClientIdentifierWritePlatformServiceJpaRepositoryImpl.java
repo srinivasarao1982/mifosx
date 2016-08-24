@@ -195,8 +195,10 @@ public class ClientIdentifierWritePlatformServiceJpaRepositoryImpl implements Cl
     @Override
     public List<ClientIdentifier> addClientIdentifierService(final Client client, final JsonCommand command) {
         final JsonObject clientIdentifierDataObject = new JsonParser().parse(command.json()).getAsJsonObject();
+
         if (!clientIdentifierDataObject.has("clientIdentifierData")) { return null; }
         final JsonArray clientIdentifierDataArray = clientIdentifierDataObject.get("clientIdentifierData").getAsJsonArray();
+
         if (clientIdentifierDataArray != null && clientIdentifierDataArray.isJsonArray()) {
             final List<ClientIdentifier> clientIdentifiers = this.clientExtAssembler
                     .assembleDoumentIdentifiersDetails(clientIdentifierDataArray, client);
