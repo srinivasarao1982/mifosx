@@ -28,6 +28,8 @@ import static org.mifosplatform.portfolio.savings.SavingsApiConstants.overdraftL
 import static org.mifosplatform.portfolio.savings.SavingsApiConstants.productIdParamName;
 import static org.mifosplatform.portfolio.savings.SavingsApiConstants.submittedOnDateParamName;
 import static org.mifosplatform.portfolio.savings.SavingsApiConstants.withdrawalFeeForTransfersParamName;
+import static org.mifosplatform.portfolio.savings.SavingsApiConstants.dateParamName;
+import static org.mifosplatform.portfolio.savings.SavingsApiConstants.activeParamName;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -68,6 +70,37 @@ public class SavingsAccountDataValidator {
     @Autowired
     public SavingsAccountDataValidator(final FromJsonHelper fromApiJsonHelper) {
         this.fromApiJsonHelper = fromApiJsonHelper;
+    }
+    
+    public void validateForCreateActiveSavingsApplication(final String json) {
+        if (StringUtils.isBlank(json)) { throw new InvalidJsonException(); }
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
+                SavingsApiConstants.SAVINGS_ACCOUNT_CREATE_OR_ACTIVATE_DATA_PARAMETER);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME);
+        final JsonElement element = this.fromApiJsonHelper.parse(json);
+        final Long clientId = this.fromApiJsonHelper.extractLongNamed(clientIdParamName, element);
+        baseDataValidator.reset().parameter(clientIdParamName).value(clientId).notNull().longGreaterThanZero();
+
+        final Long productId = this.fromApiJsonHelper.extractLongNamed(productIdParamName, element);
+        baseDataValidator.reset().parameter(productIdParamName).value(productId).notNull().integerGreaterThanZero();
+
+        final LocalDate submittedOnDate = this.fromApiJsonHelper.extractLocalDateNamed(dateParamName, element);
+        baseDataValidator.reset().parameter(dateParamName).value(submittedOnDate).notNull();
+
+        if (this.fromApiJsonHelper.parameterExists(activeParamName, element)) {
+            final Boolean isActive = this.fromApiJsonHelper.extractBooleanNamed(activeParamName, element);
+            baseDataValidator.reset().parameter(activeParamName).value(isActive).ignoreIfNull().validateForBooleanValue();
+        }
+
+        final Long fieldOfficerId = this.fromApiJsonHelper.extractLongNamed(fieldOfficerIdParamName, element);
+        baseDataValidator.reset().parameter(fieldOfficerIdParamName).value(fieldOfficerId);
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+
     }
 
     public void validateForSubmit(final String json) {

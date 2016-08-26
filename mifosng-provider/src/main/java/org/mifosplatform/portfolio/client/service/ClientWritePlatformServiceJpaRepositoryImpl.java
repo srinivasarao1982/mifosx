@@ -273,20 +273,24 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             // For nirantara Address
-            final JsonArray addressArray = object.get("naddress").getAsJsonArray();
-            if (addressArray != null && addressArray.size()>0) {
-                final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
-                if (address != null && address.size() > 0) {
-                    newClient.updateAddressExt(address);
+            if (object.has("naddress")) {
+                final JsonArray addressArray = object.get("naddress").getAsJsonArray();
+                if (addressArray != null && addressArray.size() > 0) {
+                    final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
+                    if (address != null && address.size() > 0) {
+                        newClient.updateAddressExt(address);
+                    }
                 }
             }
 
             // For nirantara familyDetails
-            final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
-            if (familyDetailsArray != null && familyDetailsArray.size() > 0) {
-                List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, newClient);
-                if (familyDetails != null && familyDetails.size() > 0) {
-                    newClient.updateFamilyDetails(familyDetails);
+            if (object.has("familyDetails")) {
+                final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
+                if (familyDetailsArray != null && familyDetailsArray.size() > 0) {
+                    List<FamilyDetails> familyDetails = this.clientExtAssembler.assembleFamilyDetails(familyDetailsArray, newClient);
+                    if (familyDetails != null && familyDetails.size() > 0) {
+                        newClient.updateFamilyDetails(familyDetails);
+                    }
                 }
             }
 
@@ -294,21 +298,25 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);
 
             // Occupation Details
-            final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
-            if (occupationDetailsArray != null && occupationDetailsArray.size() > 0) {
-                List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray,
-                        newClient);
-                if (occupationDetails != null && occupationDetails.size() > 0) {
-                    newClient.updateOccupationDetails(occupationDetails);
+            if (object.has("cfaOccupations")) {
+                final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
+                if (occupationDetailsArray != null && occupationDetailsArray.size() > 0) {
+                    List<OccupationDetails> occupationDetails = this.clientExtAssembler.assembleOccupationDetails(occupationDetailsArray,
+                            newClient);
+                    if (occupationDetails != null && occupationDetails.size() > 0) {
+                        newClient.updateOccupationDetails(occupationDetails);
+                    }
                 }
             }
 
             // For nirantara Nominee Details
-            final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
-            if (nomineeDetailsArray != null && nomineeDetailsArray.size() > 0) {
-                List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, newClient);
-                if (nomineeDetails != null && nomineeDetails.size() > 0) {
-                    newClient.updateNomineeDetails(nomineeDetails);
+            if (object.has("nomineeDetails")) {
+                final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
+                if (nomineeDetailsArray != null && nomineeDetailsArray.size() > 0) {
+                    List<NomineeDetails> nomineeDetails = this.clientExtAssembler.assembleNomineeDetails(nomineeDetailsArray, newClient);
+                    if (nomineeDetails != null && nomineeDetails.size() > 0) {
+                        newClient.updateNomineeDetails(nomineeDetails);
+                    }
                 }
             }
 
@@ -522,8 +530,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private CommandProcessingResult openSavingsAccount(final Client client, final DateTimeFormatter fmt) {
         CommandProcessingResult commandProcessingResult = CommandProcessingResult.empty();
         if (client.isActive() && client.SavingsProduct() != null) {
+            Staff staff = null;
             SavingsAccountDataDTO savingsAccountDataDTO = new SavingsAccountDataDTO(client, null, client.SavingsProduct(),
-                    client.getActivationLocalDate(), client.activatedBy(), fmt);
+                    staff, client.getActivationLocalDate(), client.activatedBy(), fmt);
             commandProcessingResult = this.savingsApplicationProcessWritePlatformService.createActiveApplication(savingsAccountDataDTO);
             if (commandProcessingResult.getSavingsId() != null) {
                 SavingsAccount savingsAccount = this.savingsRepository.findOne(commandProcessingResult.getSavingsId());

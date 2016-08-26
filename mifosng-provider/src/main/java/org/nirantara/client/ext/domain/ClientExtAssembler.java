@@ -62,7 +62,7 @@ public class ClientExtAssembler {
     public ClientExt assembleClientExt(final JsonCommand command, final Client newClient) {
 
         final JsonObject formDataObject = new JsonParser().parse(command.json()).getAsJsonObject();
-
+        if (!formDataObject.has("clientExt")) { return null; }
         final JsonElement element = formDataObject.get("clientExt");
 
         final Long id = this.fromApiJsonHelper.extractLongNamed("id", element);

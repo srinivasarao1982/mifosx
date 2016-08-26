@@ -1003,6 +1003,14 @@ public class CommandWrapperBuilder {
         this.href = "/savingsaccounts/template";
         return this;
     }
+    
+    public CommandWrapperBuilder createOrActivateSavings() {
+        this.actionName = "CREATE";
+        this.entityName = "CREATEORACTIVATESAVINGSACCOUNT";
+        this.entityId = null;
+        this.href = "/savingsaccounts/createOrActivateSavingsAccount";
+        return this;
+    }
 
     public CommandWrapperBuilder updateSavingsAccount(final Long accountId) {
         this.actionName = "UPDATE";
