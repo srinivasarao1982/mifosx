@@ -105,6 +105,7 @@ import org.mifosplatform.portfolio.loanaccount.data.LoanChargeData;
 import org.mifosplatform.portfolio.loanaccount.data.LoanChargePaidByData;
 import org.mifosplatform.portfolio.loanaccount.data.LoanInstallmentChargeData;
 import org.mifosplatform.portfolio.loanaccount.data.ScheduleGeneratorDTO;
+import org.mifosplatform.portfolio.loanaccount.data.ScheduleGeneratorData;
 import org.mifosplatform.portfolio.loanaccount.domain.ChangedTransactionDetail;
 import org.mifosplatform.portfolio.loanaccount.domain.DefaultLoanLifecycleStateMachine;
 import org.mifosplatform.portfolio.loanaccount.domain.Loan;
@@ -126,11 +127,11 @@ import org.mifosplatform.portfolio.loanaccount.domain.LoanTransactionType;
 import org.mifosplatform.portfolio.loanaccount.exception.ExceedingTrancheCountException;
 import org.mifosplatform.portfolio.loanaccount.exception.InvalidPaidInAdvanceAmountException;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanDisbursalException;
+import org.mifosplatform.portfolio.loanaccount.exception.LoanMultiDisbursementException;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanOfficerAssignmentException;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanOfficerUnassignmentException;
 import org.mifosplatform.portfolio.loanaccount.exception.LoanTransactionNotFoundException;
 import org.mifosplatform.portfolio.loanaccount.exception.MultiDisbursementDataRequiredException;
-import org.mifosplatform.portfolio.loanaccount.exception.LoanMultiDisbursementException;
 import org.mifosplatform.portfolio.loanaccount.guarantor.service.GuarantorDomainService;
 import org.mifosplatform.portfolio.loanaccount.loanschedule.data.OverdueLoanScheduleData;
 import org.mifosplatform.portfolio.loanaccount.loanschedule.domain.DefaultScheduledDateGenerator;
@@ -2822,6 +2823,69 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         return transaction;
     }
+    
+	@Override
+	@CronTarget(jobName = JobName.GENERATE_CORRECT_REPAYMENT_SCHEDULE)
+	public void generateCorrectRepaymentSchedule() {
+		Collection<ScheduleGeneratorData> scheduleGeneratorData = this.loanReadPlatformService
+				.retriveloanIdAndFirstRepaymentDate();
+		for (ScheduleGeneratorData ScheduleGeneratorDataforLoanId : scheduleGeneratorData) {
+			Loan loan = this.loanAssembler
+					.assembleFrom(ScheduleGeneratorDataforLoanId.getLoanId());
+			final CalendarInstance calendarInstance = this.calendarInstanceRepository
+					.findCalendarInstaneByEntityId(loan.getId(),
+							CalendarEntityType.LOANS.getValue());
+			final LocalDate calculatedRepaymentsStartingFromDate = this.loanAccountDomainService
+					.getCalculatedRepaymentsStartingFromDate(
+							loan.getDisbursementDate(), loan, calendarInstance);
+			final boolean isHolidayEnabled = this.configurationDomainService
+					.isRescheduleRepaymentsOnHolidaysEnabled();
+			final List<Holiday> holidays = this.holidayRepository
+					.findByOfficeIdAndGreaterThanDate(loan.getOfficeId(), loan
+							.getDisbursementDate().toDate());
+			final WorkingDays workingDays = this.workingDaysRepository
+					.findOne();
+			AppUser currentUser = this.context.getAuthenticatedUserIfPresent();
+			final MonetaryCurrency currency = loan.getCurrency();
+			final ApplicationCurrency applicationCurrency = this.applicationCurrencyRepository
+					.findOneWithNotFoundDetection(currency);
+			CalendarInstance restCalendarInstance = null;
+			CalendarInstance compoundingCalendarInstance = null;
+			LocalDate recalculateFrom = null;
+			Long overdurPenaltyWaitPeriod = null;
+
+			HolidayDetailDTO holidayDetailDTO = new HolidayDetailDTO(
+					isHolidayEnabled, holidays, workingDays);
+			ScheduleGeneratorDTO scheduleGeneratorDTO = new ScheduleGeneratorDTO(
+					this.loanScheduleFactory, applicationCurrency,
+					ScheduleGeneratorDataforLoanId.getNewfirstRepaymentDate(),
+					holidayDetailDTO, restCalendarInstance,
+					compoundingCalendarInstance, recalculateFrom,
+					overdurPenaltyWaitPeriod);
+
+			loan.regenerateRepaymentSchedule(scheduleGeneratorDTO, currentUser);
+			ChangedTransactionDetail changedTransactionDetail = loan
+					.handleRegenerateRepaymentScheduleWithInterestRecalculation(
+							scheduleGeneratorDTO, currentUser);
+			saveLoanWithDataIntegrityViolationChecks(loan);
+			if (changedTransactionDetail != null) {
+				for (final Map.Entry<Long, LoanTransaction> mapEntry : changedTransactionDetail
+						.getNewTransactionMappings().entrySet()) {
+					this.loanTransactionRepository.save(mapEntry.getValue());
+					// update loan with references to the newly created
+					// transactions
+					loan.getLoanTransactions().add(mapEntry.getValue());
+					this.accountTransfersWritePlatformService
+							.updateLoanTransaction(mapEntry.getKey(),
+									mapEntry.getValue());
+				}
+			}
+
+		}
+
+	}
+
+    //}
 
     @Override
     @CronTarget(jobName = JobName.RECALCULATE_INTEREST_FOR_LOAN)

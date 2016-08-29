@@ -25,8 +25,8 @@ public enum JobName {
     ADD_PERIODIC_ACCRUAL_ENTRIES("Add Periodic Accrual Transactions"),
     RECALCULATE_INTEREST_FOR_LOAN("Recalculate Interest For Loans"),
     GENERATE_RD_SCEHDULE("Generate Mandatory Savings Schedule"),
-    GENERATE_CENTER_MEETING_SCHEDULE("Generate Center Meeting Schedule");
-
+    GENERATE_CENTER_MEETING_SCHEDULE("Generate Center Meeting Schedule"),
+    GENERATE_CORRECT_REPAYMENT_SCHEDULE("Generate Correct Repayment Schedule");
     private final String name;
 
     private JobName(final String name) {
