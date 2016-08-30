@@ -21,6 +21,7 @@ import org.mifosplatform.portfolio.loanaccount.data.LoanTermVariationsData;
 import org.mifosplatform.portfolio.loanaccount.data.LoanTransactionData;
 import org.mifosplatform.portfolio.loanaccount.data.PaidInAdvanceData;
 import org.mifosplatform.portfolio.loanaccount.data.RepaymentScheduleRelatedLoanData;
+import org.mifosplatform.portfolio.loanaccount.data.ScheduleGeneratorData;
 import org.mifosplatform.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
 import org.mifosplatform.portfolio.loanaccount.loanschedule.data.LoanSchedulePeriodData;
 import org.mifosplatform.portfolio.loanaccount.loanschedule.data.OverdueLoanScheduleData;
@@ -114,5 +115,6 @@ public interface LoanReadPlatformService {
 
     Collection<CalendarData> retrieveCalendarsForCenter(final Long centerId);
 
+    Collection<ScheduleGeneratorData>retriveloanIdAndFirstRepaymentDate();  
 
 }

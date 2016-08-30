@@ -82,6 +82,7 @@ import org.mifosplatform.portfolio.loanaccount.data.LoanTransactionData;
 import org.mifosplatform.portfolio.loanaccount.data.LoanTransactionEnumData;
 import org.mifosplatform.portfolio.loanaccount.data.PaidInAdvanceData;
 import org.mifosplatform.portfolio.loanaccount.data.RepaymentScheduleRelatedLoanData;
+import org.mifosplatform.portfolio.loanaccount.data.ScheduleGeneratorData;
 import org.mifosplatform.portfolio.loanaccount.domain.Loan;
 import org.mifosplatform.portfolio.loanaccount.domain.LoanRepaymentScheduleInstallment;
 import org.mifosplatform.portfolio.loanaccount.domain.LoanRepaymentScheduleTransactionProcessorFactory;
@@ -1763,6 +1764,53 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             return null;
         }
     }
+    
+	private static final class ScheduleGeneratorMapper implements
+			RowMapper<ScheduleGeneratorData> {
+
+		private final String schema;
+
+		public ScheduleGeneratorMapper() {
+			final StringBuilder builder = new StringBuilder(200);
+			builder.append("select ");
+			builder.append("dl.loan_id as loanId,dl.first_repayment_date as firstRepaymentDate,  ");
+			builder.append("dl.new_first_repayment_date as newFirstRepaymentdate ");
+
+			builder.append("from deleteme dl ");
+
+			this.schema = builder.toString();
+		}
+
+		public String schema() {
+			return this.schema;
+		}
+
+		@Override
+		public ScheduleGeneratorData mapRow(final ResultSet rs,
+				@SuppressWarnings("unused") final int rowNum)
+				throws SQLException {
+
+			final Long loanId = rs.getLong("loanId");
+			final LocalDate firstRepaymentDate = JdbcSupport.getLocalDate(rs,
+					"firstRepaymentDate");
+			final LocalDate newFirstRepaymentdate = JdbcSupport.getLocalDate(
+					rs, "newFirstRepaymentdate");
+
+			return ScheduleGeneratorData.correctScheduleGeneratedData(loanId,
+					firstRepaymentDate, newFirstRepaymentdate);
+		}
+	}
+
+	@Override
+	public Collection<ScheduleGeneratorData> retriveloanIdAndFirstRepaymentDate() {
+		ScheduleGeneratorMapper sgm = new ScheduleGeneratorMapper();
+		try {
+			return this.jdbcTemplate.query(sgm.schema().toString(), sgm,
+					new Object[] {});
+		} catch (final EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 
     @Override
     public Collection<LoanTransactionData> retrieveWaiverLoanTransactions(final Long loanId) {
@@ -1951,5 +1999,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 retrieveTotalPaidInAdvance(loan.getId()).getPaidInAdvance(), null, null, null, null, null, null, paymentOptions, null,
                 null, null, null, false);
     }
+
+	
 
 }
