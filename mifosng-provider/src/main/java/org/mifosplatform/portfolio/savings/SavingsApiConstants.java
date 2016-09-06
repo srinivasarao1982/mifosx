@@ -187,6 +187,10 @@ public class SavingsApiConstants {
             // withdrawalFeeAmountParamName, withdrawalFeeTypeParamName,
             withdrawalFeeForTransfersParamName, feeAmountParamName, feeOnMonthDayParamName, chargesParamName, allowOverdraftParamName,
             overdraftLimitParamName, minRequiredBalanceParamName, enforceMinRequiredBalanceParamName));
+    
+    public static final Set<String> SAVINGS_ACCOUNT_CREATE_OR_ACTIVATE_DATA_PARAMETER = new HashSet<>(Arrays.asList(localeParamName,
+            dateFormatParamName, monthDayFormatParamName, staffIdParamName, accountNoParamName, clientIdParamName, productIdParamName,
+            fieldOfficerIdParamName, dateParamName, activeParamName));
 
     /**
      * These parameters will match the class level parameters of

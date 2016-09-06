@@ -266,7 +266,7 @@ public class SavingsAccountAssembler {
      * request inheriting details where relevant from chosen
      * {@link SavingsProduct}.
      */
-    public SavingsAccount assembleFrom(final Client client, final Group group, final SavingsProduct product, final LocalDate appliedonDate,
+    public SavingsAccount assembleFrom(final Client client, final Group group, final SavingsProduct product, final Staff staff, final LocalDate appliedonDate,
             final AppUser appliedBy) {
 
         AccountType accountType = AccountType.INVALID;
@@ -290,7 +290,7 @@ public class SavingsAccountAssembler {
 
         final Set<SavingsAccountCharge> charges = this.savingsAccountChargeAssembler.fromSavingsProduct(product);
 
-        final SavingsAccount account = SavingsAccount.createNewApplicationForSubmittal(client, group, product, null, null, null,
+        final SavingsAccount account = SavingsAccount.createNewApplicationForSubmittal(client, group, product, staff, null, null,
                 accountType, appliedonDate, appliedBy, product.nominalAnnualInterestRate(), product.interestCompoundingPeriodType(),
                 product.interestPostingPeriodType(), product.interestCalculationType(), product.interestCalculationDaysInYearType(),
                 product.minRequiredOpeningBalance(), product.lockinPeriodFrequency(), product.lockinPeriodFrequencyType(),
