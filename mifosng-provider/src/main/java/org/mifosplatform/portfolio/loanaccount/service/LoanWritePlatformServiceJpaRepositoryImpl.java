@@ -100,6 +100,7 @@ import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.group.exception.GroupNotActiveException;
 import org.mifosplatform.portfolio.loanaccount.api.LoanApiConstants;
 import org.mifosplatform.portfolio.loanaccount.command.LoanUpdateCommand;
+import org.mifosplatform.portfolio.loanaccount.data.AdjustedLoanTransactionDetails;
 import org.mifosplatform.portfolio.loanaccount.data.HolidayDetailDTO;
 import org.mifosplatform.portfolio.loanaccount.data.LoanChargeData;
 import org.mifosplatform.portfolio.loanaccount.data.LoanChargePaidByData;
@@ -205,7 +206,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     private final AccountTransferDetailRepository accountTransferDetailRepository;
     private final BusinessEventNotifierService businessEventNotifierService;
     private final GuarantorDomainService guarantorDomainService;
-
     @Autowired
     public LoanWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
             final LoanEventApiJsonValidator loanEventApiJsonValidator,
@@ -808,150 +808,61 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         changes.put("loanTransactions", transactionIds);
         return changes;
     }
-
+    
     @Transactional
     @Override
     public CommandProcessingResult adjustLoanTransaction(final Long loanId, final Long transactionId, final JsonCommand command) {
 
         AppUser currentUser = getAppUserIfPresent();
-
+        AdjustedLoanTransactionDetails changedLoanTransactionDetails = null;
         this.loanEventApiJsonValidator.validateTransaction(command.json());
-
-        final Loan loan = this.loanAssembler.assembleFrom(loanId);
-        checkClientOrGroupActive(loan);
-        final LoanTransaction transactionToAdjust = this.loanTransactionRepository.findOne(transactionId);
-        if (transactionToAdjust == null) { throw new LoanTransactionNotFoundException(transactionId); }
-        this.businessEventNotifierService.notifyBusinessEventToBeExecuted(BUSINESS_EVENTS.LOAN_ADJUST_TRANSACTION,
-                constructEntityMap(BUSINESS_ENTITY.LOAN_ADJUSTED_TRANSACTION, transactionToAdjust));
-        if (this.accountTransfersReadPlatformService.isAccountTransfer(transactionId, PortfolioAccountType.LOAN)) { throw new PlatformServiceUnavailableException(
-                "error.msg.loan.transfer.transaction.update.not.allowed", "Loan transaction:" + transactionId
-                        + " update not allowed as it involves in account transfer", transactionId); }
-        if (loan.isClosedWrittenOff()) { throw new PlatformServiceUnavailableException("error.msg.loan.written.off.update.not.allowed",
-                "Loan transaction:" + transactionId + " update not allowed as loan status is written off", transactionId); }
-
+        Loan loan = this.loanAssembler.assembleFrom(loanId);
+        Map<String, Object> changes = new LinkedHashMap<>();
         final LocalDate transactionDate = command.localDateValueOfParameterNamed("transactionDate");
         final BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed("transactionAmount");
         final String txnExternalId = command.stringValueOfParameterNamedAllowingNull("externalId");
-
-        final Map<String, Object> changes = new LinkedHashMap<>();
-        changes.put("transactionDate", command.stringValueOfParameterNamed("transactionDate"));
-        changes.put("transactionAmount", command.stringValueOfParameterNamed("transactionAmount"));
-        changes.put("locale", command.locale());
-        changes.put("dateFormat", command.dateFormat());
-        changes.put("paymentTypeId", command.stringValueOfParameterNamed("paymentTypeId"));
-
-        final List<Long> existingTransactionIds = new ArrayList<>();
-        final List<Long> existingReversedTransactionIds = new ArrayList<>();
-
-        final Money transactionAmountAsMoney = Money.of(loan.getCurrency(), transactionAmount);
-        final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService.createPaymentDetail(command, changes);
-        LoanTransaction newTransactionDetail = LoanTransaction.repayment(loan.getOffice(), transactionAmountAsMoney, paymentDetail,
-                transactionDate, txnExternalId, DateUtils.getLocalDateTimeOfTenant(), currentUser);
-        if (transactionToAdjust.isInterestWaiver()) {
-            Money unrecognizedIncome = transactionAmountAsMoney.zero();
-            Money interestComponent = transactionAmountAsMoney;
-            if (loan.isPeriodicAccrualAccountingEnabledOnLoanProduct()) {
-                Money receivableInterest = loan.getReceivableInterest(transactionDate);
-                if (transactionAmountAsMoney.isGreaterThan(receivableInterest)) {
-                    interestComponent = receivableInterest;
-                    unrecognizedIncome = transactionAmountAsMoney.minus(receivableInterest);
-                }
-            }
-            newTransactionDetail = LoanTransaction.waiver(loan.getOffice(), loan, transactionAmountAsMoney, transactionDate,
-                    interestComponent, unrecognizedIncome, DateUtils.getLocalDateTimeOfTenant(), currentUser);
-        }
-
-        final boolean allowTransactionsOnHoliday = this.configurationDomainService.allowTransactionsOnHolidayEnabled();
-        final List<Holiday> holidays = this.holidayRepository
-                .findByOfficeIdAndGreaterThanDate(loan.getOfficeId(), transactionDate.toDate());
-        final WorkingDays workingDays = this.workingDaysRepository.findOne();
-        final boolean allowTransactionsOnNonWorkingDay = this.configurationDomainService.allowTransactionsOnNonWorkingDayEnabled();
-
-        CalendarInstance restCalendarInstance = null;
-        CalendarInstance compoundingCalendarInstance = null;
-        ApplicationCurrency applicationCurrency = null;
-        LocalDate calculatedRepaymentsStartingFromDate = null;
-        boolean isHolidayEnabled = false;
-        LocalDate recalculateFrom = null;
-        Long overdurPenaltyWaitPeriod = null;
-
-        if (loan.repaymentScheduleDetail().isInterestRecalculationEnabled()) {
-            restCalendarInstance = calendarInstanceRepository.findCalendarInstaneByEntityId(loan.loanInterestRecalculationDetailId(),
-                    CalendarEntityType.LOAN_RECALCULATION_REST_DETAIL.getValue());
-            compoundingCalendarInstance = calendarInstanceRepository.findCalendarInstaneByEntityId(
-                    loan.loanInterestRecalculationDetailId(), CalendarEntityType.LOAN_RECALCULATION_COMPOUNDING_DETAIL.getValue());
-
-            final MonetaryCurrency currency = loan.getCurrency();
-            applicationCurrency = this.applicationCurrencyRepository.findOneWithNotFoundDetection(currency);
-            final CalendarInstance calendarInstance = this.calendarInstanceRepository.findCalendarInstaneByEntityId(loan.getId(),
-                    CalendarEntityType.LOANS.getValue());
-            calculatedRepaymentsStartingFromDate = this.loanAccountDomainService.getCalculatedRepaymentsStartingFromDate(
-                    loan.getDisbursementDate(), loan, calendarInstance);
-
-            isHolidayEnabled = this.configurationDomainService.isRescheduleRepaymentsOnHolidaysEnabled();
-            overdurPenaltyWaitPeriod = this.configurationDomainService.retrievePenaltyWaitPeriod();
-        }
-
-        HolidayDetailDTO holidayDetailDTO = new HolidayDetailDTO(isHolidayEnabled, holidays, workingDays, allowTransactionsOnHoliday,
-                allowTransactionsOnNonWorkingDay);
-        ScheduleGeneratorDTO scheduleGeneratorDTO = new ScheduleGeneratorDTO(loanScheduleFactory, applicationCurrency,
-                calculatedRepaymentsStartingFromDate, holidayDetailDTO, restCalendarInstance, compoundingCalendarInstance, recalculateFrom,
-                overdurPenaltyWaitPeriod);
-
-        final ChangedTransactionDetail changedTransactionDetail = loan.adjustExistingTransaction(newTransactionDetail,
-                defaultLoanLifecycleStateMachine(), transactionToAdjust, existingTransactionIds, existingReversedTransactionIds,
-                scheduleGeneratorDTO, currentUser);
-
-        if (newTransactionDetail.isGreaterThanZero(loan.getPrincpal().getCurrency())) {
-            if (paymentDetail != null) {
-                this.paymentDetailWritePlatformService.persistPaymentDetail(paymentDetail);
-            }
-            this.loanTransactionRepository.save(newTransactionDetail);
-        }
-
-        /***
-         * TODO Vishwas Batch save is giving me a
-         * HibernateOptimisticLockingFailureException, looping and saving for
-         * the time being, not a major issue for now as this loop is entered
-         * only in edge cases (when a adjustment is made before the latest
-         * payment recorded against the loan)
-         ***/
-        saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
-        if (changedTransactionDetail != null) {
-            for (final Map.Entry<Long, LoanTransaction> mapEntry : changedTransactionDetail.getNewTransactionMappings().entrySet()) {
-                this.loanTransactionRepository.save(mapEntry.getValue());
-                // update loan with references to the newly created transactions
-                loan.getLoanTransactions().add(mapEntry.getValue());
-                this.accountTransfersWritePlatformService.updateLoanTransaction(mapEntry.getKey(), mapEntry.getValue());
-            }
-        }
-
+        final Locale locale = command.extractLocale();
+        final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);
+        final String paymentTypeId = command.stringValueOfParameterNamed("paymentTypeId");
         final String noteText = command.stringValueOfParameterNamed("note");
-        if (StringUtils.isNotBlank(noteText)) {
-            changes.put("note", noteText);
-            Note note = null;
-            /**
-             * If a new transaction is not created, associate note with the
-             * transaction to be adjusted
-             **/
-            if (newTransactionDetail.isGreaterThanZero(loan.getPrincpal().getCurrency())) {
-                note = Note.loanTransactionNote(loan, newTransactionDetail, noteText);
-            } else {
-                note = Note.loanTransactionNote(loan, transactionToAdjust, noteText);
-            }
-            this.noteRepository.save(note);
+        final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService.createPaymentDetail(command, changes);
+        Long fromAccountId = null;
+        String description = null;
+        Integer fromTransferType = null;
+        Integer toTransferType = null;
+        Long chargeId = null;
+        Integer loanInstallmentNumber = null;
+        Integer transferType = null;
+        AccountTransferDetails accountTransferDetails = null;
+        SavingsAccount toSavingsAccount = null;
+        SavingsAccount fromSavingsAccount = null;
+        Boolean isRegularTransaction = false;
+        Boolean isExceptionForBalanceCheck = false;
+
+        if (this.accountTransfersReadPlatformService.isAccountTransfer(transactionId, PortfolioAccountType.LOAN)) {
+            final AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, transactionAmount,
+                    PortfolioAccountType.SAVINGS, PortfolioAccountType.LOAN, fromAccountId, loanId, description, locale, fmt,
+                    paymentDetail, fromTransferType, toTransferType, chargeId, loanInstallmentNumber, transferType, accountTransferDetails,
+                    noteText, txnExternalId, loan, toSavingsAccount, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+            changedLoanTransactionDetails = this.accountTransfersWritePlatformService.reverseTransaction(accountTransferDTO, transactionId,
+                    PortfolioAccountType.LOAN);
+        } else {
+            changedLoanTransactionDetails = this.loanAccountDomainService.reverseLoanTransactions(loan, transactionId, transactionDate,
+                    transactionAmount, txnExternalId, locale, fmt, noteText, paymentDetail);
+            this.accountTransfersWritePlatformService.reverseTransfersWithFromAccountType(loanId, PortfolioAccountType.LOAN);
         }
-        this.accountTransfersWritePlatformService.reverseTransfersWithFromAccountType(loanId, PortfolioAccountType.LOAN);
 
-        postJournalEntries(loan, existingTransactionIds, existingReversedTransactionIds);
+        this.businessEventNotifierService.notifyBusinessEventToBeExecuted(BUSINESS_EVENTS.LOAN_ADJUST_TRANSACTION,
+                constructEntityMap(BUSINESS_ENTITY.LOAN_ADJUSTED_TRANSACTION, changedLoanTransactionDetails.getTransactionToAdjust()));
 
-        this.loanAccountDomainService.recalculateAccruals(loan);
-        Map<BUSINESS_ENTITY, Object> entityMap = constructEntityMap(BUSINESS_ENTITY.LOAN_ADJUSTED_TRANSACTION, transactionToAdjust);
-        if (newTransactionDetail.isRepayment() && newTransactionDetail.isGreaterThanZero(loan.getPrincpal().getCurrency())) {
-            entityMap.put(BUSINESS_ENTITY.LOAN_TRANSACTION, newTransactionDetail);
+        Map<BUSINESS_ENTITY, Object> entityMap = constructEntityMap(BUSINESS_ENTITY.LOAN_ADJUSTED_TRANSACTION,
+                changedLoanTransactionDetails.getTransactionToAdjust());
+        if (changedLoanTransactionDetails.getNewTransactionDetail().isRepayment()
+                && changedLoanTransactionDetails.getNewTransactionDetail().isGreaterThanZero(loan.getPrincpal().getCurrency())) {
+            entityMap.put(BUSINESS_ENTITY.LOAN_TRANSACTION, changedLoanTransactionDetails.getNewTransactionDetail());
         }
         this.businessEventNotifierService.notifyBusinessEventWasExecuted(BUSINESS_EVENTS.LOAN_ADJUST_TRANSACTION, entityMap);
-
+       
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
                 .withEntityId(transactionId) //
@@ -959,7 +870,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 .withClientId(loan.getClientId()) //
                 .withGroupId(loan.getGroupId()) //
                 .withLoanId(loanId) //
-                .with(changes) //
+                .with(changedLoanTransactionDetails.getChanges()) //
                 .build();
     }
 

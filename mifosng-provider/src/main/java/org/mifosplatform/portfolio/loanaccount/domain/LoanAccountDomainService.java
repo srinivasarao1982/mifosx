@@ -6,10 +6,13 @@
 package org.mifosplatform.portfolio.loanaccount.domain;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormatter;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.mifosplatform.portfolio.calendar.domain.CalendarInstance;
+import org.mifosplatform.portfolio.loanaccount.data.AdjustedLoanTransactionDetails;
 import org.mifosplatform.portfolio.loanaccount.data.ScheduleGeneratorDTO;
 import org.mifosplatform.portfolio.paymentdetail.domain.PaymentDetail;
 
@@ -55,5 +58,9 @@ public interface LoanAccountDomainService {
      */
 
     public ScheduleGeneratorDTO buildScheduleGeneratorDTO(final Loan loan);
+    
+    AdjustedLoanTransactionDetails reverseLoanTransactions(Loan loan, Long transactionId, LocalDate transactionDate,
+            BigDecimal transactionAmount, String txnExternalId, Locale locale, DateTimeFormatter dateFormat, String noteText,
+            PaymentDetail paymentDetail);
 
 }
