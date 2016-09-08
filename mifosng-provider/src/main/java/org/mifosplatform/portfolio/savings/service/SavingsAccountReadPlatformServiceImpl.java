@@ -147,6 +147,12 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             objectArray[arrayPos] = searchParameters.getExternalId();
             arrayPos = arrayPos + 1;
         }
+        
+        if (searchParameters.isOfficeIdPassed()) {
+            sqlBuilder.append(" and c.office_id = ?");
+            objectArray[arrayPos] = searchParameters.getOfficeId();
+            arrayPos = arrayPos + 1;
+        }
 
         if (searchParameters.isOrderByRequested()) {
             sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
@@ -162,13 +168,13 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                 sqlBuilder.append(" offset ").append(searchParameters.getOffset());
             }
         }
-
+        
         final Object[] finalObjectArray = Arrays.copyOf(objectArray, arrayPos);
         final String sqlCountRows = "SELECT FOUND_ROWS()";
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), finalObjectArray,
                 this.savingAccountMapper);
     }
-
+    
     @Override
     public SavingsAccountData retrieveOne(final Long accountId) {
 

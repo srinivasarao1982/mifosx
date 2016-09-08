@@ -21,12 +21,15 @@ import javax.persistence.Transient;
 import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.codes.data.CodeValueData;
 import org.mifosplatform.infrastructure.core.data.EnumOptionData;
+import org.mifosplatform.infrastructure.core.domain.JdbcSupport;
 import org.mifosplatform.organisation.monetary.data.CurrencyData;
 import org.mifosplatform.organisation.staff.data.StaffData;
 import org.mifosplatform.portfolio.account.data.PortfolioAccountData;
 import org.mifosplatform.portfolio.calendar.data.CalendarData;
 import org.mifosplatform.portfolio.charge.data.ChargeData;
+import org.mifosplatform.portfolio.client.domain.ClientEnumerations;
 import org.mifosplatform.portfolio.collateral.data.CollateralData;
+import org.mifosplatform.portfolio.common.service.CommonEnumerations;
 import org.mifosplatform.portfolio.fund.data.FundData;
 import org.mifosplatform.portfolio.group.data.CenterData;
 import org.mifosplatform.portfolio.group.data.GroupGeneralData;
@@ -38,6 +41,7 @@ import org.mifosplatform.portfolio.loanproduct.data.LoanProductData;
 import org.mifosplatform.portfolio.loanproduct.data.TransactionProcessingStrategyData;
 import org.mifosplatform.portfolio.loanproduct.domain.LoanProductConfigurableAttributes;
 import org.mifosplatform.portfolio.loanproduct.domain.LoanProductValueConditionType;
+import org.mifosplatform.portfolio.loanproduct.service.LoanEnumerations;
 import org.mifosplatform.portfolio.note.data.NoteData;
 import org.springframework.util.CollectionUtils;
 
@@ -1160,6 +1164,175 @@ public class LoanAccountData {
                 daysInMonthType, daysInYearType, isInterestRecalculationEnabled, interestRecalculationData,
                 originalSchedule, createStandingInstructionAtDisbursement,paidInAdvance,loanApplicationId,centerName, center);
     }
+    
+    
+	public static LoanAccountData basicLoanDetailsForLookup(
+			final Long id, final String accountNo,
+			final LoanStatusEnumData status, final Long clientId,
+			final String clientName, final String loanProductName,
+			final BigDecimal principal,
+			final LoanApplicationTimelineData timeline) {
+
+		final String externalId = null;
+		final String loanApplicationId = null;
+		final Long clientOfficeId = null;
+		final GroupGeneralData group = null;
+		final EnumOptionData loanType = null;
+		final Long loanProductId = null;
+		final String loanProductDescription = null;
+		final Long fundId = null;
+		final String fundName = null;
+		final Long loanPurposeId = null;
+		final String loanPurposeName = null;
+		final Long loanOfficerId = null;
+		final String loanOfficerName = null;
+		final CurrencyData currencyData = null;
+		final BigDecimal proposedPrincipal = null;
+		final BigDecimal approvedPrincipal = null;
+		final BigDecimal totalOverpaid = null;
+		final BigDecimal inArrearsTolerance = null;
+		final Integer numberOfRepayments = null;
+		final Integer repaymentEvery = null;
+		final BigDecimal interestRatePerPeriod = null;
+		final BigDecimal annualInterestRate = null;
+
+		final Integer graceOnPrincipalPayment = null;
+		final Integer graceOnInterestPayment = null;
+		final Integer graceOnInterestCharged = null;
+		final Integer graceOnArrearsAgeing = null;
+
+		final Integer termFrequency = null;
+		final Integer termPeriodFrequencyTypeInt = null;
+		final EnumOptionData termPeriodFrequencyType = null;
+
+		final int repaymentFrequencyTypeInt = 0;
+		final EnumOptionData repaymentFrequencyType = null;
+
+		final Integer repaymentFrequencyNthDayTypeInt = null;
+		final EnumOptionData repaymentFrequencyNthDayType = null;
+
+		final Integer repaymentFrequencyDayOfWeekTypeInt = null;
+		final EnumOptionData repaymentFrequencyDayOfWeekType = null;
+
+		final int interestRateFrequencyTypeInt = 0;
+		final EnumOptionData interestRateFrequencyType = null;
+
+		final Long transactionStrategyId = null;
+		final String transactionStrategyName = null;
+
+		final int amortizationTypeInt = 0;
+		final int interestTypeInt = 0;
+		final int interestCalculationPeriodTypeInt = 0;
+
+		final EnumOptionData amortizationType = null;
+		final EnumOptionData interestType = null;
+		final EnumOptionData interestCalculationPeriodType = null;
+
+		final Integer lifeCycleStatusId = null;
+
+		// settings
+		final LocalDate expectedFirstRepaymentOnDate = null;
+		final LocalDate interestChargedFromDate = null;
+
+		final Boolean syncDisbursementWithMeeting = null;
+
+		final BigDecimal feeChargesDueAtDisbursementCharged = null;
+		LoanSummaryData loanSummary = null;
+		Boolean inArrears = false;
+
+		GroupGeneralData groupData = null;
+		final Integer loanCounter = null;
+		final Integer loanProductCounter = null;
+		final BigDecimal fixedEmiAmount = null;
+		final BigDecimal firstInstallmentEmiAmount = null;
+		final Boolean isNPA = null;
+
+		final int daysInMonth = 0;
+		final EnumOptionData daysInMonthType = null;
+		final int daysInYear = 0;
+		final EnumOptionData daysInYearType = null;
+		final boolean isInterestRecalculationEnabled = false;
+		final Boolean createStandingInstructionAtDisbursement = null;
+
+		LoanInterestRecalculationData interestRecalculationData = null;
+
+		final LoanScheduleData repaymentSchedule = null;
+		final Collection<LoanTransactionData> transactions = null;
+		final Collection<LoanChargeData> charges = null;
+		final Collection<CollateralData> collateral = null;
+		final Collection<GuarantorData> guarantors = null;
+		final Collection<NoteData> notes = null;
+		final CenterData center = null;
+		final CalendarData calendarData = null;
+		final Collection<LoanProductData> productOptions = null;
+		final Collection<EnumOptionData> termFrequencyTypeOptions = null;
+		final Collection<EnumOptionData> repaymentFrequencyTypeOptions = null;
+		final Collection<EnumOptionData> repaymentFrequencyNthDayTypeOptions = null;
+		final Collection<EnumOptionData> repaymentFrequencyDayOfWeekTypeOptions = null;
+		final Collection<TransactionProcessingStrategyData> repaymentStrategyOptions = null;
+		final Collection<EnumOptionData> interestRateFrequencyTypeOptions = null;
+		final Collection<EnumOptionData> amortizationTypeOptions = null;
+		final Collection<EnumOptionData> interestTypeOptions = null;
+		final Collection<EnumOptionData> interestCalculationPeriodTypeOptions = null;
+		final Collection<FundData> fundOptions = null;
+		final Collection<ChargeData> chargeOptions = null;
+		final ChargeData chargeTemplate = null;
+		final Collection<StaffData> loanOfficerOptions = null;
+		final Collection<CodeValueData> loanPurposeOptions = null;
+		final Collection<CodeValueData> loanCollateralOptions = null;
+		final Collection<CalendarData> calendarOptions = null;
+		final Collection<PortfolioAccountData> accountLinkingOptions = null;
+		final PortfolioAccountData linkedAccount = null;
+		final Collection<DisbursementData> disbursementData = null;
+		final Collection<LoanTermVariationsData> emiAmountVariations = null;
+		final Map<Long, LoanBorrowerCycleData> memberVariations = null;
+		final LoanProductData product = null;
+		final Collection<ChargeData> overdueCharges = null;
+		final LoanScheduleData originalSchedule = null;
+		final PaidInAdvanceData paidInAdvance = null;
+		final Boolean multiDisburseLoan = null;
+		final Boolean canDefineInstallmentAmount = null;
+		final BigDecimal fixedEmiAmont = null;
+		final String centerName = null;
+		final BigDecimal outstandingLoanBalance = null;
+
+		return new LoanAccountData(id, accountNo, status, externalId, clientId,
+				clientName, clientOfficeId, group, loanType, loanProductId,
+				loanProductName, loanProductDescription, fundId, fundName,
+				loanPurposeId, loanPurposeName, loanOfficerId, loanOfficerName,
+				currencyData, proposedPrincipal, principal, approvedPrincipal,
+				totalOverpaid, inArrearsTolerance, termFrequency,
+				termPeriodFrequencyType, numberOfRepayments, repaymentEvery,
+				repaymentFrequencyType, repaymentFrequencyNthDayType,
+				repaymentFrequencyDayOfWeekType, transactionStrategyId,
+				transactionStrategyName, amortizationType,
+				interestRatePerPeriod, interestRateFrequencyType,
+				annualInterestRate, interestType,
+				interestCalculationPeriodType, expectedFirstRepaymentOnDate,
+				graceOnPrincipalPayment, graceOnInterestPayment,
+				graceOnInterestCharged, interestChargedFromDate, timeline,
+				loanSummary, feeChargesDueAtDisbursementCharged,
+				repaymentSchedule, transactions, charges, collateral,
+				guarantors, calendarData, productOptions,
+				termFrequencyTypeOptions, repaymentFrequencyTypeOptions,
+				repaymentFrequencyNthDayTypeOptions,
+				repaymentFrequencyDayOfWeekTypeOptions,
+				repaymentStrategyOptions, interestRateFrequencyTypeOptions,
+				amortizationTypeOptions, interestTypeOptions,
+				interestCalculationPeriodTypeOptions, fundOptions,
+				chargeOptions, chargeTemplate, loanOfficerOptions,
+				loanPurposeOptions, loanCollateralOptions, calendarOptions,
+				syncDisbursementWithMeeting, loanCounter, loanProductCounter,
+				notes, accountLinkingOptions, linkedAccount, disbursementData,
+				multiDisburseLoan, canDefineInstallmentAmount, fixedEmiAmont,
+				firstInstallmentEmiAmount, outstandingLoanBalance,
+				emiAmountVariations, memberVariations, product, inArrears,
+				graceOnArrearsAgeing, overdueCharges, isNPA, daysInMonthType,
+				daysInYearType, isInterestRecalculationEnabled,
+				interestRecalculationData, originalSchedule,
+				createStandingInstructionAtDisbursement, paidInAdvance,
+				loanApplicationId, centerName, center);
+	}
 
     /*
      * Used to combine the associations and template data on top of exist loan

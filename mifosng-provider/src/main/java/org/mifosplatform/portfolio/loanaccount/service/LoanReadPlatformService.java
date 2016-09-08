@@ -63,7 +63,7 @@ public interface LoanReadPlatformService {
 
     Collection<CalendarData> retrieveCalendars(Long groupId);
 
-    Page<LoanAccountData> retrieveAll(SearchParameters searchParameters);
+    Page<LoanAccountData> retrieveAll(SearchParameters searchParameters, boolean lookup);
 
     Collection<StaffData> retrieveAllowedLoanOfficers(Long selectedOfficeId, boolean staffInSelectedOfficeOnly);
 

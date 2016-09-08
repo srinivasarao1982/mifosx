@@ -135,7 +135,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     private final CalendarReadPlatformService calendarReadPlatformService;
     private final StaffReadPlatformService staffReadPlatformService;
     private final PaginationHelper<LoanAccountData> paginationHelper = new PaginationHelper<>();
-    private final LoanMapper loaanLoanMapper = new LoanMapper();
+    private LoanMapper loaanLoanMapper = null;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
     private final LoanScheduleGeneratorFactory loanScheduleFactory;
@@ -252,12 +252,17 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
     }
 
     @Override
-    public Page<LoanAccountData> retrieveAll(final SearchParameters searchParameters) {
+    public Page<LoanAccountData> retrieveAll(final SearchParameters searchParameters, final boolean lookup) {
 
         final AppUser currentUser = this.context.authenticatedUser();
         final String hierarchy = currentUser.getOffice().getHierarchy();
         String isgroupSearch = searchParameters.getGroupSearch(); 
         final String hierarchySearchString = hierarchy + "%";
+        if (lookup) {
+        	this.loaanLoanMapper = new LoanLookupMapper();
+        }else{
+        	this.loaanLoanMapper = new LoanMapper();
+        }
 
         final StringBuilder sqlBuilder = new StringBuilder(200);
         sqlBuilder.append("select SQL_CALC_FOUND_ROWS ");
@@ -308,6 +313,12 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
             extraCriterias.add(searchParameters.getAccountNo());
             arrayPos = arrayPos + 1;
         }
+        
+        if (searchParameters.isOfficeIdPassed()) {
+            sqlBuilder.append(" and c.office_id = ?");
+            extraCriterias.add(searchParameters.getOfficeId());
+            arrayPos = arrayPos + 1;
+        }
 
         if (searchParameters.isOrderByRequested()) {
             sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
@@ -323,12 +334,14 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                 sqlBuilder.append(" offset ").append(searchParameters.getOffset());
             }
         }
-
+        
         final Object[] objectArray = extraCriterias.toArray();
         final Object[] finalObjectArray = Arrays.copyOf(objectArray, arrayPos);
         final String sqlCountRows = "SELECT FOUND_ROWS()";
-        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), finalObjectArray,
-                this.loaanLoanMapper);
+		
+		return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlCountRows, sqlBuilder.toString(), finalObjectArray,
+			this.loaanLoanMapper);
+        
     }
 
     @Override
@@ -558,7 +571,7 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         return transaction.toData(currencyData, accountTransferData);
     }
 
-    private static final class LoanMapper implements RowMapper<LoanAccountData> {
+    private static class LoanMapper implements RowMapper<LoanAccountData> {
 
         public String loanSchema() {
             return "l.id as id, l.account_no as accountNo, l.external_id as externalId, l.fund_id as fundId, f.name as fundName,ext.loanApplication_Id as loanApplicationId,"
@@ -921,6 +934,41 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
                     syncDisbursementWithMeeting, loanCounter, loanProductCounter, multiDisburseLoan, canDefineInstallmentAmount,
                     fixedEmiAmount, firstInstallmentEmiAmount, outstandingLoanBalance, inArrears, graceOnArrearsAgeing, isNPA, daysInMonthType,
                     daysInYearType, isInterestRecalculationEnabled, interestRecalculationData,createStandingInstructionAtDisbursement,loanApplicationId, centerName);
+        }
+    }
+    
+    private static final class LoanLookupMapper extends LoanMapper implements RowMapper<LoanAccountData> {
+
+        public String loanSchema() {
+        	
+        	return " l.id AS id, l.account_no AS accountNo, c.id AS clientId, c.display_name AS clientName, lp.name AS loanProductName, "
+        			+ "l.expected_disbursedon_date AS expectedDisbursementDate, l.principal_amount AS principal, l.loan_status_id AS lifeCycleStatusId"
+        			+ " FROM m_loan l "
+        			+ "JOIN m_product_loan lp ON lp.id = l.product_id "
+        			+ "LEFT JOIN m_client c ON c.id = l.client_id "
+        			+ "LEFT JOIN m_group g ON g.id = l.group_id "
+        			+ "LEFT JOIN m_staff s ON s.id = l.loan_officer_id ";
+        	
+        }
+
+        @Override
+        public LoanAccountData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String accountNo = rs.getString("accountNo");
+            final Long clientId = JdbcSupport.getLong(rs, "clientId");
+            final String clientName = rs.getString("clientName");
+            final String loanProductName = rs.getString("loanProductName");
+
+            final LocalDate expectedDisbursementDate = JdbcSupport.getLocalDate(rs, "expectedDisbursementDate");
+            final LoanApplicationTimelineData timeline = LoanApplicationTimelineData.templateDefault(expectedDisbursementDate);
+
+            final BigDecimal principal = rs.getBigDecimal("principal");
+
+            final Integer lifeCycleStatusId = JdbcSupport.getInteger(rs, "lifeCycleStatusId");
+            final LoanStatusEnumData status = LoanEnumerations.status(lifeCycleStatusId);
+
+            return LoanAccountData.basicLoanDetailsForLookup(id, accountNo, status, clientId, clientName, loanProductName, principal, timeline);
         }
     }
 
