@@ -9,7 +9,9 @@ import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.portfolio.account.PortfolioAccountType;
 import org.mifosplatform.portfolio.account.data.AccountTransferDTO;
+import org.mifosplatform.portfolio.loanaccount.data.AdjustedLoanTransactionDetails;
 import org.mifosplatform.portfolio.loanaccount.domain.LoanTransaction;
+import org.mifosplatform.useradministration.domain.AppUser;
 
 public interface AccountTransfersWritePlatformService {
 
@@ -24,4 +26,7 @@ public interface AccountTransfersWritePlatformService {
     void updateLoanTransaction(Long loanTransactionId, LoanTransaction newLoanTransaction);
     
     CommandProcessingResult refundByTransfer(JsonCommand command);
+    
+    AdjustedLoanTransactionDetails reverseTransaction(AccountTransferDTO accountTransferDTO, Long transactionId,
+            PortfolioAccountType accountType);
 }

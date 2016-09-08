@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.mifosplatform.integrationtests.common.CommonConstants;
 import org.mifosplatform.integrationtests.common.Utils;
 
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ public class LoanTransactionHelper {
     private static final String DISBURSE_LOAN_COMMAND = "disburse";
     private static final String DISBURSE_LOAN_TO_SAVINGS_COMMAND = "disburseToSavings";
     private static final String UNDO_DISBURSE_LOAN_COMMAND = "undoDisbursal";
+    private static final String UNDO_REPAYMENT = "undo";
     private static final String WRITE_OFF_LOAN_COMMAND = "writeoff";
     private static final String WAIVE_INTEREST_COMMAND = "waiveinterest";
     private static final String MAKE_REPAYMENT_COMMAND = "repayment";
@@ -166,6 +168,30 @@ public class LoanTransactionHelper {
         final String url = createLoanOperationURL(UNDO_DISBURSE_LOAN_COMMAND, loanID);
         System.out.println("IN DISBURSE LOAN URL " + url);
         return performLoanTransaction(createLoanOperationURL(UNDO_DISBURSE_LOAN_COMMAND, loanID), undoDisburseJson);
+    }
+    
+    public HashMap undoRepayment(final Integer loanID, final String transactionId) {
+        final String url = createAccountTransferTransactionURL(UNDO_REPAYMENT, loanID, transactionId);
+        System.out.println("UNDO LOAN REPAYMENT URL " + url);
+        return performLoanTransaction(createAccountTransferTransactionURL(UNDO_REPAYMENT, loanID, transactionId), undoRepaymentJson());
+    }
+    
+    public Object undoRepaymentError(final Integer loanID, final String transactionId, String jsonAttributeToGetBack) {
+        final String url = createAccountTransferTransactionURL(UNDO_REPAYMENT, loanID, transactionId);
+        System.out.println("UNDO LOAN REPAYMENT URL " + url);
+        return performLoanTransaction(createAccountTransferTransactionURL(UNDO_REPAYMENT, loanID, transactionId), undoRepaymentJson(),
+                jsonAttributeToGetBack);
+    }
+    
+    private String undoRepaymentJson() {
+        final HashMap<String, String> map = new HashMap<>();
+        map.put("dateFormat", CommonConstants.dateFormat);
+        map.put("locale", CommonConstants.locale);
+        map.put("transactionAmount", "0");
+        map.put("transactionDate", "16 August 2016");
+        String accountTransferJson = new Gson().toJson(map);
+        System.out.println(accountTransferJson);
+        return accountTransferJson;
     }
 
     public void recoverFromGuarantor(final Integer loanID) {
@@ -411,6 +437,11 @@ public class LoanTransactionHelper {
 
     private String createLoanTransactionURL(final String command, final Integer loanID) {
         return "/mifosng-provider/api/v1/loans/" + loanID + "/transactions?command=" + command + "&" + Utils.TENANT_IDENTIFIER;
+    }
+
+    private String createAccountTransferTransactionURL(final String command, final Integer loanID, final String transactionId) {
+        return "/mifosng-provider/api/v1/loans/" + loanID + "/transactions/" + transactionId + "?command=" + command + "&"
+                + Utils.TENANT_IDENTIFIER;
     }
 
     private HashMap performLoanTransaction(final String postURLForLoanTransaction, final String jsonToBeSent) {
