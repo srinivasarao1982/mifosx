@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
@@ -41,6 +42,7 @@ import org.mifosplatform.infrastructure.core.serialization.ApiRequestJsonSeriali
 import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.mifosplatform.infrastructure.core.service.Page;
+import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.accountdetails.data.AccountSummaryCollectionData;
 import org.mifosplatform.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
@@ -53,7 +55,7 @@ import org.mifosplatform.portfolio.group.data.CenterData;
 import org.mifosplatform.portfolio.group.data.GroupGeneralData;
 import org.mifosplatform.portfolio.group.data.StaffCenterData;
 import org.mifosplatform.portfolio.group.service.CenterReadPlatformService;
-import org.mifosplatform.infrastructure.core.service.SearchParameters;
+import org.mifosplatform.portfolio.loanaccount.data.LoanAccountData;
 import org.mifosplatform.portfolio.meeting.data.MeetingData;
 import org.mifosplatform.portfolio.meeting.service.MeetingReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,7 @@ public class CentersApiResource {
     private final ToApiJsonSerializer<CenterData> centerApiJsonSerializer;
     private final ToApiJsonSerializer<Object> toApiJsonSerializer;
     private final ToApiJsonSerializer<AccountSummaryCollectionData> groupSummaryToApiJsonSerializer;
+    private final ToApiJsonSerializer<LoanAccountData> bulkUndoTransactionsToApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final CollectionSheetReadPlatformService collectionSheetReadPlatformService;
@@ -88,7 +91,8 @@ public class CentersApiResource {
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
             final CollectionSheetReadPlatformService collectionSheetReadPlatformService, final FromJsonHelper fromJsonHelper,
             final AccountDetailsReadPlatformService accountDetailsReadPlatformService,
-            final CalendarReadPlatformService calendarReadPlatformService, final MeetingReadPlatformService meetingReadPlatformService) {
+            final CalendarReadPlatformService calendarReadPlatformService, final MeetingReadPlatformService meetingReadPlatformService,
+            final ToApiJsonSerializer<LoanAccountData> bulkUndoTransactionsToApiJsonSerializer) {
         this.context = context;
         this.centerReadPlatformService = centerReadPlatformService;
         this.centerApiJsonSerializer = centerApiJsonSerializer;
@@ -101,6 +105,7 @@ public class CentersApiResource {
         this.accountDetailsReadPlatformService = accountDetailsReadPlatformService;
         this.calendarReadPlatformService = calendarReadPlatformService;
         this.meetingReadPlatformService = meetingReadPlatformService;
+        this.bulkUndoTransactionsToApiJsonSerializer = bulkUndoTransactionsToApiJsonSerializer;
     }
 
     @GET
@@ -330,4 +335,21 @@ public class CentersApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.groupSummaryToApiJsonSerializer.serialize(settings, groupAccount, GROUP_ACCOUNTS_DATA_PARAMETERS);
     }
+    
+    @GET
+    @Path("{centerId}/transactions")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String retrieveAllTransactionsForCenterId(@PathParam("centerId") final Long centerId, @Context final UriInfo uriInfo, 
+    		@QueryParam("transactionDate") final String transactionDate) {
+
+        this.context.authenticatedUser().validateHasReadPermission(GroupingTypesApiConstants.CENTER_RESOURCE_NAME);
+
+        final List<LoanAccountData> bulkTransactionsForCenterId = this.accountDetailsReadPlatformService
+        		.retrieveAllTransactionsForCenterId(centerId, transactionDate);
+
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.bulkUndoTransactionsToApiJsonSerializer.serialize(settings, bulkTransactionsForCenterId);
+    }
+    
 }

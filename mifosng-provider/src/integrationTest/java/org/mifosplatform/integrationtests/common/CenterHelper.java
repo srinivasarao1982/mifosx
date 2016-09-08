@@ -18,6 +18,7 @@ import com.jayway.restassured.specification.ResponseSpecification;
 public class CenterHelper {
 
     private static final String CENTERS_URL = "/mifosng-provider/api/v1/centers";
+    private static final String BATCHES_URL = "/mifosng-provider/api/v1/batches";
 
     public static final String CREATED_DATE = "29 December 2014";
     private static final String CREATE_CENTER_URL = "/mifosng-provider/api/v1/centers?" + Utils.TENANT_IDENTIFIER;
@@ -250,6 +251,18 @@ public class CenterHelper {
                 + "&command=unassignStaff";
         System.out.println("---------------------------------Unassign Staff---------------------------------------------");
         return Utils.performServerPost(requestSpec, responseSpec, GROUP_ASSIGN_STAFF_URL, unassignStaffAsJSON(staffId), "changes");
+    }
+    
+    public static Object retrieveRepaymentTransactionsByCenterID(int centerId, final String transactionDate, final RequestSpecification requestSpec, final ResponseSpecification responseSpec) {
+        final String GET_TRANSACTION_BY_ID_URL = CENTERS_URL + "/" + centerId + "/transactions?transactionDate=" + transactionDate + "&" + Utils.TENANT_IDENTIFIER;
+        System.out.println("------------------------ RETRIEVING CENTER AT " + centerId + "-------------------------");
+        return Utils.performServerGet(requestSpec, responseSpec, GET_TRANSACTION_BY_ID_URL, "");
+    }
+    
+    public static Object MakeBulkUndoRepaymentTransactions(final String payload, final RequestSpecification requestSpec,
+            final ResponseSpecification responseSpec) {
+        System.out.println("------------------------CREATING CENTER-------------------------");
+        return Utils.performServerPost(requestSpec, responseSpec, BATCHES_URL + "?" + Utils.TENANT_IDENTIFIER, payload, "");
     }
 
 }
