@@ -1,0 +1,1 @@
+update m_permission set grouping ='transaction_savings' where entity_name ='CREATEORACTIVATESAVINGSACCOUNT'
