@@ -312,14 +312,105 @@ public class AccountTransferTest {
                 this.responseSpec, toLoanID, "transactions");
         HashMap transaction = transactionschedule.get(2);
         String transactionId = String.valueOf(transaction.get("id"));
+
+        this.journalEntryHelper.checkJournalEntryForLiabilityAccount(liabilityAccount, "1 March 2013", new JournalEntry(3000.0f,
+                JournalEntry.TransactionType.DEBIT));
+
+        this.journalEntryHelper.checkJournalEntryForIncomeAccount(loanIncomeAccount, "1 March 2013", new JournalEntry(281.18f,
+                JournalEntry.TransactionType.CREDIT));
+
+        this.journalEntryHelper.checkJournalEntryForAssetAccount(loanAssetAccount, "1 March 2013", new JournalEntry(2718.82f,
+                JournalEntry.TransactionType.CREDIT));
+        
         toLoanStatusHashMap = this.loanTransactionHelper.undoRepayment(toLoanID, transactionId);
+
+        this.journalEntryHelper.checkJournalEntryForLiabilityAccount(liabilityAccount, "1 March 2013", new JournalEntry(3000.0f,
+                JournalEntry.TransactionType.CREDIT));
+
+        this.journalEntryHelper.checkJournalEntryForIncomeAccount(loanIncomeAccount, "1 March 2013", new JournalEntry(281.18f,
+                JournalEntry.TransactionType.DEBIT));
+
+        this.journalEntryHelper.checkJournalEntryForAssetAccount(loanAssetAccount, "1 March 2013", new JournalEntry(2718.82f,
+                JournalEntry.TransactionType.DEBIT));
+
+        this.journalEntryHelper.checkJournalEntryForLiabilityAccount(liabilityAccount, "1 March 2013", new JournalEntry(3000.0f,
+                JournalEntry.TransactionType.DEBIT));
+
+        this.journalEntryHelper.checkJournalEntryForIncomeAccount(loanIncomeAccount, "1 March 2013", new JournalEntry(281.18f,
+                JournalEntry.TransactionType.CREDIT));
+
+        this.journalEntryHelper.checkJournalEntryForAssetAccount(loanAssetAccount, "1 March 2013", new JournalEntry(2718.82f,
+                JournalEntry.TransactionType.CREDIT));
 
         fromSavingsBalance += TRANSFER_AMOUNT_ADJUST;
 
         fromSavingsSummaryAfter = this.savingsAccountHelper.getSavingsSummary(fromSavingsID);
         assertEquals("Verifying From Savings Account Balance after Account Transfer", fromSavingsBalance,
                 fromSavingsSummaryAfter.get("accountBalance"));
+    }
+
+    @Test
+    public void testOfUndoTransaction() {
+
+        final Account loanAssetAccount = this.accountHelper.createAssetAccount();
+        final Account loanIncomeAccount = this.accountHelper.createIncomeAccount();
+        final Account loanExpenseAccount = this.accountHelper.createExpenseAccount();
+        final Account overpaymentAccount = this.accountHelper.createLiabilityAccount();
+
+        this.savingsAccountHelper = new SavingsAccountHelper(this.requestSpec, this.responseSpec);
+        this.loanTransactionHelper = new LoanTransactionHelper(this.requestSpec, this.responseSpec);
+        this.accountTransferHelper = new AccountTransferHelper(this.requestSpec, this.responseSpec);
+
+        OfficeHelper officeHelper = new OfficeHelper(this.requestSpec, this.responseSpec);
+        Integer toOfficeId = officeHelper.createOffice("01 January 2011");
+        Assert.assertNotNull(toOfficeId);
+
+        // Creating Loan Account to which fund to be Transferred
+        final Integer toClientID = ClientHelper.createClient(this.requestSpec, this.responseSpec, "01 January 2011",
+                String.valueOf(toOfficeId));
+        Assert.assertNotNull(toClientID);
+
+        final Integer toLoanProductID = createLoanProduct(loanAssetAccount, loanIncomeAccount, loanExpenseAccount, overpaymentAccount);
+        Assert.assertNotNull(toLoanProductID);
+        final Integer toLoanID = applyForLoanApplication(toClientID, toLoanProductID);
+        Assert.assertNotNull(toLoanID);
+
+        HashMap toLoanStatusHashMap = LoanStatusChecker.getStatusOfLoan(this.requestSpec, this.responseSpec, toLoanID);
+        LoanStatusChecker.verifyLoanIsPending(toLoanStatusHashMap);
+
+        toLoanStatusHashMap = this.loanTransactionHelper.approveLoan(LOAN_APPROVAL_DATE, toLoanID);
+        LoanStatusChecker.verifyLoanIsApproved(toLoanStatusHashMap);
+        toLoanStatusHashMap = this.loanTransactionHelper.disburseLoan(LOAN_DISBURSAL_DATE, toLoanID);
+        LoanStatusChecker.verifyLoanIsActive(toLoanStatusHashMap);
+
+        this.loanTransactionHelper.makeRepayment("11 March 2013", 100f, toLoanID);
+
+        @SuppressWarnings("unchecked")
+        final ArrayList<HashMap> transactionschedule = (ArrayList<HashMap>) this.loanTransactionHelper.getLoanDetail(this.requestSpec,
+                this.responseSpec, toLoanID, "transactions");
+
+        HashMap transaction = transactionschedule.get(2);
+        String transactionId = String.valueOf(transaction.get("id"));
+        this.journalEntryHelper.checkJournalEntryForAssetAccount(loanAssetAccount, "11 March 2013", new JournalEntry(100f,
+                JournalEntry.TransactionType.DEBIT));
+
+        this.journalEntryHelper.checkJournalEntryForIncomeAccount(loanIncomeAccount, "11 March 2013", new JournalEntry(100f,
+                JournalEntry.TransactionType.CREDIT));
+
+        toLoanStatusHashMap = this.loanTransactionHelper.undoRepayment(toLoanID, transactionId);
+     
+        this.journalEntryHelper.checkJournalEntryForAssetAccount(loanAssetAccount, "11 March 2013", new JournalEntry(100f,
+                JournalEntry.TransactionType.CREDIT));
         
+        this.journalEntryHelper.checkJournalEntryForIncomeAccount(loanIncomeAccount, "11 March 2013", new JournalEntry(100f,
+                JournalEntry.TransactionType.DEBIT));
+
+        this.journalEntryHelper.checkJournalEntryForAssetAccount(loanAssetAccount, "11 March 2013", new JournalEntry(100f,
+                JournalEntry.TransactionType.DEBIT));
+
+        this.journalEntryHelper.checkJournalEntryForIncomeAccount(loanIncomeAccount, "11 March 2013", new JournalEntry(100f,
+                JournalEntry.TransactionType.CREDIT));
+
     }
     
     @Test
