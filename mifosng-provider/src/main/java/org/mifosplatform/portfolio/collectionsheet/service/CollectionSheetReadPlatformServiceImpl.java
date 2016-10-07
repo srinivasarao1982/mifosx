@@ -213,7 +213,7 @@ public class CollectionSheetReadPlatformServiceImpl implements CollectionSheetRe
                     .append("if(ln.loan_status_id = 200 , ln.principal_amount , null) As disbursementAmount, ")
                     .append("if(sum(ifnull(if(ln.loan_status_id = 300, ls.principal_amount, 0.0), 0.0)) > ln.principal_outstanding_derived ,ln.principal_outstanding_derived, (ifnull(if(ln.loan_status_id = 300, (sum(ifnull(ls.principal_amount, 0.0))-sum(ifnull(ls.principal_completed_derived,0.0))), 0.0), 0.0)))  As principalDue, ")
                     .append("ln.principal_repaid_derived As principalPaid, ")
-                    .append("sum(ifnull(if(ln.loan_status_id = 300, ls.interest_amount, 0.0), 0.0) - ifnull(if(ln.loan_status_id = 300, ls.interest_completed_derived, 0.0), 0.0)) As interestDue, ")
+                    .append("sum(ifnull(if(ln.loan_status_id = 300, ls.interest_amount, 0.0), 0.0) - ifnull(if(ln.loan_status_id = 300, ls.interest_completed_derived, 0.0), 0.0)-ifnull(if(ln.loan_status_id = 300, ls.interest_waived_derived, 0.0), 0.0)-ifnull(if(ln.loan_status_id = 300, ls.interest_writtenoff_derived, 0.0), 0.0)) As interestDue, ")
                     .append("ln.interest_repaid_derived As interestPaid, ")
                     .append("ca.attendance_type_enum as attendanceTypeId ")
                     .append("FROM m_group gp ")
