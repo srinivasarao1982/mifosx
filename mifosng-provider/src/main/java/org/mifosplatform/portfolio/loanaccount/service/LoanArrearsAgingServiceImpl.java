@@ -8,7 +8,9 @@ package org.mifosplatform.portfolio.loanaccount.service;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.mifosplatform.infrastructure.core.domain.JdbcSupport;
+import org.mifosplatform.infrastructure.core.service.DateUtils;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
 import org.mifosplatform.infrastructure.core.service.ThreadLocalContextUtil;
 import org.mifosplatform.infrastructure.jobs.annotation.CronTarget;
@@ -75,6 +78,10 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
     @Override
     @CronTarget(jobName = JobName.UPDATE_LOAN_ARREARS_AGEING)
     public void updateLoanArrearsAgeingDetails() {
+    	
+        Date currentDate = DateUtils.getDateOfTenant();
+        String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+        formattedDate = "'" + formattedDate + "'";
 
         this.jdbcTemplate.execute("truncate table m_loan_arrears_aging");
 
@@ -102,7 +109,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         updateSqlBuilder.append(" left join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id ");
         updateSqlBuilder.append(" WHERE ml.loan_status_id = 300 "); // active
         updateSqlBuilder.append(" and mr.completed_derived is false ");
-        updateSqlBuilder.append(" and mr.duedate < SUBDATE(CURDATE(),INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) ");
+        updateSqlBuilder.append(" and mr.duedate < SUBDATE("+formattedDate+",INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) ");
         updateSqlBuilder.append(" and (prd.arrears_based_on_original_schedule = 0 or prd.arrears_based_on_original_schedule is null) ");
         updateSqlBuilder.append(" GROUP BY ml.id");
 
@@ -186,6 +193,9 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
 
     private List<String> updateLoanArrearsAgeingDetailsWithOriginalSchedule() {
         List<String> insertStatement = new ArrayList<>();
+        Date currentDate = DateUtils.getDateOfTenant();
+        String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+        formattedDate = "'" + formattedDate + "'";
 
         final StringBuilder loanIdentifier = new StringBuilder();
         loanIdentifier.append("select ml.id as loanId FROM m_loan ml  ");
@@ -193,7 +203,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
         loanIdentifier
                 .append("inner join m_product_loan_recalculation_details prd on prd.product_id = ml.product_id and prd.arrears_based_on_original_schedule = 1  ");
         loanIdentifier
-                .append("WHERE ml.loan_status_id = 300  and mr.completed_derived is false  and mr.duedate < SUBDATE(CURDATE(),INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) group by ml.id");
+                .append("WHERE ml.loan_status_id = 300  and mr.completed_derived is false  and mr.duedate < SUBDATE("+formattedDate+",INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) group by ml.id");
         List<Long> loanIds = this.jdbcTemplate.queryForList(loanIdentifier.toString(), Long.class);
         if (!loanIds.isEmpty()) {
             String loanIdsAsString = loanIds.toString();
@@ -392,6 +402,9 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
     private static final class OriginalScheduleExtractor implements ResultSetExtractor<Map<Long, List<LoanSchedulePeriodData>>> {
 
         private final String schema;
+        Date currentDate = DateUtils.getDateOfTenant();
+        String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+        String formattedDateComplete = "'" + formattedDate + "'";
 
         public OriginalScheduleExtractor(final String loanIdsAsString) {
             final StringBuilder scheduleDetail = new StringBuilder();
@@ -399,7 +412,7 @@ public class LoanArrearsAgingServiceImpl implements LoanArrearsAgingService, Bus
             scheduleDetail
                     .append("mr.interest_amount as interestAmount, mr.fee_charges_amount as feeAmount, mr.penalty_charges_amount as penaltyAmount  ");
             scheduleDetail.append("from m_loan ml  INNER JOIN m_loan_repayment_schedule_history mr on mr.loan_id = ml.id ");
-            scheduleDetail.append("where mr.duedate  < SUBDATE(CURDATE(),INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) and ");
+            scheduleDetail.append("where mr.duedate  < SUBDATE("+formattedDateComplete+",INTERVAL  ifnull(ml.grace_on_arrears_ageing,0) day) and ");
             scheduleDetail.append("ml.id IN(").append(loanIdsAsString).append(") and  mr.version = (");
             scheduleDetail.append("select max(lrs.version) from m_loan_repayment_schedule_history lrs where mr.loan_id = lrs.loan_id");
             scheduleDetail.append(") order by ml.id,mr.duedate");
