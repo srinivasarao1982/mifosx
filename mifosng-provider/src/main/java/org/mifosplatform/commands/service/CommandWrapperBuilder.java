@@ -2408,5 +2408,26 @@ public class CommandWrapperBuilder {
         this.href = "/" + PaymentTypeApiResourceConstants.RESOURCE_NAME + paymentTypeId;
         return this;
     }
+    public CommandWrapperBuilder createBankDetails() {
+        this.actionName = "CREATE";
+        this.entityName = "BANKDETAILS";
+        this.href = "/bankdetails";
+        return this;
+    }
+    public CommandWrapperBuilder updateBankDetails(final Long bankdetailsId) {
+        this.actionName = "UPDATE";
+        this.entityName = "BANKDETAILS";
+        this.entityId = bankdetailsId;
+        this.href = "/bankdetails/" + bankdetailsId;
+        return this;
+    }
+    public CommandWrapperBuilder deleteBankDetails(final Long bankdetailsId) {
+        this.actionName = "DELETE";
+        this.entityName = "BANKDETAILS";
+        this.entityId = bankdetailsId;
+        this.href = "/bankdetails/" + bankdetailsId;
+        this.json = "{}";
+        return this;
+    }
 
 }

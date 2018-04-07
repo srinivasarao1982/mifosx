@@ -6,6 +6,7 @@
 package org.mifosplatform.portfolio.client.data;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import org.mifosplatform.infrastructure.core.exception.PlatformApiDataValidation
 import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.infrastructure.core.service.DateUtils;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
+import org.mifosplatform.portfolio.client.api.ClientsBankDetailsApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -586,4 +588,101 @@ public final class ClientDataValidator {
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
 
     }
+    
+    public void validateForCreateBankDetails(final JsonCommand command) {
+
+        final String json = command.json();
+
+        if (StringUtils.isBlank(json)) { throw new InvalidJsonException(); }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, ClientsBankDetailsApiConstants.CLIENTBANK_DETAILS_REQUEST_DATA_PARAMETERS);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(ClientsBankDetailsApiConstants.CLIENTSBANKDETAILS_RESOURCE_NAME);
+        final JsonElement element = command.parsedJson();
+
+        final String benificaryName = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.beneficiarynameparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.beneficiarynameparamname).value(benificaryName).notBlank();
+
+        final String accountNumber = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.accountnumberparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.accountnumberparamname).value(accountNumber).notBlank();
+
+        final String ifscCode = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.ifsccodeparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.ifsccodeparamname).value(ifscCode).notBlank();
+
+        final String bankName = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.branchnameparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.branchnameparamname).value(bankName).notBlank();
+
+        final String bankAddress = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.beneficiarynameparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.beneficiarynameparamname).value(bankAddress).notBlank();
+
+        final long lastTransactionAmount = this.fromApiJsonHelper.extractLongNamed(ClientsBankDetailsApiConstants.lasttransactionamountparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.lasttransactionamountparamname).value(lastTransactionAmount).notNull()
+                .longGreaterThanZero();
+
+        final LocalDate lastTransactionDate = this.fromApiJsonHelper.extractLocalDateNamed(ClientsBankDetailsApiConstants.lasttransactiondateparamname,
+                element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.lasttransactiondateparamname).value(lastTransactionDate).notNull();
+
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+
+    }
+    
+    public void validateUpdateBankDetails(final JsonCommand command) {
+
+        final String json = command.json();
+
+        if (StringUtils.isBlank(json)) { throw new InvalidJsonException(); }
+
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, ClientsBankDetailsApiConstants.CLIENTBANK_DETAILS_UPDATE_DATA_PARAMETERS);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors)
+                .resource(ClientsBankDetailsApiConstants.CLIENTSBANKDETAILS_RESOURCE_NAME);
+        final JsonElement element = command.parsedJson();
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.beneficiarynameparamname, element)) {
+        final String benificaryName = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.beneficiarynameparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.beneficiarynameparamname).value(benificaryName).notBlank();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.accountnumberparamname, element)) {
+        final String accountNumber = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.accountnumberparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.accountnumberparamname).value(accountNumber).notBlank();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.ifsccodeparamname, element)) {
+        final String ifscCode = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.ifsccodeparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.ifsccodeparamname).value(ifscCode).notBlank();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.branchnameparamname, element)) {
+        final String bankName = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.branchnameparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.branchnameparamname).value(bankName).notBlank();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.branchaddressparamname, element)) {
+        final String bankAddress = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.branchaddressparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.branchaddressparamname).value(bankAddress).notBlank();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.lasttransactionamountparamname, element)) {
+        final long lastTransactionAmount = this.fromApiJsonHelper.extractLongNamed(ClientsBankDetailsApiConstants.lasttransactionamountparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.lasttransactionamountparamname).value(lastTransactionAmount).notNull()
+                .longGreaterThanZero();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.lasttransactiondateparamname, element)) {
+        final LocalDate lastTransactionDate = this.fromApiJsonHelper.extractLocalDateNamed(ClientsBankDetailsApiConstants.lasttransactiondateparamname,
+                element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.lasttransactiondateparamname).value(lastTransactionDate).notNull();
+        }
+        throwExceptionIfValidationWarningsExist(dataValidationErrors);
+
+    }
+
+
 }
