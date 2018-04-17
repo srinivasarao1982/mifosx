@@ -16,6 +16,8 @@ public class ClientsBankDetailsApiConstants {
     //request Parameter
     public static final String beneficiarynameparamname ="beneficiaryname";
     public static final String ifsccodeparamname="ifsccode";
+    public static final String micrcodeparamname="micrcode";
+    public static final String banknameparamname="bankname";
     public static final String branchnameparamname="branchname";
     public static final String branchaddressparamname="branchaddress";
     public static final String lasttransactiondateparamname="lasttransactiondate";
@@ -34,13 +36,13 @@ public class ClientsBankDetailsApiConstants {
     public static final String idparamname="id";
     
     
-    public static final Set<String> CLIENTBANK_DETAILS_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, beneficiarynameparamname, ifsccodeparamname, branchnameparamname, branchaddressparamname, lasttransactiondateparamname,lasttransactionamountparamname, accountnumberparamname, createdbyparamname, createddateparamaname,
+    public static final Set<String> CLIENTBANK_DETAILS_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, beneficiarynameparamname, ifsccodeparamname, branchnameparamname, branchaddressparamname, lasttransactiondateparamname,lasttransactionamountparamname,micrcodeparamname,banknameparamname, accountnumberparamname, createdbyparamname, createddateparamaname,
     		lastmodifybyparamname, lastmodifieddateparamname,clientidparamname,beneficiarynameparamname1,accountnumberparamname1));
   
-    public static final Set<String> CLIENTBANK_DETAILS_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idparamname,localeParamName,dateFormatParamName, beneficiarynameparamname, ifsccodeparamname, branchnameparamname, branchaddressparamname, lasttransactiondateparamname,lasttransactionamountparamname, accountnumberparamname, createdbyparamname, createddateparamaname,
+    public static final Set<String> CLIENTBANK_DETAILS_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idparamname,localeParamName,dateFormatParamName, beneficiarynameparamname, ifsccodeparamname, branchnameparamname, branchaddressparamname, lasttransactiondateparamname,lasttransactionamountparamname, micrcodeparamname,banknameparamname,accountnumberparamname, createdbyparamname, createddateparamaname,
     		lastmodifybyparamname, lastmodifiedDateparamname,lastmodifieddateparamname,clientidparamname,beneficiarynameparamname1,accountnumberparamname1));
   
-    public static final Set<String> CLIENTBANK_DETAILS_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idparamname,localeParamName,dateFormatParamName, beneficiarynameparamname, ifsccodeparamname, branchnameparamname, branchaddressparamname, lasttransactiondateparamname,lasttransactionamountparamname, accountnumberparamname, createdbyparamname, createddateparamaname,
+    public static final Set<String> CLIENTBANK_DETAILS_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idparamname,localeParamName,dateFormatParamName, beneficiarynameparamname, ifsccodeparamname, branchnameparamname, branchaddressparamname, lasttransactiondateparamname,lasttransactionamountparamname,micrcodeparamname,banknameparamname, accountnumberparamname, createdbyparamname, createddateparamaname,
     		lastmodifybyparamname, lastmodifieddateparamname,clientidparamname));
   
 

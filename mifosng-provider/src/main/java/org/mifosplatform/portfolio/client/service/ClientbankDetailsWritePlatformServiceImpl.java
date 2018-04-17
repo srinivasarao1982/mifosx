@@ -62,8 +62,10 @@ public class ClientbankDetailsWritePlatformServiceImpl implements ClientbankDeta
                 final String bankName=command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.branchnameparamname);
                 final String branchAddress=command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.branchaddressparamname);
                 final BigDecimal lastTransactionAmount=command.bigDecimalValueOfParameterNamed(ClientsBankDetailsApiConstants.lasttransactionamountparamname);
-                
-	            ClientBankDetails clientBankDetails =ClientBankDetails.registerbankdetails(client, benefeciaryName, accountNumber, lastTransactionAmount, ifscCode, bankName, branchAddress, command);
+                final String bankName1=command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.banknameparamname);
+                final String micrCode=command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.micrcodeparamname);
+
+	            ClientBankDetails clientBankDetails =ClientBankDetails.registerbankdetails(client, benefeciaryName, accountNumber,bankName1,micrCode, lastTransactionAmount, ifscCode, bankName, branchAddress, command);
 	            this.clientsBankDetailsRepositoryWrapper.save(clientBankDetails);
 	            return new CommandProcessingResultBuilder() //
 	                    .withCommandId(command.commandId()) //

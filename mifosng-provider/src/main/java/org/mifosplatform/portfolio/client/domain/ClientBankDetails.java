@@ -43,6 +43,12 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 	    @Column(name = "ifsc_code", length = 256)
 	    private String ifsccode;
 	    
+	    @Column(name = "micr_code", length = 256)
+	    private String micrcode;
+	    
+	    @Column(name = "bank_name", length = 256)
+	    private String bankname;
+	    
 	    @Column(name = "branch_name", length = 256)
 	    private String branchname;    
 	    
@@ -54,11 +60,11 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 	    private Date lasttransactiondate;
 	    
 	    
-	   public static ClientBankDetails registerbankdetails(final Client client, final String  beneficiaryname, final String  accountno,final BigDecimal lastTransactionAmount, final String  ifsccode,
+	   public static ClientBankDetails registerbankdetails(final Client client, final String  beneficiaryname, final String  accountno,final String bankName,final String micrCode,final BigDecimal lastTransactionAmount, final String  ifsccode,
                 final String branchname, final String branchaddress,final JsonCommand command) {
 	        final LocalDate lasttransactiondate = command.localDateValueOfParameterNamed(ClientsBankDetailsApiConstants.lasttransactiondateparamname);
 
-		   return new ClientBankDetails(client,beneficiaryname,accountno,lastTransactionAmount,ifsccode,branchname,branchaddress,lasttransactiondate.toDate());
+		   return new ClientBankDetails(client,beneficiaryname,accountno,lastTransactionAmount,ifsccode,branchname,branchaddress,lasttransactiondate.toDate(),bankName,micrCode);
 	   }
       
 	   public Map<String, Object> update(final JsonCommand command) {
@@ -81,6 +87,18 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 	            final String newValue = command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.ifsccodeparamname);
 	            actualChanges.put(ClientsBankDetailsApiConstants.ifsccodeparamname, newValue);
 	            this.ifsccode = StringUtils.defaultIfEmpty(newValue, null);
+	        }
+	        
+	        if (command.isChangeInStringParameterNamed(ClientsBankDetailsApiConstants.micrcodeparamname, this.micrcode)) {
+	            final String newValue = command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.micrcodeparamname);
+	            actualChanges.put(ClientsBankDetailsApiConstants.micrcodeparamname, newValue);
+	            this.micrcode = StringUtils.defaultIfEmpty(newValue, null);
+	        }
+	        
+	        if (command.isChangeInStringParameterNamed(ClientsBankDetailsApiConstants.banknameparamname, this.bankname)) {
+	            final String newValue = command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.banknameparamname);
+	            actualChanges.put(ClientsBankDetailsApiConstants.banknameparamname, newValue);
+	            this.bankname = StringUtils.defaultIfEmpty(newValue, null);
 	        }
 
 	        if (command.isChangeInStringParameterNamed(ClientsBankDetailsApiConstants.branchnameparamname, this.branchname)) {
@@ -122,7 +140,7 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 	    }
 
 		public ClientBankDetails(Client client, String beneficiaryname, String accountno,BigDecimal lasttransactionAmount, String ifsccode,
-				String branchname, String branchaddress, Date lasttransactiondate) {
+				String branchname, String branchaddress, Date lasttransactiondate,String bankName,String micrCode) {
 			super();
 			this.client = client;
 			this.beneficiaryname = beneficiaryname;
@@ -132,6 +150,8 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 			this.branchname = branchname;
 			this.branchaddress = branchaddress;
 			this.lasttransactiondate = lasttransactiondate;
+			this.bankname=bankName;
+			this.micrcode=micrCode;
 		}
 
 		public Client getClient() {
@@ -189,7 +209,32 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 		public void setLasttransactiondate(Date lasttransactiondate) {
 			this.lasttransactiondate = lasttransactiondate;
 		}
-		  public ClientBankDetails() {
+		
+		  public BigDecimal getLasttransactionAmount() {
+			return lasttransactionAmount;
+		}
+
+		public void setLasttransactionAmount(BigDecimal lasttransactionAmount) {
+			this.lasttransactionAmount = lasttransactionAmount;
+		}
+
+		public String getMicrcode() {
+			return micrcode;
+		}
+
+		public void setMicrcode(String micrcode) {
+			this.micrcode = micrcode;
+		}
+
+		public String getBankname() {
+			return bankname;
+		}
+
+		public void setBankname(String bankname) {
+			this.bankname = bankname;
+		}
+
+		public ClientBankDetails() {
 				super();
 			}
 	   

@@ -66,7 +66,8 @@ public class ClientBankDetailsReadPlatformServiceImpl implements ClientBankDetai
 	        public String schema() {
 	            return "mb.id as id,mb.client_id as clientId,mb.beneficiary_name as benificaryName,"
 	                    + " mb.account_no as accountNumber,mb.lasttransaction_amount as lastTransactionAmount, "
-	                    + " mb.ifsc_code as ifscCode,mb.branch_name as bankName ,mb.branch_address as bankAddress,"
+	            		+ " mb.bank_name as bankName,mb.micr_code as micrCode, " 
+	                    + " mb.ifsc_code as ifscCode,mb.branch_name as branchName ,mb.branch_address as bankAddress,"
 	                    + " mb.lasttransaction_date as lastTransactionDate,usr.username as createdBy,"
 	                    + " usr1.username as lastModifyBy,mb.created_date as createddate,mb.lastmodified_date as modifiedDate  "
 	                    + " from m_bankdetails mb join m_appuser usr on mb.createdby_id=usr.id "
@@ -78,9 +79,11 @@ public class ClientBankDetailsReadPlatformServiceImpl implements ClientBankDetai
 
 	            final Long id = JdbcSupport.getLong(rs, "id");
 	            final Long clientId = JdbcSupport.getLong(rs, "clientId");
-	            final String bankName =rs.getString("bankName");
+	            final String bankName =rs.getString("branchName");
 	            final String bankAddress=rs.getString("bankAddress");
 	            final String ifscCode=rs.getString("ifscCode");
+	            final String bankName1=rs.getString("bankName");
+	            final String micrCode=rs.getString("micrCode");
 	            final String benificaryName=rs.getString("benificaryName");
 	            final String accountNumber=rs.getString("accountNumber");
 	            final String createdby=rs.getString("createdBy");
@@ -90,7 +93,7 @@ public class ClientBankDetailsReadPlatformServiceImpl implements ClientBankDetai
 	            final LocalDate lastTransactionDate = JdbcSupport.getLocalDate(rs, "lastTransactionDate");
 
 	            final BigDecimal lastTransactionAmount =JdbcSupport.getBigDecimalDefaultToZeroIfNull(rs, "lastTransactionAmount");
-	            return ClientBankDetailsData.bankdetailsData(id, clientId, benificaryName, ifscCode, bankName, bankAddress, lastTransactionDate, lastTransactionAmount, accountNumber, createdby, createdDate, lastmodifyBy, modifiedDate);
+	            return ClientBankDetailsData.bankdetailsData(id, clientId, benificaryName, ifscCode, bankName, bankAddress, lastTransactionDate, lastTransactionAmount, accountNumber, bankName1,micrCode,createdby, createdDate, lastmodifyBy, modifiedDate);
 	      
 	        }
 

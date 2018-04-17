@@ -612,6 +612,12 @@ public final class ClientDataValidator {
         final String ifscCode = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.ifsccodeparamname, element);
         baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.ifsccodeparamname).value(ifscCode).notBlank();
 
+        final String micrCode = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.micrcodeparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.micrcodeparamname).value(micrCode).notBlank();
+
+        final String bankName1 = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.banknameparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.banknameparamname).value(bankName1).notBlank();
+
         final String bankName = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.branchnameparamname, element);
         baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.branchnameparamname).value(bankName).notBlank();
 
@@ -657,6 +663,15 @@ public final class ClientDataValidator {
         if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.ifsccodeparamname, element)) {
         final String ifscCode = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.ifsccodeparamname, element);
         baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.ifsccodeparamname).value(ifscCode).notBlank();
+        }
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.micrcodeparamname, element)) {
+        final String micrCode = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.micrcodeparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.micrcodeparamname).value(micrCode).notBlank();
+        }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.banknameparamname, element)) {
+        final String bankName1 = this.fromApiJsonHelper.extractStringNamed(ClientsBankDetailsApiConstants.banknameparamname, element);
+        baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.banknameparamname).value(bankName1).notBlank();
         }
         
         if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.branchnameparamname, element)) {
