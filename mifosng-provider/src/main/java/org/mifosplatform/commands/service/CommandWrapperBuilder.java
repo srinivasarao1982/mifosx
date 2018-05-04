@@ -2429,5 +2429,19 @@ public class CommandWrapperBuilder {
         this.json = "{}";
         return this;
     }
+    public CommandWrapperBuilder createPartialLoan() {
+        this.actionName = "CREATE";
+        this.entityName = "PARTIALLOAN";
+        this.href = "/partialloan";
+        return this;
+    }
+    public CommandWrapperBuilder updatePartialLoan(final Long clientId,final Long groupId) {
+        this.actionName = "UPDATE";
+        this.entityName = "PARTIALLOAN";
+        this.clientId=clientId;
+        this.groupId=groupId;
+        this.href = "/partialloan/"+clientId+"/"+groupId;
+        return this;
+    }
 
 }

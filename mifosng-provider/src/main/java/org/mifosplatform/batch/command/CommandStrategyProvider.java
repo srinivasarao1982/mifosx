@@ -89,6 +89,8 @@ public class CommandStrategyProvider {
                 "disburseLoanCommandStrategy");
         this.commandStrategies.put(CommandContext.resource("loans\\/\\d+\\/transactions\\/\\d+\\?command=undo").method("POST").build(),
                 "undoLoanTransactionsCommandStrategy");
+        this.commandStrategies.put(CommandContext.resource("partialloan").method("POST").build(), "createPartialLoanCommandStartegy");
+
     }
 
 }
