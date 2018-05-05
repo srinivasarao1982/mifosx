@@ -53,7 +53,7 @@ public class PartialLoan  extends AbstractAuditableCustom<AppUser, Long>{
     private Staff staff;
     
 	@ManyToOne
-	@JoinColumn(name = "loanpurpose_cv_id", nullable = false)
+	@JoinColumn(name = "loanpurpose_cv_id")
     private CodeValue loanpurpose;
 
     @Column(name = "rpdo_no", length = 256)
@@ -71,6 +71,9 @@ public class PartialLoan  extends AbstractAuditableCustom<AppUser, Long>{
     @Column(name = "submitted_date" )
     private Date submittedDate;
     
+    @Column(name = "cbReportReceive_date" )
+    private Date cbReportReceivedate;
+    
     @ManyToOne
     @JoinColumn(name = "status" )
     private CodeValue status;
@@ -85,9 +88,9 @@ public class PartialLoan  extends AbstractAuditableCustom<AppUser, Long>{
             final Office office,final Staff staff,final CodeValue loanpurpose, final String rpdonumber,
             final  BigDecimal loanAmount, final long loantenure,final BigDecimal fixedemi,final  Date submittedDate,
             final CodeValue status,final String remark,final int isActive) {
-
+    	  Date cbReportReceivedate=null;
 	   return new PartialLoan(client,group,product,office,staff,loanpurpose,rpdonumber,loanAmount,
-			   loantenure,fixedemi,submittedDate,status,remark,isActive);
+			   loantenure,fixedemi,submittedDate,status,remark,isActive,cbReportReceivedate);
    }
   
    public PartialLoan() {
@@ -145,20 +148,20 @@ public Map<String, Object> update(final JsonCommand command) {
         final String dateFormatAsInput = command.dateFormat();
         final String localeAsInput = command.locale();
 
-        if (command.isChangeInLocalDateParameterNamed(PartialLoanApiConstant.submitteddateparamname, getLastTransactionOnDate())) {
-            final String valueAsInput = command.stringValueOfParameterNamed(PartialLoanApiConstant.submitteddateparamname);
-            actualChanges.put(PartialLoanApiConstant.submitteddateparamname, valueAsInput);
-            actualChanges.put(PartialLoanApiConstant.dateFormatParamName, dateFormatAsInput);
+        if (command.isChangeInLocalDateParameterNamed(PartialLoanApiConstant.cbreceiveddateparamname, getLastTransactionOnDate())) {
+            final String valueAsInput = command.stringValueOfParameterNamed(PartialLoanApiConstant.cbreceiveddateparamname);
+            actualChanges.put(PartialLoanApiConstant.cbreceiveddateparamname, valueAsInput);
+            actualChanges.put(PartialLoanApiConstant.cbreceiveddateparamname, dateFormatAsInput);
             actualChanges.put(PartialLoanApiConstant.localeParamName, localeAsInput);
 
-            final LocalDate newValue = command.localDateValueOfParameterNamed(PartialLoanApiConstant.submitteddateparamname);
-            this.submittedDate = newValue.toDate();
+            final LocalDate newValue = command.localDateValueOfParameterNamed(PartialLoanApiConstant.cbreceiveddateparamname);
+            this.cbReportReceivedate = newValue.toDate();
         }
 
        return actualChanges;
     }
    public LocalDate getLastTransactionOnDate() {
-        return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.submittedDate), null);
+        return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.cbReportReceivedate), null);
     }
 
   public Long getstatus(){
@@ -171,7 +174,7 @@ public Map<String, Object> update(final JsonCommand command) {
 
 	public PartialLoan(Client client, Group group, LoanProduct product, Office office, Staff staff,
 			CodeValue loanpurpose, String rpdonumber, BigDecimal loanAmount, long loantenure, BigDecimal fixedemi,
-			Date submittedDate, CodeValue status, String remark, int isActive) {
+			Date submittedDate, CodeValue status, String remark, int isActive,Date cbReportReceivedate) {
 		super();
 		this.client = client;
 		this.group = group;
@@ -187,6 +190,7 @@ public Map<String, Object> update(final JsonCommand command) {
 		this.status = status;
 		this.remark = remark;
 		this.isActive = isActive;
+		this.cbReportReceivedate=cbReportReceivedate;
 	}
 
 	public Client getClient() {

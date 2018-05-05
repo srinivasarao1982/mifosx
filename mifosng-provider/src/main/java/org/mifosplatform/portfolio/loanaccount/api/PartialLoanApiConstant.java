@@ -29,6 +29,7 @@ public class PartialLoanApiConstant {
     public static final String rpdonumberparamname="externalId";
     public static final String officeidparamname="officeId";
     public static final String submitteddateparamname="submittedOnDate";
+    public static final String cbreceiveddateparamname="cbreceivedate";
     public static final String loantenureparamname="loanTenure";
     public static final String statusparamname="status";
     public static final String remarkparamname="remark";
@@ -46,13 +47,13 @@ public class PartialLoanApiConstant {
     public static final String acceptedclientparamname="acceptedclientsId";
     
     public static final Set<String> PARTIALLOAN_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, groupidparamname, clientidparamname, productidparamname, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, submitteddateparamname, loantenureparamname,
-    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname));
+    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname));
   
     public static final Set<String> PARTIALLOAN_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,idparamname, groupidparamname, clientidparamname, productidparamname, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, submitteddateparamname, loantenureparamname,
-    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname));
+    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname));
   
     public static final Set<String> PARTIALLOAN_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,idparamname, responserpdonumberparamname, clientidparamname, loanAmountParamName, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, subitteddateparamname, statusdataparamname,
-    		statusdataparamname,acceptedclientparamname, remarkparamname,clientidparamname,clientNameparamName,isActiveparamaname,isActiveparamaname));
+    		statusdataparamname,acceptedclientparamname, remarkparamname,clientidparamname,clientNameparamName,isActiveparamaname,isActiveparamaname,cbreceiveddateparamname));
   
 
 

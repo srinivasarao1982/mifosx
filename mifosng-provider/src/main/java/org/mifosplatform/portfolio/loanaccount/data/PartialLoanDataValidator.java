@@ -62,13 +62,9 @@ public class PartialLoanDataValidator {
 	        
 	        final long principal = this.fromApiJsonHelper.extractLongNamed(PartialLoanApiConstant.principalparamname, element);
 	        baseDataValidator.reset().parameter(PartialLoanApiConstant.principalparamname).value(principal).notNull()
-	                .longGreaterThanZero();
+	                .longGreaterThanZero();	        
 	        
 	        
-	        final long loanPurposeId = this.fromApiJsonHelper.extractLongNamed(PartialLoanApiConstant.loanpurposeparamname, element);
-	        baseDataValidator.reset().parameter(PartialLoanApiConstant.loanpurposeparamname).value(loanPurposeId).notNull()
-	                .longGreaterThanZero();
-
 	      	        throwExceptionIfValidationWarningsExist(dataValidationErrors);
 
 	    }

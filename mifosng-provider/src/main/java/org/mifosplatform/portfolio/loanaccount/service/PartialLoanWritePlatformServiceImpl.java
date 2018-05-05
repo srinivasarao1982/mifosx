@@ -84,8 +84,11 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                 final Long staffId = command.longValueOfParameterNamed(PartialLoanApiConstant.loanofficeridparamname);	
                 final Staff staff=this.staffRepositoryWrapper.findOneWithNotFoundDetection(staffId);
                 final Long longpurposeId =command.longValueOfParameterNamed(PartialLoanApiConstant.loanpurposeparamname);
-	            final CodeValue purpose =this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(longpurposeId);
-                final Long officeId =command.longValueOfParameterNamed(PartialLoanApiConstant.officeidparamname);		
+                CodeValue purpose=null;
+                if(longpurposeId!=null){
+	              purpose =this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(longpurposeId);
+                }
+	             final Long officeId =command.longValueOfParameterNamed(PartialLoanApiConstant.officeidparamname);		
                 final Office office =this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId) ;
                 final Long productId= command.longValueOfParameterNamed(PartialLoanApiConstant.productidparamname);
                 final LoanProduct product=this.loanProductRepository.findOne(productId)	;	
