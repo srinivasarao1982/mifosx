@@ -123,7 +123,9 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
         try {
             final String name = command.stringValueOfParameterNamed(GroupingTypesApiConstants.nameParamName);
             final String externalId = command.stringValueOfParameterNamed(GroupingTypesApiConstants.externalIdParamName);
-
+            
+            final Long isnewcenter =command.longValueOfParameterNamed(GroupingTypesApiConstants.isnewcenterParamName);
+            final Long iscbcheckrequired=command.longValueOfParameterNamed(GroupingTypesApiConstants.iscbchekrequiredparamName);  
             final AppUser currentUser = this.context.authenticatedUser();
             Long officeId = null;
             Group parentGroup = null;
@@ -163,7 +165,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             }
 
             final Group newGroup = Group.newGroup(groupOffice, staff, parentGroup, groupLevel, name, externalId, active, activationDate,
-                    clientMembers, groupMembers, submittedOnDate, currentUser);
+                    clientMembers, groupMembers, submittedOnDate, currentUser,isnewcenter,iscbcheckrequired);
 
             boolean rollbackTransaction = false;
             if (newGroup.isActive()) {
@@ -308,7 +310,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final Long officeId = groupForUpdate.officeId();
             final Office groupOffice = groupForUpdate.getOffice();
             final String groupHierarchy = groupOffice.getHierarchy();
-
+            
             this.context.validateAccessRights(groupHierarchy);
 
             final LocalDate activationDate = command.localDateValueOfParameterNamed(GroupingTypesApiConstants.activationDateParamName);

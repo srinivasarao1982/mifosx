@@ -27,6 +27,8 @@ public class CenterData {
     private final Long staffId;
     private final String staffName;
     private final String hierarchy;
+    private final String isnewCenter;
+    private final String iscbCheckRequired;
 
     private final EnumOptionData status;
     @SuppressWarnings("unused")
@@ -49,20 +51,23 @@ public class CenterData {
         final CalendarData collectionMeetingCalendar = null;
         final Collection<CodeValueData> closureReasons = null;
         final GroupTimelineData timeline = null;
+        final String isnewCenter=null;
+        final String iscbCheckRequired=null;
+
         return new CenterData(null, null, null, null, activationDate, officeId, null, null, null, null, null, officeOptions, staffOptions,
-                groupMembersOptions, collectionMeetingCalendar, closureReasons, timeline);
+                groupMembersOptions, collectionMeetingCalendar, closureReasons, timeline,isnewCenter,iscbCheckRequired);
     }
 
     public static CenterData withTemplate(final CenterData templateCenter, final CenterData center) {
         return new CenterData(center.id, center.name, center.externalId, center.status, center.activationDate, center.officeId,
                 center.officeName, center.staffId, center.staffName, center.hierarchy, center.groupMembers, templateCenter.officeOptions,
                 templateCenter.staffOptions, templateCenter.groupMembersOptions, templateCenter.collectionMeetingCalendar,
-                templateCenter.closureReasons, center.timeline);
+                templateCenter.closureReasons, center.timeline,center.isnewCenter,center.iscbCheckRequired);
     }
 
     public static CenterData instance(final Long id, final String name, final String externalId, final EnumOptionData status,
             final LocalDate activationDate, final Long officeId, final String officeName, final Long staffId, final String staffName,
-            final String hierarchy, final GroupTimelineData timeline, final CalendarData collectionMeetingCalendar) {
+            final String hierarchy, final GroupTimelineData timeline, final CalendarData collectionMeetingCalendar,final String isnewCenter,final String isCbcheckRequired) {
 
         final Collection<GroupGeneralData> groupMembers = null;
         final Collection<OfficeData> officeOptions = null;
@@ -71,7 +76,7 @@ public class CenterData {
         final Collection<CodeValueData> closureReasons = null;
 
         return new CenterData(id, name, externalId, status, activationDate, officeId, officeName, staffId, staffName, hierarchy,
-                groupMembers, officeOptions, staffOptions, groupMembersOptions, collectionMeetingCalendar, closureReasons, timeline);
+                groupMembers, officeOptions, staffOptions, groupMembersOptions, collectionMeetingCalendar, closureReasons, timeline,isnewCenter,isCbcheckRequired);
     }
 
     public static CenterData withAssociations(final CenterData centerData, final Collection<GroupGeneralData> groupMembers,
@@ -79,7 +84,7 @@ public class CenterData {
         return new CenterData(centerData.id, centerData.name, centerData.externalId, centerData.status, centerData.activationDate,
                 centerData.officeId, centerData.officeName, centerData.staffId, centerData.staffName, centerData.hierarchy, groupMembers,
                 centerData.officeOptions, centerData.staffOptions, centerData.groupMembersOptions, collectionMeetingCalendar,
-                centerData.closureReasons, centerData.timeline);
+                centerData.closureReasons, centerData.timeline,centerData.isnewCenter,centerData.iscbCheckRequired);
     }
 
     public static CenterData withClosureReasons(final Collection<CodeValueData> closureReasons) {
@@ -99,15 +104,18 @@ public class CenterData {
         final Collection<GroupGeneralData> groupMembersOptions = null;
         final CalendarData collectionMeetingCalendar = null;
         final GroupTimelineData timeline = null;
+        final String isnewCenter=null;
+        final String iscbCheckRequired=null;
         return new CenterData(id, name, externalId, status, activationDate, officeId, officeName, staffId, staffName, hierarchy,
-                groupMembers, officeOptions, staffOptions, groupMembersOptions, collectionMeetingCalendar, closureReasons, timeline);
+                groupMembers, officeOptions, staffOptions, groupMembersOptions, collectionMeetingCalendar, closureReasons, timeline,isnewCenter,iscbCheckRequired);
     }
-
+    
     private CenterData(final Long id, final String name, final String externalId, final EnumOptionData status,
             final LocalDate activationDate, final Long officeId, final String officeName, final Long staffId, final String staffName,
             final String hierarchy, final Collection<GroupGeneralData> groupMembers, final Collection<OfficeData> officeOptions,
             final Collection<StaffData> staffOptions, final Collection<GroupGeneralData> groupMembersOptions,
-            final CalendarData collectionMeetingCalendar, final Collection<CodeValueData> closureReasons, final GroupTimelineData timeline) {
+            final CalendarData collectionMeetingCalendar, final Collection<CodeValueData> closureReasons, final GroupTimelineData timeline,
+            final String isnewCenter,final String iscbCheckRequired) {
         this.id = id;
         this.name = name;
         this.externalId = externalId;
@@ -123,6 +131,8 @@ public class CenterData {
         this.staffId = staffId;
         this.staffName = staffName;
         this.hierarchy = hierarchy;
+        this.iscbCheckRequired=iscbCheckRequired;
+        this.isnewCenter=isnewCenter;
 
         this.groupMembers = groupMembers;
 

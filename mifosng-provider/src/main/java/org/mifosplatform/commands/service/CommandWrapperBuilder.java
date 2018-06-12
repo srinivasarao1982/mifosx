@@ -2444,4 +2444,30 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createTaskDetails() {
+        this.actionName = "CREATE";
+        this.entityName = "TASK";
+        this.href = "/taskdetails";
+        return this;
+    }
+    public CommandWrapperBuilder updateTaskDetails(final Long taskId) {
+        this.actionName = "UPDATE";
+        this.entityName = "TASK";
+        this.entityId=taskId;
+        this.href = "/taskdetails/"+taskId;
+        return this;
+    }
+    public CommandWrapperBuilder createTaskConfiguratioDetails() {
+        this.actionName = "CREATE";
+        this.entityName = "TASKCONFIGURATION";
+        this.href = "/taskdetails/taskconfiguration";
+        return this;
+    }
+    public CommandWrapperBuilder updateTaskConfigurationDetails(final Long taskconfigurationId) {
+        this.actionName = "UPDATE";
+        this.entityName = "TASKCONFIGURATION";
+        this.entityId=taskconfigurationId;
+        this.href = "/taskdetails/taskconfiguration"+taskconfigurationId;
+        return this;
+    }
 }

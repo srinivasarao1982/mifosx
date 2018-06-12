@@ -28,6 +28,8 @@ public class GroupingTypesApiConstants {
     public static final String groupIdParamName = "groupId";
     public static final String clientIdParamName = "clientId";
     public static final String groupRolesParamName = "groupRoles";
+    public static final String isnewcenterParamName="isnewCenter";
+    public static final String iscbchekrequiredparamName="iscbcheckRequired";
 
     // general
     public static final String localeParamName = "locale";
@@ -68,10 +70,10 @@ public class GroupingTypesApiConstants {
 
     // staff centres parameters
     public static final String meetingFallCenters = "meetingFallCenters";
-
+    
     public static final Set<String> CENTER_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, idParamName, nameParamName, externalIdParamName, officeIdParamName, staffIdParamName, activeParamName,
-            activationDateParamName, groupMembersParamName, submittedOnDateParamName));
+            activationDateParamName, groupMembersParamName, submittedOnDateParamName,isnewcenterParamName,iscbchekrequiredparamName));
 
     public static final Set<String> GROUP_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName, dateFormatParamName,
             idParamName, nameParamName, externalIdParamName, centerIdParamName, officeIdParamName, staffIdParamName, activeParamName,
@@ -88,7 +90,7 @@ public class GroupingTypesApiConstants {
     public static final Set<String> CENTER_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, nameParamName,
             externalIdParamName, officeIdParamName, officeNameParamName, staffIdParamName, staffNameParamName, hierarchyParamName,
             officeOptionsParamName, staffOptionsParamName, statusParamName, activeParamName, activationDateParamName, timeLine,
-            groupMembersParamName, collectionMeetingCalendar, closureReasons));
+            groupMembersParamName, collectionMeetingCalendar, closureReasons,isnewcenterParamName,iscbchekrequiredparamName));
 
     public static final Set<String> CENTER_GROUP_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, nameParamName,
             externalIdParamName, officeIdParamName, officeNameParamName, staffIdParamName, staffNameParamName, hierarchyParamName,

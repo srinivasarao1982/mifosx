@@ -141,8 +141,8 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
 
     private static final String sqlQuery = "g.id as id, g.external_id as externalId, g.display_name as name, "
             + "g.office_id as officeId, o.name as officeName, " //
-            + "g.staff_id as staffId, s.display_name as staffName, " //
-            + "g.status_enum as statusEnum, g.activation_date as activationDate, " //
+            + "g.staff_id as staffId, s.display_name as staffName,if(g.is_new_center=1,'New','Old') as isnewcenter, " //
+            + "g.status_enum as statusEnum, g.activation_date as activationDate,if(g.is_cbcheck_required=1,'Yes','No') as iscbcheckrequired , " //
             + "g.hierarchy as hierarchy, " //
             + "g.closedon_date as closedOnDate, " + "g.submittedon_date as submittedOnDate, " + "sbu.username as submittedByUsername, "
             + "sbu.firstname as submittedByFirstname, " + "sbu.lastname as submittedByLastname, " + "clu.username as closedByUsername, "
@@ -181,6 +181,8 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
             final Long staffId = JdbcSupport.getLong(rs, "staffId");
             final String staffName = rs.getString("staffName");
             final String hierarchy = rs.getString("hierarchy");
+            final String isnewCenter=rs.getString("isnewcenter");
+            final String iscbcheckRequired=rs.getString("iscbcheckrequired");
 
             final LocalDate closedOnDate = JdbcSupport.getLocalDate(rs, "closedOnDate");
             final String closedByUsername = rs.getString("closedByUsername");
@@ -199,9 +201,9 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
             final GroupTimelineData timeline = new GroupTimelineData(submittedOnDate, submittedByUsername, submittedByFirstname,
                     submittedByLastname, activationDate, activatedByUsername, activatedByFirstname, activatedByLastname, closedOnDate,
                     closedByUsername, closedByFirstname, closedByLastname);
-
+           
             return CenterData.instance(id, name, externalId, status, activationDate, officeId, officeName, staffId, staffName, hierarchy,
-                    timeline, null);
+                    timeline, null,isnewCenter,iscbcheckRequired);
         }
     }
 
@@ -213,7 +215,7 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
 
             schemaSql = " select g.id as id, g.display_name as name, g.office_id as officeId, g.staff_id as staffId, s.display_name as staffName, g.external_id as externalId, "
                     + " g.status_enum as statusEnum, g.activation_date as activationDate, g.hierarchy as hierarchy,  "
-                    + " c.id as calendarId, ci.id as calendarInstanceId, ci.entity_id as entityId,  "
+                    + " c.id as calendarId, ci.id as calendarInstanceId, ci.entity_id as entityId,if(g.is_new_center=1,'New','Old') as isnewcenter, if(g.is_cbcheck_required=1,'Yes','No') as iscbcheckrequired , "
                     + " ci.entity_type_enum as entityTypeId, c.title as title,  c.description as description,  "
                     + " c.location as location, c.start_date as startDate, c.end_date as endDate, c.recurrence as recurrence  "
                     + " from m_calendar c join m_calendar_instance ci on ci.calendar_id=c.id and ci.entity_type_enum=4 join m_group g  "
@@ -249,12 +251,15 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
             final LocalDate startDate = JdbcSupport.getLocalDate(rs, "startDate");
             final LocalDate endDate = JdbcSupport.getLocalDate(rs, "endDate");
             final String recurrence = rs.getString("recurrence");
+            final String isnewCenter=rs.getString("isnewcenter");
+            final String iscbcheckRequired=rs.getString("iscbcheckrequired");
+
 
             CalendarData calendarData = CalendarData.instance(calendarId, calendarInstanceId, entityId, entityType, title, description,
                     location, startDate, endDate, null, null, false, recurrence, null, null, null, null, null, null, null, null, null,
                     null, null, null, null);
             return CenterData.instance(id, name, externalId, status, activationDate, officeId, null, staffId, staffName, hierarchy, null,
-                    calendarData);
+                    calendarData,isnewCenter,iscbcheckRequired);
         }
     }
 
