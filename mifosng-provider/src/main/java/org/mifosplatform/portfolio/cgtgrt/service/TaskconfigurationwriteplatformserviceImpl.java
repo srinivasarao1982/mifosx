@@ -97,8 +97,12 @@ public class TaskconfigurationwriteplatformserviceImpl  implements Taskconfigura
 			if(nooftask==null){
 				throw new TaskConfigurationExistException("nooftask");
 			}
+			final Long orderNo = command.longValueOfParameterNamed(TaskConfigurationApiConstant.ordernoparamname);
+			if(orderNo==null){
+				throw new TaskConfigurationExistException("orderNo");
+			}
 
-			TaskConfiguration taskConfiguration = TaskConfiguration.createTaskConfiguration(taskType, noofdays, completedBy, centerType,nooftask);
+			TaskConfiguration taskConfiguration = TaskConfiguration.createTaskConfiguration(taskType, noofdays, completedBy, centerType,nooftask,orderNo);
 					
 			this.taskConfigurationRepositoryWrapper.save(taskConfiguration);
 			return new CommandProcessingResultBuilder() //
@@ -149,7 +153,7 @@ public class TaskconfigurationwriteplatformserviceImpl  implements Taskconfigura
 	private void handleClientIdentifierDataIntegrityViolation(final String accountNumber, final String  ifsc,
             final DataIntegrityViolationException dve) {
 
-       if (dve.getMostSpecificCause().getMessage().contains("unique_loan_identifier")) {
+       if (dve.getMostSpecificCause().getMessage().contains("unique_task_identifier")) {
            throw new DuplicateClientIdentifierException(accountNumber);
        } 
        logAsErrorUnexpectedDataIntegrityException(dve);

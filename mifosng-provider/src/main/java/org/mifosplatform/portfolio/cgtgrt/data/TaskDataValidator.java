@@ -23,13 +23,19 @@ import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.portfolio.cgtgrt.api.TaskApiConstant;
 import org.mifosplatform.portfolio.cgtgrt.api.TaskConfigurationApiConstant;
 import org.mifosplatform.portfolio.cgtgrt.domain.TaskClientAttendence;
+import org.mifosplatform.portfolio.cgtgrt.domain.TaskConfiguration;
+import org.mifosplatform.portfolio.cgtgrt.domain.TaskConfigurationRepository;
 import org.mifosplatform.portfolio.cgtgrt.domain.TaskDetails;
+import org.mifosplatform.portfolio.cgtgrt.domain.TaskRepository;
 import org.mifosplatform.portfolio.cgtgrt.domain.Tasks;
 import org.mifosplatform.portfolio.cgtgrt.exception.FieldCannotbeBlankException;
 import org.mifosplatform.portfolio.cgtgrt.exception.TaskDetailsException;
+import org.mifosplatform.portfolio.cgtgrt.exception.TaskOrderException;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.exception.ClientNotFoundException;
+import org.mifosplatform.portfolio.group.domain.Group;
+import org.mifosplatform.portfolio.group.domain.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,15 +48,25 @@ public class TaskDataValidator {
 	private final FromJsonHelper fromApiJsonHelper;
     private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
     private final ClientRepositoryWrapper clientRepositoryWrapper;
+    private final TaskRepository taskRepository;
+    private final TaskConfigurationRepository taskConfigurationRepository;
+	private final GroupRepository groupRepository;
+
+    
 
 
 
     @Autowired
     public TaskDataValidator(final FromJsonHelper fromApiJsonHelper,final CodeValueRepositoryWrapper codeValueRepositoryWrapper,
-    		final ClientRepositoryWrapper clientRepositoryWrapper) {
+    		final ClientRepositoryWrapper clientRepositoryWrapper,final TaskRepository taskRepository,
+    		final TaskConfigurationRepository taskConfigurationRepository,final GroupRepository groupRepository) {
         this.fromApiJsonHelper = fromApiJsonHelper;
 	    this.codeValueRepositoryWrapper=codeValueRepositoryWrapper;
 	    this.clientRepositoryWrapper=clientRepositoryWrapper;
+	    this.taskRepository=taskRepository;
+	    this.taskConfigurationRepository=taskConfigurationRepository;
+	    this.groupRepository=groupRepository;
+	    
 
     }
 	
@@ -90,6 +106,23 @@ public class TaskDataValidator {
 	        if(taskTypeId==null){
 				throw new FieldCannotbeBlankException("taskTypeId");
 			}
+	        //validate for ordering of task
+			final Group group = this.groupRepository.findCenterById(centerId);
+			long i=group.getIsnewCenter();
+			int j= (int)i;
+			Integer centerType= Integer.valueOf(j);
+			TaskConfiguration taskConfiguration=this.taskConfigurationRepository.findTask(taskTypeId, centerType);
+			Long orderno=taskConfiguration.getOrder();
+			orderno=orderno-1;
+			while(orderno>0){
+				TaskConfiguration taskConfigurationforOrderNo=this.taskConfigurationRepository.findTaskByOrderNo(orderno, centerType);
+                 List<Tasks>noOfTask=this.taskRepository.findNoOfTask(centerId, taskConfigurationforOrderNo.getTasktype().getId());
+				 if(taskConfigurationforOrderNo.getNoOfTask()!=noOfTask.size()){
+					throw new TaskOrderException(taskConfigurationforOrderNo.getTasktype().label()); 
+				 }
+				 orderno--;
+			}
+	        
 	        baseDataValidator.reset().parameter(TaskApiConstant.tasktypeparamname).value(taskTypeId).notNull()
 	                .longGreaterThanZero();
 	        

@@ -30,6 +30,7 @@ import org.mifosplatform.portfolio.cgtgrt.domain.Tasks;
 import org.mifosplatform.portfolio.cgtgrt.exception.FieldCannotbeBlankException;
 import org.mifosplatform.portfolio.cgtgrt.exception.MaximumNumberofTaskExceedException;
 import org.mifosplatform.portfolio.cgtgrt.exception.TaskIsInActiveStateException;
+import org.mifosplatform.portfolio.cgtgrt.exception.TaskOrderException;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.exception.DuplicateClientIdentifierException;
 import org.mifosplatform.portfolio.group.domain.Group;
@@ -159,6 +160,29 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 			final Tasks taskforUpdate = this.taskRepositoryWrapper.findOneWithNotFoundDetection(taskId);
 			if (taskforUpdate != null) {
 				this.taskDataValidator.validateUpdate(command);
+				
+				 //validate for ordering of task
+				Long taskTypeId=command.longValueOfParameterNamed(TaskApiConstant.tasktypeparamname);
+				final Long centerId = command.longValueOfParameterNamed(TaskApiConstant.centerIdparamname);
+				if(centerId==null){
+					throw new FieldCannotbeBlankException("centerId");
+				}
+				final Group group = this.groupRepository.findCenterById(centerId);
+				long i=group.getIsnewCenter();
+				int j= (int)i;
+				Integer centerType= Integer.valueOf(j);
+				TaskConfiguration taskConfiguration=this.taskConfigurationRepository.findTask(taskTypeId, centerType);
+				Long orderno=taskConfiguration.getOrder();
+				orderno=orderno-1;
+				while(orderno>0){
+					TaskConfiguration taskConfigurationforOrderNo=this.taskConfigurationRepository.findTaskByOrderNo(orderno, centerType);
+	                 List<Tasks>noOfTask=this.taskRepository.findNoOfTask(centerId, taskConfigurationforOrderNo.getTasktype().getId());
+					 if(taskConfigurationforOrderNo.getNoOfTask()!=noOfTask.size()){
+						throw new TaskOrderException(taskConfigurationforOrderNo.getTasktype().label()); 
+					 }
+					 orderno--;
+				}
+				// for Validata Purpose
 				final Map<String, Object> changes = taskforUpdate.update(command);
 
 				if (changes.containsKey(TaskApiConstant.taskstatusparamname)) {

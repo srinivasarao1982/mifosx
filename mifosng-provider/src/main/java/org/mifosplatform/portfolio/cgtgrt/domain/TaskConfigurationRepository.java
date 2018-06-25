@@ -10,5 +10,8 @@ public interface TaskConfigurationRepository extends JpaRepository<TaskConfigura
 	@Query("from TaskConfiguration taskConfiguration where taskConfiguration.tasktype.id = :tasktype and  taskConfiguration.centerType =:centertype")
 	TaskConfiguration findTask(@Param("tasktype") Long tasktype ,@Param("centertype") Integer centertype);
 
+	@Query("from TaskConfiguration taskConfiguration where taskConfiguration.order = :orderNo and  taskConfiguration.centerType =:centertype")
+	TaskConfiguration findTaskByOrderNo(@Param("orderNo") Long orderNo ,@Param("centertype") Integer centertype);
+
 }
  

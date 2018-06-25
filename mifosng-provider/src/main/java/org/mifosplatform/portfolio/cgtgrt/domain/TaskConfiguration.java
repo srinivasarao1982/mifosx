@@ -44,22 +44,26 @@ public class TaskConfiguration extends AbstractPersistable<Long> {
    @Column(name = "no_of_task", nullable = false)
    private Long noOfTask;
    
+   @Column(name = "order_no", nullable = false)
+   private Long order;
+   
    
    public TaskConfiguration() {
 	super();
 }
 
-public static TaskConfiguration createTaskConfiguration(final CodeValue tasktype,final int noofdays,final CodeValue completedby, final int centerType,final Long noOfTask){
-	   return new TaskConfiguration(tasktype,noofdays,completedby,centerType,noOfTask);
+public static TaskConfiguration createTaskConfiguration(final CodeValue tasktype,final int noofdays,final CodeValue completedby, final int centerType,final Long noOfTask,Long order){
+	   return new TaskConfiguration(tasktype,noofdays,completedby,centerType,noOfTask,order);
    }
 
-   public TaskConfiguration(CodeValue tasktype, int noofdays, CodeValue completedby, Integer centerType,final Long noOfTask) {
+   public TaskConfiguration(CodeValue tasktype, int noofdays, CodeValue completedby, Integer centerType,final Long noOfTask,final Long orderNo) {
 		super();
 		this.tasktype = tasktype;
 		this.noofdays = noofdays;
 		this.completedby = completedby;
 		this.centerType = centerType;
 		this.noOfTask=noOfTask;
+		this.order=orderNo;
 	}
    
    public Map<String, Object> update(final JsonCommand command) {
@@ -82,6 +86,10 @@ public static TaskConfiguration createTaskConfiguration(final CodeValue tasktype
        
        if(command.longValueOfParameterNamed(TaskConfigurationApiConstant.nooftaskparamname)==null){
 			throw new FieldCannotbeBlankException("no of task");
+     }
+
+       if(command.longValueOfParameterNamed(TaskConfigurationApiConstant.ordernoparamname)==null){
+			throw new FieldCannotbeBlankException(" Task order No");
      }
        if (command.isChangeInLongParameterNamed(TaskConfigurationApiConstant.tasktypeIdparamname, this.tasktype.getId())) {
            final Long newValue = command.longValueOfParameterNamed(TaskConfigurationApiConstant.tasktypeIdparamname);
@@ -107,6 +115,10 @@ public static TaskConfiguration createTaskConfiguration(final CodeValue tasktype
        if (command.isChangeInLongParameterNamed(TaskConfigurationApiConstant.completedbyparamname, this.completedby.getId())) {
            final Long newValue = command.longValueOfParameterNamed(TaskConfigurationApiConstant.completedbyparamname);
            actualChanges.put(TaskConfigurationApiConstant.completedbyparamname, newValue);
+       }
+       if (command.isChangeInLongParameterNamed(TaskConfigurationApiConstant.ordernoparamname, this.order)) {
+           final Long newValue = command.longValueOfParameterNamed(TaskConfigurationApiConstant.ordernoparamname);
+            this.order=newValue;
        }
   
       return actualChanges;
@@ -179,6 +191,14 @@ public Long getNoOfTask() {
 
 public void setNoOfTask(Long noOfTask) {
 	this.noOfTask = noOfTask;
+}
+
+public Long getOrder() {
+	return order;
+}
+
+public void setOrder(Long order) {
+	this.order = order;
 }
   
    

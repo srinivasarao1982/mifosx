@@ -14,6 +14,7 @@ public class TaskConfigurationData {
 	public  Long tasktypeId;
 	public Long completedById;
 	private Long nooftask;
+	private Long orderno;
 	
 	
 	//Template
@@ -29,17 +30,18 @@ public class TaskConfigurationData {
 		final  Long tasktypeId=null;
 		final Long completedById=null;
 		final Long nooftask=null;
+		final Long orderNo=null;
 		 
-		 return new TaskConfigurationData(taskTypes,taskCompletedBy,taskType,completedBy,noofdays,centerType,taskconfigurationId,tasktypeId,completedById,nooftask);
+		 return new TaskConfigurationData(taskTypes,taskCompletedBy,taskType,completedBy,noofdays,centerType,taskconfigurationId,tasktypeId,completedById,nooftask,orderNo);
 	}
 	
-	public static TaskConfigurationData taskconfigurationData(final String taskType,final String completedBy,final int noofdays,final String centerType,final Long taskconfigurationId,final Long tasktypeId,final Long completedById,final Long nooftask){
+	public static TaskConfigurationData taskconfigurationData(final String taskType,final String completedBy,final int noofdays,final String centerType,final Long taskconfigurationId,final Long tasktypeId,final Long completedById,final Long nooftask,final Long orderNo){
 		final Collection<CodeValueData>taskTypes =null;
 		 final Collection<CodeValueData>taskCompletedBy=null;
 
-		return new TaskConfigurationData(taskTypes,taskCompletedBy,taskType,completedBy,noofdays,centerType,taskconfigurationId,tasktypeId,completedById,nooftask);
+		return new TaskConfigurationData(taskTypes,taskCompletedBy,taskType,completedBy,noofdays,centerType,taskconfigurationId,tasktypeId,completedById,nooftask,orderNo);
 	}
-	public TaskConfigurationData(final Collection<CodeValueData>descriptions,final Collection<CodeValueData>taskCompletedBy, final String taskType, String completedBy, Integer noofdays, String centerType,Long taskconfigurationId,final Long tasktypeId,final Long completedById ,final Long nooftask) {
+	public TaskConfigurationData(final Collection<CodeValueData>descriptions,final Collection<CodeValueData>taskCompletedBy, final String taskType, String completedBy, Integer noofdays, String centerType,Long taskconfigurationId,final Long tasktypeId,final Long completedById ,final Long nooftask,final Long orderNo) {
 		super();
 		this.descriptions=descriptions;
 		this.taskCompletedBy=taskCompletedBy;
@@ -51,6 +53,7 @@ public class TaskConfigurationData {
 		this.tasktypeId=tasktypeId;
 		this.completedById=completedById;
 		this.nooftask=nooftask;
+		this.orderno=orderNo;
 	}
 	public Long getNooftask() {
 		return nooftask;
@@ -119,6 +122,14 @@ public class TaskConfigurationData {
 
 	public void setCompletedById(Long completedById) {
 		this.completedById = completedById;
+	}
+
+	public Long getOrderNo() {
+		return orderno;
+	}
+
+	public void setOrderNo(Long orderNo) {
+		this.orderno = orderNo;
 	}
 	
 	

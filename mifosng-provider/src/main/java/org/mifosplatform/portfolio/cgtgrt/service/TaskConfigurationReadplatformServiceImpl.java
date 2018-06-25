@@ -73,7 +73,7 @@ public class TaskConfigurationReadplatformServiceImpl implements TaskConfigurati
         public TaskConfigurationDataMapper() {}
 
         public String schema() {
-            return   "  select mtc.id as tadkconfigurationId,if(mtc.center_type=1,'New','Old') as centerType,mtc.task_type as taskTypeId,mtc.completed_by as completedById,mtc.no_of_task as nooftask , "
+            return   "  select mtc.id as tadkconfigurationId,if(mtc.center_type=1,'New','Old') as centerType,mtc.task_type as taskTypeId,mtc.completed_by as completedById,mtc.no_of_task as nooftask ,mtc.order_no as taskorderNo, "
                     + " mcv.code_value as taskType,mcv1.code_value as completedBy,mtc.no_of_days as noOfDays "
                     + " from m_task_configuration mtc join "
                     + " m_code_value mcv on mcv.id=mtc.task_type "
@@ -91,9 +91,11 @@ public class TaskConfigurationReadplatformServiceImpl implements TaskConfigurati
             final Long tasktypeId = JdbcSupport.getLong(rs, "taskTypeId");
             final Long completedById = JdbcSupport.getLong(rs, "completedById");
             final Long nooftask = JdbcSupport.getLong(rs, "nooftask");
+            final Long taskorderNo =JdbcSupport.getLong(rs, "taskorderNo");
 
 
-           return TaskConfigurationData.taskconfigurationData(taskType, completedBy, noOfdays, centerType,taskconfigurationId,tasktypeId,completedById,nooftask);
+
+           return TaskConfigurationData.taskconfigurationData(taskType, completedBy, noOfdays, centerType,taskconfigurationId,tasktypeId,completedById,nooftask,taskorderNo);
             		
         }
 
@@ -119,7 +121,7 @@ public class TaskConfigurationReadplatformServiceImpl implements TaskConfigurati
         public TaskDetailsMapper() {}
 
         public String schema() {
-            return   "  select mtc.id as tadkconfigurationId,if(mtc.center_type=1,'New','Old') as centerType, mtc.task_type as taskTypeId,mtc.completed_by as completedById,mtc.no_of_task as nooftask ,"
+            return   "  select mtc.id as tadkconfigurationId,if(mtc.center_type=1,'New','Old') as centerType, mtc.task_type as taskTypeId,mtc.completed_by as completedById,mtc.no_of_task as nooftask ,mtc.order_no as taskorderNo, "
                     + " mcv.code_value as taskType,mcv1.code_value as completedBy,mtc.no_of_days as noOfDays "
                     + " from m_task_configuration mtc join "
                     + " m_code_value mcv on mcv.id=mtc.task_type "
@@ -137,9 +139,10 @@ public class TaskConfigurationReadplatformServiceImpl implements TaskConfigurati
             final Long tasktypeId = JdbcSupport.getLong(rs, "taskTypeId");
             final Long completedById = JdbcSupport.getLong(rs, "completedById");
             final Long nooftask = JdbcSupport.getLong(rs, "nooftask");
+            final Long taskorderNo =JdbcSupport.getLong(rs, "taskorderNo");
 
 
-           return TaskConfigurationData.taskconfigurationData(taskType, completedBy, noOfdays, centerType,taskconfigurationId,tasktypeId,completedById,nooftask);
+           return TaskConfigurationData.taskconfigurationData(taskType, completedBy, noOfdays, centerType,taskconfigurationId,tasktypeId,completedById,nooftask,taskorderNo);
             		
         }
 

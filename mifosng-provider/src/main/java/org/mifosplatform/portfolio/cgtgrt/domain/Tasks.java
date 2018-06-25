@@ -122,17 +122,7 @@ public class Tasks  extends AbstractAuditableCustom<AppUser, Long>{
        
         final String dateFormatAsInput = command.dateFormat();
         final String localeAsInput = command.locale();
-
-      /*  if (command.isChangeInLocalDateParameterNamed(TaskApiConstant.taskcompleteddateparamname, getLastTransactionOnDate())) {
-            final String valueAsInput = command.stringValueOfParameterNamed(TaskApiConstant.taskcompleteddateparamname);
-            actualChanges.put(TaskApiConstant.taskcompleteddateparamname, valueAsInput);
-            actualChanges.put(TaskApiConstant.taskcompleteddateparamname, dateFormatAsInput);
-            actualChanges.put(TaskApiConstant.taskcompleteddateparamname, localeAsInput);
-
-            final LocalDate newValue = command.localDateValueOfParameterNamed(TaskApiConstant.taskcompleteddateparamname);
-            this.taskCompletedDate = newValue.toDate();
-        }*/
-
+    
        return actualChanges;
     }
    public LocalDate getLastTransactionOnDate() {

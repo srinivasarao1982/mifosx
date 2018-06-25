@@ -46,6 +46,7 @@ CREATE TABLE `m_task_configuration` (
 	`completed_by` INT(11) NULL DEFAULT NULL,
 	`center_type` INT(11) NULL DEFAULT NULL,
 	`no_of_task` INT(11) NULL DEFAULT NULL,
+	`order_no` INT(11) NULL DEFAULT NULL,
 	PRIMARY KEY (`id`)
 );
 

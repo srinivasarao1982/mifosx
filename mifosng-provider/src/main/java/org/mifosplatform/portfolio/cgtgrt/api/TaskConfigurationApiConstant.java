@@ -31,14 +31,15 @@ public class TaskConfigurationApiConstant {
     public static final String completedByIdsparamname="completedById";
     public static final String completedbysparamname="completedby";
     public static final String nooftaskparamname="nooftask";
+    public static final String ordernoparamname="orderno";
    // public static final String centerparamname="centertype";
         
 
-    public static final Set<String> TASKCONFIGURATION_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, tasktypeIdparamname, noofdaysparamname,completedbyparamname, centertypeparamname,nooftaskparamname));
+    public static final Set<String> TASKCONFIGURATION_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, tasktypeIdparamname, noofdaysparamname,completedbyparamname, centertypeparamname,nooftaskparamname,ordernoparamname));
 	
     public static final Set<String> TASKCONFIGURATION_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, tasktypeIdparamname, noofdaysparamname,completedbyparamname, centertypeparamname,completeByparamname,noofdayparamname,centerTypeParamname
-    		,taskconfigurationIdparamname,tasktypeIdsparamname,completedByIdsparamname,completedbysparamname,nooftaskparamname));
+    		,taskconfigurationIdparamname,tasktypeIdsparamname,completedByIdsparamname,completedbysparamname,nooftaskparamname,ordernoparamname));
 
-    public static final Set<String> TASKCONFIGURATION_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, tasktypeIdparamname, noofdaysparamname,completedbyparamname, centertypeparamname,nooftaskparamname));
+    public static final Set<String> TASKCONFIGURATION_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, tasktypeIdparamname, noofdaysparamname,completedbyparamname, centertypeparamname,nooftaskparamname,ordernoparamname));
 
 }
