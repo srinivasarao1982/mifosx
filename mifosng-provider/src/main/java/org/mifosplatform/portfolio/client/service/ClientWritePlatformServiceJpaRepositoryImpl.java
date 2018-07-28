@@ -187,7 +187,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         	 String [] args=realCause.getMessage().split(" ");
         	 String [] valueField= args[2].split("-");
         		 CodeValue codeValue = codeValueRepository.findOneWithNotFoundDetection(Long.parseLong(valueField[0].substring(1, valueField[0].length())));        		
-            throw new PlatformDataIntegrityException("error.msg.duplicate.document.type  Duplicate "+codeValue.label() +" No already exists",
+            throw new PlatformDataIntegrityException("error.msg.duplicate.document.key",codeValue.label() +" No already exists",
                     "Duplicate type and key already exists");
         }
         logAsErrorUnexpectedDataIntegrityException(dve);
