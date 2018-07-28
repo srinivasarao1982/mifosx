@@ -21,6 +21,7 @@ import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifierRepository;
 import org.mifosplatform.portfolio.loanaccount.domain.Loan;
+import org.nirantara.client.ext.exception.DupicateDocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -356,7 +357,10 @@ public class ClientExtAssembler {
                 }
                 final String documentKey = this.fromApiJsonHelper.extractStringNamed("documentKey", element);
                 final String description = this.fromApiJsonHelper.extractStringNamed("documentDescription", element);
-
+                List<ClientIdentifier> identifiers=this.clientIdentifierRepository.getclientIdentifier(documentTypeId,documentKey);
+                if(identifiers.size()>0){
+                	throw new DupicateDocumentException(documentKey);
+                }
                 ClientIdentifier clientIdentifier = null;
                 if (id != null) {
                     clientIdentifier = this.clientIdentifierRepository.findOne(id);

@@ -29,6 +29,7 @@ import org.mifosplatform.portfolio.cgtgrt.domain.TaskStatus;
 import org.mifosplatform.portfolio.cgtgrt.domain.Tasks;
 import org.mifosplatform.portfolio.cgtgrt.exception.FieldCannotbeBlankException;
 import org.mifosplatform.portfolio.cgtgrt.exception.MaximumNumberofTaskExceedException;
+import org.mifosplatform.portfolio.cgtgrt.exception.TaskConfigurationNotExist;
 import org.mifosplatform.portfolio.cgtgrt.exception.TaskIsInActiveStateException;
 import org.mifosplatform.portfolio.cgtgrt.exception.TaskOrderException;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
@@ -115,6 +116,9 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 				int j= (int)i;
 				Integer centerType= Integer.valueOf(j);
 			TaskConfiguration taskConfiguration=this.taskConfigurationRepository.findTask(taskTypeId, centerType);
+			if(taskConfiguration==null){
+				throw new TaskConfigurationNotExist(taskType.label());
+			}
 			List<Tasks>tasks=this.taskRepository.findNoOfTask(centerId,taskTypeId);
 			if(tasks!=null && taskConfiguration !=null){
 			if(tasks.size()>=taskConfiguration.getNoOfTask()){

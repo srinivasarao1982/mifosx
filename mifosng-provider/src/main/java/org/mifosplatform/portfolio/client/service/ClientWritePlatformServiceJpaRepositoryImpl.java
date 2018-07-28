@@ -184,7 +184,10 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             throw new PlatformDataIntegrityException("error.msg.client.address.type.duplicated",
                     "Client address type duplicated");
         }else if (realCause.getMessage().contains("unique_identifier_key")) {
-            throw new PlatformDataIntegrityException("error.msg.duplicate.document.type.and.document.key",
+        	 String [] args=realCause.getMessage().split(" ");
+        	 String [] valueField= args[2].split("-");
+        		 CodeValue codeValue = codeValueRepository.findOneWithNotFoundDetection(Long.parseLong(valueField[0].substring(1, valueField[0].length())));        		
+            throw new PlatformDataIntegrityException("error.msg.duplicate.document.type  Duplicate "+codeValue.label() +" No already exists",
                     "Duplicate type and key already exists");
         }
         logAsErrorUnexpectedDataIntegrityException(dve);
@@ -279,6 +282,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                     final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
                     if (address != null && address.size() > 0) {
                         newClient.updateAddressExt(address);
+                      
+                       
                     }
                 }
             }

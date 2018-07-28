@@ -29,6 +29,7 @@ import org.mifosplatform.portfolio.cgtgrt.domain.TaskDetails;
 import org.mifosplatform.portfolio.cgtgrt.domain.TaskRepository;
 import org.mifosplatform.portfolio.cgtgrt.domain.Tasks;
 import org.mifosplatform.portfolio.cgtgrt.exception.FieldCannotbeBlankException;
+import org.mifosplatform.portfolio.cgtgrt.exception.TaskConfigurationNotExist;
 import org.mifosplatform.portfolio.cgtgrt.exception.TaskDetailsException;
 import org.mifosplatform.portfolio.cgtgrt.exception.TaskOrderException;
 import org.mifosplatform.portfolio.client.domain.Client;
@@ -103,8 +104,12 @@ public class TaskDataValidator {
 
 	        
 	        final Long taskTypeId = this.fromApiJsonHelper.extractLongNamed(TaskApiConstant.tasktypeparamname, element);
+	        CodeValue taskType=null;
 	        if(taskTypeId==null){
 				throw new FieldCannotbeBlankException("taskTypeId");
+			}else{
+				taskType = this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskTypeId);
+
 			}
 	        //validate for ordering of task
 			final Group group = this.groupRepository.findCenterById(centerId);
@@ -112,6 +117,9 @@ public class TaskDataValidator {
 			int j= (int)i;
 			Integer centerType= Integer.valueOf(j);
 			TaskConfiguration taskConfiguration=this.taskConfigurationRepository.findTask(taskTypeId, centerType);
+			if(taskConfiguration==null){
+				throw new TaskConfigurationNotExist(taskType.label());
+			}
 			Long orderno=taskConfiguration.getOrder();
 			orderno=orderno-1;
 			while(orderno>0){
