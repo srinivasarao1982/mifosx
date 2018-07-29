@@ -13,6 +13,8 @@ import org.mifosplatform.portfolio.paymentdetail.PaymentDetailConstants;
 import org.mifosplatform.portfolio.paymentdetail.domain.PaymentDetail;
 import org.mifosplatform.portfolio.paymentdetail.domain.PaymentDetailRepository;
 import org.mifosplatform.portfolio.paymentdetail.exception.DuplicateReceiptNumberException;
+import org.mifosplatform.portfolio.paymentdetail.exception.ReceiptNumberMandatoryException;
+import org.mifosplatform.portfolio.paymentdetail.exception.ReceiptNumberMustBeNumericException;
 import org.mifosplatform.portfolio.paymenttype.domain.PaymentType;
 import org.mifosplatform.portfolio.paymenttype.domain.PaymentTypeRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,14 @@ public class PaymentDetailWritePlatformServiceJpaRepositoryImpl implements Payme
         if (paymentTypeId == null) { return null; }
         
         final String receiptNumber =command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
+        if(receiptNumber!=null && receiptNumber!=""){
+        if (!(receiptNumber.matches("[0-9]+") && receiptNumber.length() > 2)) {
+        	throw  new ReceiptNumberMustBeNumericException(receiptNumber);
+          }
+        }
+        else{
+        	throw  new ReceiptNumberMandatoryException(receiptNumber);
+        }
         List<PaymentDetail>paymentdetails=this.paymentDetailRepository.getPaymentDetails(receiptNumber);
         if(paymentdetails.size()>0){
         	throw new DuplicateReceiptNumberException(receiptNumber);
