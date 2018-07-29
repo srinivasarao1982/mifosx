@@ -42,7 +42,7 @@ public class PaymentDetailWritePlatformServiceJpaRepositoryImpl implements Payme
         
         final String receiptNumber =command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
         if(receiptNumber!=null && receiptNumber!=""){
-        if (!(receiptNumber.matches("[0-9]+") && receiptNumber.length() > 2)) {
+        if (!(receiptNumber.matches("[0-9]+"))) {
         	throw  new ReceiptNumberMustBeNumericException(receiptNumber);
           }
         }
