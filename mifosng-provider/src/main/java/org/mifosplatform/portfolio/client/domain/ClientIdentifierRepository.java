@@ -16,4 +16,8 @@ public interface ClientIdentifierRepository extends JpaRepository<ClientIdentifi
     // no behaviour
 	@Query("from  ClientIdentifier clientIdentifier where clientIdentifier.documentType.id =:documettype and clientIdentifier.documentKey =:documentKey")
 	  List<ClientIdentifier>getclientIdentifier(@Param ("documettype")Long documettype,@Param("documentKey") String  documentKey );
+	
+	@Query("from  ClientIdentifier clientIdentifier where clientIdentifier.documentType.id =:documettype and clientIdentifier.documentKey =:documentKey and clientIdentifier.client.id =:clientId")
+	  List<ClientIdentifier>getclientIdentifierwithclient(@Param ("documettype")Long documettype,@Param("documentKey") String  documentKey,@Param ("clientId")Long clientId );
+
 }

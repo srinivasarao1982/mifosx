@@ -341,7 +341,7 @@ public class ClientExtAssembler {
     }
 
     @SuppressWarnings("null")
-    public List<ClientIdentifier> assembleDoumentIdentifiersDetails(final JsonArray clientIdentifierDataArray, final Client newClient) {
+    public List<ClientIdentifier> assembleDoumentIdentifiersDetails(final JsonArray clientIdentifierDataArray, final Client newClient,boolean isUpdate) {
         List<ClientIdentifier> clientIdentifiers = new ArrayList<>();
         for (int i = 0; i < clientIdentifierDataArray.size(); i++) {
             final JsonElement element = clientIdentifierDataArray.get(i).getAsJsonObject();
@@ -358,9 +358,19 @@ public class ClientExtAssembler {
                 final String documentKey = this.fromApiJsonHelper.extractStringNamed("documentKey", element);
                 final String description = this.fromApiJsonHelper.extractStringNamed("documentDescription", element);
                 List<ClientIdentifier> identifiers=this.clientIdentifierRepository.getclientIdentifier(documentTypeId,documentKey);
+                 if(!isUpdate){
                 if(identifiers.size()>0){
                 	throw new DupicateDocumentException(documentKey);
                 }
+                 }
+                 else{
+                     List<ClientIdentifier> identifiersforUpdate=this.clientIdentifierRepository.getclientIdentifierwithclient(documentTypeId,documentKey,newClient.getId());
+                     if(identifiersforUpdate.size()==0){
+                    	 if(identifiers.size()>0){
+                         	throw new DupicateDocumentException(documentKey); 
+                    	 }
+                     }
+                   }
                 ClientIdentifier clientIdentifier = null;
                 if (id != null) {
                     clientIdentifier = this.clientIdentifierRepository.findOne(id);

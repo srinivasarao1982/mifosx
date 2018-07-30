@@ -300,7 +300,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             // For nirantara ClientIdentifierWritePlatformService
-            this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);
+            this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command,false);
 
             // Occupation Details
             if (object.has("cfaOccupations")) {
@@ -455,7 +455,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             // For nirantara ClientIdentifierWritePlatformService
-            this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
+            this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command,true);
 
             // For nirantara Occupation Details
             final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
