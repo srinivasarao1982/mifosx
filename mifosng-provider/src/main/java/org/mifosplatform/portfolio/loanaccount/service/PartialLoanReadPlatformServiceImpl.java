@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.codes.data.CodeValueData;
 import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
@@ -15,8 +16,10 @@ import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.loanaccount.api.PartialLoanApiConstant;
 import org.mifosplatform.portfolio.loanaccount.data.PartialLoanData;
+import org.mifosplatform.portfolio.loanaccount.data.SequenceNumberData;
 import org.mifosplatform.portfolio.loanaccount.exception.PartialLoanNotFoundException;
 import org.mifosplatform.useradministration.domain.AppUser;
+import org.pentaho.reporting.engine.classic.core.AttributeNames.Xml;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -63,8 +66,7 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
         }
 
     }
-
-    private static final class PartialLoanMapper implements RowMapper<PartialLoanData> {
+	    private static final class PartialLoanMapper implements RowMapper<PartialLoanData> {
 
         public PartialLoanMapper() {}
 
@@ -96,7 +98,7 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
     }
     
     @Override
-    public List<Long> retriveAcceptedMember(final Long parentId,final Long isActive) {
+    public List<Long> retriveAcceptedMember(final Long parentId,final Long isActive,final Long isDisburse) {
         try {
             final AppUser currentUser = this.context.authenticatedUser();
             
@@ -106,7 +108,7 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
             	Sql=Sql+ " and mcv.code_value='Accepted'";
             }
             List<Long>acceptedclientsIds=new ArrayList<Long>();
-            acceptedclientsIds = this.jdbcTemplate.query(Sql, rm, new Object[] { parentId,isActive});
+            acceptedclientsIds = this.jdbcTemplate.query(Sql, rm, new Object[] { parentId,isActive,isDisburse});
             return acceptedclientsIds;
         } catch (final EmptyResultDataAccessException e) {
             throw new PartialLoanNotFoundException(parentId);
@@ -121,7 +123,7 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
         public String schema() {
             return   "  mpl.client_Id as clientId from m_partial_loan mpl "
                     + " left join m_code_value mcv on mcv.id=mpl.status  "
-                    + " where mpl.group_id in (select  id from m_group mg  where mg.parent_id=? ) and mpl.is_active =?";
+                    + " where mpl.group_id in (select  id from m_group mg  where mg.parent_id=? ) and mpl.is_active =? and mpl.is_Disburse=? ";
                   }
 
         @Override
@@ -133,7 +135,42 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
         }
 
     }
+	@Override
+    public List<SequenceNumberData> retriveSequenceNumber(final Long parentId) {
+        try {
+            final AppUser currentUser = this.context.authenticatedUser();
+            
+            final SequenceNumberMapper rm = new SequenceNumberMapper();
+            String Sql ="select"+rm.schema();
+            List<SequenceNumberData>sequenceNumberDetails=new ArrayList<SequenceNumberData>();
+            sequenceNumberDetails = this.jdbcTemplate.query(Sql, rm, new Object[] { parentId});
+            return sequenceNumberDetails;
+        } catch (final EmptyResultDataAccessException e) {
+            throw new PartialLoanNotFoundException(parentId);
+        }
 
+    }
+
+    private static final class SequenceNumberMapper implements RowMapper<SequenceNumberData> {
+
+        public SequenceNumberMapper() {}
+
+        public String schema() {
+            return   "  mpl.client_id as clientId, mpl.rpdo_no as rpdoNumber "
+                    + " from m_partial_loan mpl "
+                    + " where mpl.group_id in (select  id from m_group mg  where mg.parent_id= ?) and mpl.is_Disburse=0";
+        }
+
+        @Override
+        public SequenceNumberData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long clientId = JdbcSupport.getLong(rs, "clientId");
+            final BigDecimal sequenceNumber = JdbcSupport.getBigDecimalDefaultToNullIfZero(rs, "rpdoNumber");
+            
+            return SequenceNumberData.createsequenceNumber(clientId,sequenceNumber);
+        }
+
+    }
 
 
 }

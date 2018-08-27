@@ -1,5 +1,6 @@
 package org.mifosplatform.portfolio.loanaccount.api;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +47,10 @@ public class PartialLoanApiConstant {
     public static final String isActiveparamaname="isActive";
     public static final String acceptedclientparamname="acceptedclientsId";
     
+    public static final String clientIdparamname="clientId";
+	private static final String sequencNumberParamName="SequenceNumber";
+	
+    
     public static final Set<String> PARTIALLOAN_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, groupidparamname, clientidparamname, productidparamname, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, submitteddateparamname, loantenureparamname,
     		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname));
   
@@ -53,7 +58,7 @@ public class PartialLoanApiConstant {
     		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname));
   
     public static final Set<String> PARTIALLOAN_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,idparamname, responserpdonumberparamname, clientidparamname, loanAmountParamName, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, subitteddateparamname, statusdataparamname,
-    		statusdataparamname,acceptedclientparamname, remarkparamname,clientidparamname,clientNameparamName,isActiveparamaname,isActiveparamaname,cbreceiveddateparamname));
+    		statusdataparamname,acceptedclientparamname, remarkparamname,clientidparamname,clientNameparamName,isActiveparamaname,isActiveparamaname,cbreceiveddateparamname,sequencNumberParamName));
   
 
 

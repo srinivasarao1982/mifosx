@@ -10,6 +10,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -23,6 +24,7 @@ import org.mifosplatform.infrastructure.core.serialization.ApiRequestJsonSeriali
 import org.mifosplatform.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.loanaccount.data.PartialLoanData;
+import org.mifosplatform.portfolio.loanaccount.data.SequenceNumberData;
 import org.mifosplatform.portfolio.loanaccount.service.PartialLoanReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -36,6 +38,7 @@ public class PartialLoanApiResource {
     private final PlatformSecurityContext context;
     private final PartialLoanReadPlatformService partialLoanReadPlatformService;
     private final ToApiJsonSerializer<PartialLoanData> toApiJsonSerializer;
+    private final ToApiJsonSerializer<SequenceNumberData> seqnumbertoApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     
@@ -44,27 +47,29 @@ public class PartialLoanApiResource {
     		final ToApiJsonSerializer<PartialLoanData> toApiJsonSerializer,
             final PartialLoanReadPlatformService partialLoanReadPlatformService,
             final ApiRequestParameterHelper apiRequestParameterHelper,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+            final ToApiJsonSerializer<SequenceNumberData> seqnumbertoApiJsonSerializer
             ) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
         this.partialLoanReadPlatformService= partialLoanReadPlatformService;
+        this.seqnumbertoApiJsonSerializer=seqnumbertoApiJsonSerializer;
           }
     
     @GET
     @Path("template/{parentId}/{isActive}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveTemplate(@Context final UriInfo uriInfo,@PathParam("parentId") final Long parentId,@PathParam("isActive") final Long isActive) {
+    public String retrieveTemplate(@Context final UriInfo uriInfo,@PathParam("parentId") final Long parentId,@PathParam("isActive") final Long isActive,@QueryParam("isDisburse") final Long isDisburse) {
 
         PartialLoanData partialLoanData = null;
         this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         
          partialLoanData = this.partialLoanReadPlatformService.retrieveTemplate();
-         List<Long>acceptedMember= this.partialLoanReadPlatformService.retriveAcceptedMember(parentId,isActive);
+         List<Long>acceptedMember= this.partialLoanReadPlatformService.retriveAcceptedMember(parentId,isActive,isDisburse);
          PartialLoanData partialLoanDataforreturn=PartialLoanData.getAcceptedclientsId(partialLoanData.getStatus(),acceptedMember);
          return this.toApiJsonSerializer.serialize(settings, partialLoanDataforreturn,
         		  PartialLoanApiConstant.PARTIALLOAN_RESPONSE_DATA_PARAMETERS);
@@ -74,13 +79,23 @@ public class PartialLoanApiResource {
     @Path("{parentId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getParatialLoan(@PathParam("parentId") final Long parentId,@Context final UriInfo uriInfo) {
+    public String getParatialLoan(@PathParam("parentId") final Long parentId,@QueryParam("isSequenceNumber") final boolean isSequenceNumber, @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         List<PartialLoanData>partialLoanDatas=new ArrayList<PartialLoanData>();
+        List<SequenceNumberData>sequenceNoDatas=new ArrayList<SequenceNumberData>();
+        if(isSequenceNumber){
+        	sequenceNoDatas=this.partialLoanReadPlatformService.retriveSequenceNumber(parentId);
+        	 return this.seqnumbertoApiJsonSerializer.serialize(settings, sequenceNoDatas,
+             		  PartialLoanApiConstant.PARTIALLOAN_RESPONSE_DATA_PARAMETERS);
+        
+        }
+       
         partialLoanDatas = this.partialLoanReadPlatformService.retrievepartialLoanDetails(parentId);
-          return this.toApiJsonSerializer.serialize(settings, partialLoanDatas,
+       
+        
+        return this.toApiJsonSerializer.serialize(settings, partialLoanDatas,
         		  PartialLoanApiConstant.PARTIALLOAN_RESPONSE_DATA_PARAMETERS);
     }
 

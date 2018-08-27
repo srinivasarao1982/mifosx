@@ -24,4 +24,6 @@ public interface ScheduledJobRunnerService {
     void generateRDSchedule();
     
     void generateCenterMeetingSchedule(); 
+    
+    void equifaxIntregation(final String clientId);
 }

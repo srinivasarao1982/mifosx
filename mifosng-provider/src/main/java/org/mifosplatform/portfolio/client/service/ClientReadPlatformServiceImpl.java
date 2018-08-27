@@ -45,6 +45,7 @@ import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientNotFoundException;
 import org.mifosplatform.portfolio.group.data.GroupGeneralData;
+import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.savings.data.SavingsProductData;
 import org.mifosplatform.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.mifosplatform.useradministration.domain.AppUser;
@@ -104,7 +105,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly,
             final Long clientId,final boolean loanOfficersOnly) {
         this.context.authenticatedUser();
-
+        
+        
         ClientData clientBasicDetails = retrieveTemplate(officeId, staffInSelectedOfficeOnly,loanOfficersOnly);
 
         final ClientAdditionalDetails additionalDetails = null;

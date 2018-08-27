@@ -17,4 +17,7 @@ public interface OfficeWritePlatformService {
     CommandProcessingResult officeTransaction(JsonCommand command);
 
     CommandProcessingResult deleteOfficeTransaction(Long id, JsonCommand command);
+    
+    CommandProcessingResult updateSequenceNumber(Long id, JsonCommand command);
+
 }

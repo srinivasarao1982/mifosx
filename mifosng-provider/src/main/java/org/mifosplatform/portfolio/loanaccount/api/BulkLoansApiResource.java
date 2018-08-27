@@ -20,6 +20,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.json.JSONObject;
+import org.json.XML;
 import org.joda.time.LocalDate;
 import org.mifosplatform.commands.domain.CommandWrapper;
 import org.mifosplatform.commands.service.CommandWrapperBuilder;
@@ -47,9 +49,8 @@ public class BulkLoansApiResource {
 
     private final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("officeId", "fromLoanOfficerId",
             "assignmentDate", "officeOptions", "loanOfficerOptions", "accountSummaryCollection"));
-
+ 
     private final String resourceNameForPermissions = "LOAN";
-
     private final PlatformSecurityContext context;
     private final StaffReadPlatformService staffReadPlatformService;
     private final OfficeReadPlatformService officeReadPlatformService;
@@ -101,7 +102,9 @@ public class BulkLoansApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, loanReassignmentData, this.RESPONSE_DATA_PARAMETERS);
     }
-
+    String str="test";
+    JSONObject json = new JSONObject(str);
+    String xml = XML.toString(json);
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })

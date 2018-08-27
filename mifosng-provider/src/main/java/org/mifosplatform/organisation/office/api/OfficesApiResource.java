@@ -5,6 +5,7 @@
  */
 package org.mifosplatform.organisation.office.api;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import org.mifosplatform.infrastructure.core.serialization.ApiRequestJsonSeriali
 import org.mifosplatform.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.data.OfficeData;
+import org.mifosplatform.organisation.office.data.SequenceNumberData;
 import org.mifosplatform.organisation.office.service.OfficeReadPlatformService;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,24 +50,28 @@ public class OfficesApiResource {
      * {@link OfficeData}.
      */
     private final Set<String> RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList("id", "name", "nameDecorated", "externalId",
-            "openingDate", "hierarchy", "parentId", "parentName", "allowedParents"));
+            "openingDate", "hierarchy", "parentId", "parentName", "allowedParents","entityId","sequenceNo"));
+    
 
     private final String resourceNameForPermissions = "OFFICE";
 
     private final PlatformSecurityContext context;
     private final OfficeReadPlatformService readPlatformService;
     private final DefaultToApiJsonSerializer<OfficeData> toApiJsonSerializer;
+    private final DefaultToApiJsonSerializer<SequenceNumberData> toApiJsonSerializerSequenceNumber;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
 
     @Autowired
     public OfficesApiResource(final PlatformSecurityContext context, final OfficeReadPlatformService readPlatformService,
             final DefaultToApiJsonSerializer<OfficeData> toApiJsonSerializer, final ApiRequestParameterHelper apiRequestParameterHelper,
-            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService) {
+            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+            final DefaultToApiJsonSerializer<SequenceNumberData> toApiJsonSerializerSequenceNumber) {
         this.context = context;
         this.readPlatformService = readPlatformService;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
+        this.toApiJsonSerializerSequenceNumber=toApiJsonSerializerSequenceNumber;
         this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
     }
 
@@ -122,7 +128,7 @@ public class OfficesApiResource {
     @Path("{officeId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retreiveOffice(@PathParam("officeId") final Long officeId, @Context final UriInfo uriInfo) {
+    public String retreiveOffice(@PathParam("officeId") final Long officeId, @QueryParam("rbloffice") final boolean rbloffice,@QueryParam("isSequenceNumber") final boolean isSequenceNumber, @QueryParam("entityId") final Long entityId, @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
@@ -132,6 +138,15 @@ public class OfficesApiResource {
         if (settings.isTemplate()) {
             final Collection<OfficeData> allowedParents = this.readPlatformService.retrieveAllowedParents(officeId);
             office = OfficeData.appendedTemplate(office, allowedParents);
+        }
+        if(rbloffice){
+            final Collection<OfficeData> allowedParents = this.readPlatformService.retrieverblOffice(officeId);
+            office = OfficeData.appendedTemplate(office, allowedParents);
+        }
+        if(isSequenceNumber){
+        	SequenceNumberData sequenceNumberData= this.readPlatformService.retriveSequenceNumber(entityId);
+            return this.toApiJsonSerializerSequenceNumber.serialize(settings, sequenceNumberData, this.RESPONSE_DATA_PARAMETERS);
+
         }
 
         return this.toApiJsonSerializer.serialize(settings, office, this.RESPONSE_DATA_PARAMETERS);
@@ -143,8 +158,24 @@ public class OfficesApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String updateOffice(@PathParam("officeId") final Long officeId, final String apiRequestBodyAsJson) {
 
-        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+    	final CommandWrapper commandRequest = new CommandWrapperBuilder() //
                 .updateOffice(officeId) //
+                .withJson(apiRequestBodyAsJson) //
+                .build();
+
+        final CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+
+        return this.toApiJsonSerializer.serialize(result);
+    }
+    
+    @PUT
+    @Path("/sequenceNumber/{entityId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String updateSequenceNumber(@PathParam("entityId") final Long entityId, final String apiRequestBodyAsJson) {
+
+    	final CommandWrapper commandRequest = new CommandWrapperBuilder() //
+                .updateSequenceNumber(entityId) //
                 .withJson(apiRequestBodyAsJson) //
                 .build();
 
