@@ -56,6 +56,7 @@ import org.nirantara.client.ext.domain.Coapplicant;
 import org.nirantara.client.ext.domain.FamilyDetails;
 import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
+import org.nirantara.client.ext.exception.MandatoryFieldException;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @SuppressWarnings("serial")
@@ -253,6 +254,9 @@ public final class Client extends AbstractPersistable<Long> {
         final String accountNo = command.stringValueOfParameterNamed(ClientApiConstants.accountNoParamName);
         final String externalId = command.stringValueOfParameterNamed(ClientApiConstants.externalIdParamName);
         final String mobileNo = command.stringValueOfParameterNamed(ClientApiConstants.mobileNoParamName);
+        if(mobileNo==null){
+    	    throw new MandatoryFieldException("mobileNo"); 
+        }
 
         final String firstname = command.stringValueOfParameterNamed(ClientApiConstants.firstnameParamName);
         final String middlename = command.stringValueOfParameterNamed(ClientApiConstants.middlenameParamName);
@@ -261,6 +265,9 @@ public final class Client extends AbstractPersistable<Long> {
 
         final LocalDate dataOfBirth = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
 
+        if(dataOfBirth==null){
+    	    throw new MandatoryFieldException("dataOfBirth"); 
+        }
         ClientStatus status = ClientStatus.PENDING;
         boolean active = false;
         if (command.hasParameter("active")) {

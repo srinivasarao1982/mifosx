@@ -22,6 +22,7 @@ import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifierRepository;
 import org.mifosplatform.portfolio.loanaccount.domain.Loan;
 import org.nirantara.client.ext.exception.DupicateDocumentException;
+import org.nirantara.client.ext.exception.MandatoryFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,18 +76,27 @@ public class ClientExtAssembler {
         if (salutationId != null) {
             salutationCodeValue = this.codeValueRepository.findOneWithNotFoundDetection(salutationId);
         }
+        else{
+    	    throw new MandatoryFieldException("title"); 
+        }
 
         final Long maritalStatusId = this.fromApiJsonHelper.extractLongNamed("maritalStatus", element);
         CodeValue maritalStatusCodeValue = null;
         if (maritalStatusId != null) {
             maritalStatusCodeValue = this.codeValueRepository.findOneWithNotFoundDetection(maritalStatusId);
         }
+        else{
+    	    throw new MandatoryFieldException("maritalStatus"); 
+        }
         final Long spouseRelationShipId = this.fromApiJsonHelper.extractLongNamed("spouseRelationShip", element);
         CodeValue spouseRelationShip = null;
         if (spouseRelationShipId != null) {
             spouseRelationShip = this.codeValueRepository.findOneWithNotFoundDetection(spouseRelationShipId);
         }
+        else{
+    	    throw new MandatoryFieldException("Detail of Father/SpouseMandatory"); 
 
+        }
         final Long professionId = this.fromApiJsonHelper.extractLongNamed("profession", element);
         CodeValue professionCodeValue = null;
         if (professionId != null) {
@@ -121,6 +131,9 @@ public class ClientExtAssembler {
         }
 
         final String aadhaarNo = this.fromApiJsonHelper.extractStringNamed("aadhaarNo", element);
+        if(aadhaarNo==null){
+    	    throw new MandatoryFieldException("aadhaarNo"); 
+        }
 
         final String panNo = this.fromApiJsonHelper.extractStringNamed("panNo", element);
 
@@ -133,12 +146,19 @@ public class ClientExtAssembler {
         final String nregaNo = this.fromApiJsonHelper.extractStringNamed("nregaNo", element);
 
         final String spfirstname = this.fromApiJsonHelper.extractStringNamed("spfirstname", element);
-
+        if(spfirstname==null){
+    	    throw new MandatoryFieldException("Father First Name"); 
+        }
         final String spmiddlename = this.fromApiJsonHelper.extractStringNamed("spmiddlename", element);
 
         final String splastname = this.fromApiJsonHelper.extractStringNamed("splastname", element);
-
+        if(splastname==null){
+    	    throw new MandatoryFieldException("Father last Name"); 
+        }
         final String externalId2 = this.fromApiJsonHelper.extractStringNamed("externalId2", element);
+        if(externalId2==null){
+    	    throw new MandatoryFieldException("externalId2"); 
+        }
 
         if (id != null) {
             final ClientExt updateClientExt = this.clientExtRepository.findOne(id);
@@ -170,6 +190,14 @@ public class ClientExtAssembler {
 
                 final Long addressTypeId = this.fromApiJsonHelper.extractLongNamed("addressType", element);
                 final Long stateId = this.fromApiJsonHelper.extractLongNamed("state", element);
+                if(stateId==null && addressTypeId==20)
+        		{
+        	    throw new MandatoryFieldException("state"); 
+                 }
+                if(addressTypeId==null)
+        		{
+        	    throw new MandatoryFieldException("addressTypeId"); 
+                 }
                 CodeValue addressTypeCodeValue = null;
                 if (addressTypeId != null && stateId != null) {
 
@@ -180,14 +208,36 @@ public class ClientExtAssembler {
                     final String streetNo = this.fromApiJsonHelper.extractStringNamed("streetNo", element);
 
                     final String areaLocality = this.fromApiJsonHelper.extractStringNamed("areaLocality", element);
+                      
+                    if((areaLocality==null ||  areaLocality.equals("")) && addressTypeId==20)
+                    {
+                    	throw new MandatoryFieldException("areaLocality"); 
+                    }
 
                     final String landmark = this.fromApiJsonHelper.extractStringNamed("landmark", element);
+                    if((landmark==null ||  landmark.equals("")) && addressTypeId==20)
+            		{
+            	    throw new MandatoryFieldException("landmark"); 
+                     }
 
                     final String villageTown = this.fromApiJsonHelper.extractStringNamed("villageTown", element);
+                    if((villageTown==null ||  villageTown.equals("")) &&  addressTypeId==20)
+            		{
+            	    throw new MandatoryFieldException("villageTown"); 
+                     }
 
                     final String taluka = this.fromApiJsonHelper.extractStringNamed("taluka", element);
+                    
+                    if((taluka==null ||  taluka.equals("")) &&   addressTypeId==20)
+            		{
+            	    throw new MandatoryFieldException("taluka"); 
+                     }
 
                     final Long districtId = this.fromApiJsonHelper.extractLongNamed("district", element);
+                    if(districtId==null &&  addressTypeId==20)
+            		{
+            	    throw new MandatoryFieldException("districtId"); 
+                     }
                     CodeValue districtCodeValue = null;
                     if (districtId != null) {
                         districtCodeValue = this.codeValueRepository.findOneWithNotFoundDetection(districtId);
@@ -199,10 +249,19 @@ public class ClientExtAssembler {
                     }
 
                     final Integer pinCode = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("pinCode", element);
+                    if(pinCode==null &&  addressTypeId==20)
+            		{
+            	    throw new MandatoryFieldException("pinCode"); 
+                     }
 
                     final Long landlineNo = this.fromApiJsonHelper.extractLongNamed("landlineNo", element);
 
                     final Long mobileNo = this.fromApiJsonHelper.extractLongNamed("mobileNo", element);
+                    
+                    if(mobileNo==null)
+            		{
+            	    throw new MandatoryFieldException("mobileNo"); 
+                     }
 
                     Address address = this.addressRepository.findByClientAndAddressType(newClient, addressTypeCodeValue);
 
@@ -386,6 +445,9 @@ public class ClientExtAssembler {
                     clientIdentifiers.add(clientIdentifier);
                 }
             }
+            else{
+            	throw new MandatoryFieldException("Address and Identity Proff")
+            }
         }
         return clientIdentifiers;
     }
@@ -473,17 +535,29 @@ public class ClientExtAssembler {
                 if (salutationId != null) {
                     salutation = this.codeValueRepository.findOneWithNotFoundDetection(salutationId);
                 }
-
+                else{
+                	throw new MandatoryFieldException("title"); 
+                }
+                
                 final String firstName = this.fromApiJsonHelper.extractStringNamed("firstName", element);
+                if(firstName==null ||firstName=="" ){
+                	throw new MandatoryFieldException("firstName");
+                }
 
                 final String middleName = this.fromApiJsonHelper.extractStringNamed("middleName", element);
 
                 final String lastName = this.fromApiJsonHelper.extractStringNamed("lastName", element);
+                if(firstName==null ||firstName=="" ){
+                	throw new MandatoryFieldException("lastName");
+                }
 
                 final Long genderId = this.fromApiJsonHelper.extractLongNamed("genderId", element);
                 CodeValue gender = null;
                 if (genderId != null) {
                     gender = this.codeValueRepository.findOneWithNotFoundDetection(genderId);
+                }
+                else{
+                	throw new MandatoryFieldException("gender");
                 }
 
                 final Long relationshipId = this.fromApiJsonHelper.extractLongNamed("relationship", element);
@@ -491,8 +565,15 @@ public class ClientExtAssembler {
                 if (relationshipId != null) {
                     relationship = this.codeValueRepository.findOneWithNotFoundDetection(relationshipId);
                 }
+                else{
+                	throw new MandatoryFieldException("Details of Father/Spouse");
+                }
 
                 final LocalDate dateOfBirth = this.fromApiJsonHelper.extractLocalDateNamed("dateOfBirth", element);
+                if(dateOfBirth==null){
+                	throw new MandatoryFieldException("dateOfBirth");
+
+                }
 
                 final Integer age = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("age", element);
 

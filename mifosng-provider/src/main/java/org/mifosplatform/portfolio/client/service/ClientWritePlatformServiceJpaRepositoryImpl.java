@@ -74,6 +74,7 @@ import org.nirantara.client.ext.domain.Coapplicant;
 import org.nirantara.client.ext.domain.FamilyDetails;
 import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
+import org.nirantara.client.ext.exception.MandatoryFieldException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -219,8 +220,12 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 
             Staff staff = null;
             final Long staffId = command.longValueOfParameterNamed(ClientApiConstants.staffIdParamName);
+           
             if (staffId != null) {
                 staff = this.staffRepository.findByOfficeHierarchyWithNotFoundDetection(staffId, clientOffice.getHierarchy());
+            }
+            else{
+        	    throw new MandatoryFieldException("staff"); 
             }
 
             CodeValue gender = null;
@@ -228,7 +233,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             if (genderId != null) {
                 gender = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.GENDER, genderId);
             }
-
+            else{
+        	    throw new MandatoryFieldException("gender"); 
+            }
             CodeValue clientType = null;
             final Long clientTypeId = command.longValueOfParameterNamed(ClientApiConstants.clientTypeIdParamName);
             if (clientTypeId != null) {
