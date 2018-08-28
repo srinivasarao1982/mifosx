@@ -1,6 +1,5 @@
 package org.mifosplatform.portfolio.rblvalidation.service;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,16 +39,16 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
 	
 	
 	@Override
-    public List<RblCenterValidateData> readRblCenterData(final Long centerId) {
+    public List<RblCenterValidateData> readRblCenterData(final String centerId) {
         try {
             final AppUser currentUser = this.context.authenticatedUser();            
             final RblCenterDatMapper rm = new RblCenterDatMapper();
-            String Sql ="select"+rm.schema();
+            String Sql ="select"+rm.schema() + "where mg.id in (?)";
             List<RblCenterValidateData>RblCenterValidateDatas=new ArrayList<RblCenterValidateData>();
             RblCenterValidateDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { centerId});
             return RblCenterValidateDatas;
         } catch (final EmptyResultDataAccessException e) {
-            throw new PartialLoanNotFoundException(centerId);
+            throw new PartialLoanNotFoundException(Long.parseLong(centerId));
         }
 
     }
@@ -57,26 +56,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
     private static final class RblCenterDatMapper implements RowMapper<RblCenterValidateData> {
 
         public RblCenterDatMapper() {}
-
-        
-       /* select mg.external_id as externalId,mg.display_name as centerName,mg.activation_date,s.display_name as serviceAgent,
-        mrblc.max_individual as maxIndividual,meetingTime.code_value as meetingTime,mrblc.house_no as houseNo,mrblc.street_no as
-        streetNo,mrblc.area_loc as areaLoc,mrblc.landmark as landmark,mrblc.village as village,district.code_score as district,
-        state.code_score as state,mrblc.pin_code as pincode,rblb.`operating region` as OperatingRegion,rblb.`Branch Code` as branchCode,
-        mrblc.description as description,
-        (select clients.display_name  from m_client clients where clients clients.id in (select  mgr.client_id from  m_group_roles mgr where mgr.group_id = and mgr.role_cv_id= 97)) as primaryContact,
-        (select clients.mobile_no  from m_client clients where clients clients.id in (select  mgr.client_id from  m_group_roles mgr where mgr.group_id = and mgr.role_cv_id= 97)) as primaryPhoneNo,
-        (select clients.display_name  from m_client clients where clients clients.id in (select  mgr.client_id from  m_group_roles mgr where mgr.group_id = and mgr.role_cv_id= 98)) as secondaryContactContact,
-        (select clients.mobile_no  from m_client clients where clients clients.id in (select  mgr.client_id from  m_group_roles mgr where mgr.group_id = and mgr.role_cv_id= 9)) as secondaryPhonePhoneNo,
-        from m_group mg 
-        select mg.activation_date from m_group mg
-        join m_rblcenter mrblc on mrblc.center_id =mg.id
-        join m_staff s on mg.staff_id=mg.staff_id
-        join m_code_value meetingTime on meetingTime.id =mrblc.meting_time
-        join m_code_value district on  district.id=mrblc.district
-        join m_code_value state on state.id =mrblc.state
-        join `rbl branch name` rblb on rblb.office_id =mg.office_id
-        where mg.id=?*/
+      
         public String schema() {
             return   " select mg.external_id as externalId,mg.display_name as centerName,mg.activation_date,s.display_name as serviceAgent,"
                      +"mrblc.max_individual as maxIndividual,meetingTime.code_value as meetingTime,mrblc.house_no as houseNo,mrblc.street_no as"
@@ -132,7 +112,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         try {
             final AppUser currentUser = this.context.authenticatedUser();            
             final RblClientDatMapper rm = new RblClientDatMapper();
-            String Sql ="select"+rm.schema();
+            String Sql ="select"+rm.schema() +"where mc.id in (?)";
             List<RblclientDatValidation>RblclientDatValidations=new ArrayList<RblclientDatValidation>();
             RblclientDatValidations = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId});
             return RblclientDatValidations;
@@ -146,71 +126,38 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
 
         public RblClientDatMapper() {}
 
-        /*select mc.external_id as externalId, title.code_score as title,mc.display_name as customerName,
-        concat(ifnull(na.house_no,''),ifnull(na.street_no,'')) as addressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,'')) as addressline2,
-        concat(ifnull(na.village_town,''),ifnull(na.taluka,'')) as addressline3,district.code_score as cityCode,state.code_score as stateCode,na.pin_code as pincode,
-        mc.date_of_birth as dateofBirth ,mc.mobile_no as mobileNumber,caste.code_score as caste,gender.code_score as gender,
-        maritals.code_score as maritalStatus,relegion.code_score as relegion,'IN' as nataonality,profession.code_score as occupation,
-        profession.code_score as category,edu.code_score as educationqualification,mrbl.pension_card as pensionCard,
-        mrbl.mother_tounge as motherTounge,rblbranch.`Branch Code` as branchCode,rblbranch.`Operating Region` as operatingRegionCode,
-        nct.aadhaar_no as aadharNo ,mrbl.health as health ,mrbl.`language` as 'language',mrbl.card_issue_fl as cardIssueFl,
-        rblbranch.`bc branch code' as bcBranchCode,rblbranch.collector as collector,rblbranch.approver as Approver,
-        nco.first_name as nomineeName,nomineeRelation.code_score as nomineeRelation,mrbl.cb_check as cbCheck,
-        bankdtails.bank_name as bankName,bankdtails.account_no as AccountNumber,bankdtails.branch_name as bankbranchName,
-        mrbl.renewal_fl as renewalFl,nct.pan_no  as panNo,nct.external_Id2 as barcodeNumber,
-        (select mci.document_key from m_client_identifier mci where  mci.client_id =? and mci.document_type_id =43) as rationcard,
-        (select mci.document_key from m_client_identifier mci where  mci.client_id =? and mci.document_type_id =41) as voterId,
-        from m_client mc
-        left join n_client_ext nct on mc.id=nct.client_id
-        left join m_rblcustomer mrbl on mrbl.client_id=mc.id
-        left join m_code_value title on nct.salutation_cv_id =title.id
-        left join n_address na on na.client_id =mc.id and na.address_type_cv_id=20
-        left join m_code_value district on district.id=na.district_cv_id
-        left join m_code_value state on state.id=na.state_cv_id
-        left join m_code_value caste on caste.id =mc.client_type_cv_id
-        left join m_code_value gender on gender.id=mc.gender_cv_id
-        left join m_code_value maritals on maritals.id=nct.marital_status_cv_id
-        left join m_code_value relegion  on relegion.id =mc.client_classification_cv_id
-        left join m_code_value profession on profession.id =nct.profession_cv_id
-        left join m_code_value edu on edu.id=nct.educational_qualification_cv_id
-        left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id
-        left join n_coapplicant nco on nco.id =nco.client_id   
-        left join m_code_value nomineeRelation on nomineeRelation.id=nco.client_id
-        left join m_bankdetails bankdtails on bankdtails.client_id = mc.id
-
-
-*/        public String schema() {
-            return   "  select mc.external_id as externalId, title.code_score as title,mc.display_name as customerName,
-        concat(ifnull(na.house_no,''),ifnull(na.street_no,'')) as addressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,'')) as addressline2,
-        concat(ifnull(na.village_town,''),ifnull(na.taluka,'')) as addressline3,district.code_score as cityCode,state.code_score as stateCode,na.pin_code as pincode,
-        mc.date_of_birth as dateofBirth ,mc.mobile_no as mobileNumber,caste.code_score as caste,gender.code_score as gender,
-        maritals.code_score as maritalStatus,relegion.code_score as relegion,'IN' as nataonality,profession.code_score as occupation,
-        profession.code_score as category,edu.code_score as educationqualification,mrbl.pension_card as pensionCard,
-        mrbl.mother_tounge as motherTounge,rblbranch.`Branch Code` as branchCode,rblbranch.`Operating Region` as operatingRegionCode,
-        nct.aadhaar_no as aadharNo ,mrbl.health as health ,mrbl.`language` as language,mrbl.card_issue_fl as cardIssueFl,
-        rblbranch.`bc branch code` as bcBranchCode,rblbranch.collector as collector,rblbranch.approver as Approver,
-        nco.first_name as nomineeName,nomineeRelation.code_score as nomineeRelation,mrbl.cb_check as cbCheck,
-        bankdtails.bank_name as bankName,bankdtails.account_no as AccountNumber,bankdtails.branch_name as bankbranchName,
-        mrbl.renewal_fl as renewalFl,nct.pan_no  as panNo,nct.external_Id2 as barcodeNumber,
-        (select mci.document_key from m_client_identifier mci where  mci.client_id =3 and mci.document_type_id =43) as rationcard,
-        (select mci.document_key from m_client_identifier mci where  mci.client_id =4 and mci.document_type_id =41) as voterId
-        from m_client mc
-        left join n_client_ext nct on mc.id=nct.client_id
-        left join m_rblcustomer mrbl on mrbl.client_id=mc.id
-        left join m_code_value title on nct.salutation_cv_id =title.id
-        left join n_address na on na.client_id =mc.id and na.address_type_cv_id=20
-        left join m_code_value district on district.id=na.district_cv_id
-        left join m_code_value state on state.id=na.state_cv_id
-        left join m_code_value caste on caste.id =mc.client_type_cv_id
-        left join m_code_value gender on gender.id=mc.gender_cv_id
-        left join m_code_value maritals on maritals.id=nct.marital_status_cv_id
-        left join m_code_value relegion  on relegion.id =mc.client_classification_cv_id
-        left join m_code_value profession on profession.id =nct.profession_cv_id
-        left join m_code_value edu on edu.id=nct.educational_qualification_cv_id
-        left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id
-        left join n_coapplicant nco on nco.id =nco.client_id   
-        left join m_code_value nomineeRelation on nomineeRelation.id=nco.client_id
-        left join m_bankdetails bankdtails on bankdtails.client_id = mc.id
+                public String schema() {
+            return   "  select mc.external_id as externalId, title.code_score as title,mc.display_name as customerName,"
+                   + " concat(ifnull(na.house_no,''),ifnull(na.street_no,'')) as addressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,'')) as addressline2,"
+                    +"concat(ifnull(na.village_town,''),ifnull(na.taluka,'')) as addressline3,district.code_score as cityCode,state.code_score as stateCode,na.pin_code as pincode,"
+                   +"mc.date_of_birth as dateofBirth ,mc.mobile_no as mobileNumber,caste.code_score as caste,gender.code_score as gender,"
+                   +"maritals.code_score as maritalStatus,relegion.code_score as relegion,'IN' as nataonality,profession.code_score as occupation,"
+                   +"profession.code_score as category,edu.code_score as educationqualification,mrbl.pension_card as pensionCard,"
+                  +"mrbl.mother_tounge as motherTounge,rblbranch.`Branch Code` as branchCode,rblbranch.`Operating Region` as operatingRegionCode,"
+                  +"nct.aadhaar_no as aadharNo ,mrbl.health as health ,mrbl.`language` as language,mrbl.card_issue_fl as cardIssueFl,"
+                  +"rblbranch.`bc branch code` as bcBranchCode,rblbranch.collector as collector,rblbranch.approver as Approver,"
+                 +"nco.first_name as nomineeName,nomineeRelation.code_score as nomineeRelation,mrbl.cb_check as cbCheck,"
+                 +"bankdtails.bank_name as bankName,bankdtails.account_no as AccountNumber,bankdtails.branch_name as bankbranchName,"
+                 +"mrbl.renewal_fl as renewalFl,nct.pan_no  as panNo,nct.external_Id2 as barcodeNumber,mrbl.adharSeeding_constant as adharSeedingConstant, "
+                 +"(select mci.document_key from m_client_identifier mci where  mci.client_id =3 and mci.document_type_id =43) as rationcard,"
+                 +"(select mci.document_key from m_client_identifier mci where  mci.client_id =4 and mci.document_type_id =41) as voterId"
+                 +"from m_client mc"
+                 +"left join n_client_ext nct on mc.id=nct.client_id"
+                 +"left join m_rblcustomer mrbl on mrbl.client_id=mc.id"
+                 +"left join m_code_value title on nct.salutation_cv_id =title.id"
+                 +"left join n_address na on na.client_id =mc.id and na.address_type_cv_id=20"
+                 +"left join m_code_value district on district.id=na.district_cv_id"
+                 +"left join m_code_value state on state.id=na.state_cv_id"
+                 +"left join m_code_value caste on caste.id =mc.client_type_cv_id"
+                 +"left join m_code_value gender on gender.id=mc.gender_cv_id"
+                 +"left join m_code_value maritals on maritals.id=nct.marital_status_cv_id"
+                +"left join m_code_value relegion  on relegion.id =mc.client_classification_cv_id"
+                 +"left join m_code_value profession on profession.id =nct.profession_cv_id"
+                +"left join m_code_value edu on edu.id=nct.educational_qualification_cv_id"
+                +"left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id"
+                 +"left join n_coapplicant nco on nco.id =nco.client_id"   
+                +"left join m_code_value nomineeRelation on nomineeRelation.id=nco.client_id"
+               +"left join m_bankdetails bankdtails on bankdtails.client_id = mc.id";
 
         }        
       	
@@ -261,12 +208,13 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             final Integer renewalFl=JdbcSupport.getInteger(rs, "renewalFl");
             final  String panno =rs.getString("panNo");
         	final String barcodeNumber =rs.getString("barcodeNumber");
+        	final Integer adharSeedingConstant =JdbcSupport.getInteger(rs, "adharSeedingConstant");
            
             return new RblclientDatValidation(externalId,externalCenterId,title,customerName,addressLine1,addressLine2,addressLine3,
             		cityCode,stateCode,pincode,dateofBirt,mobileNumber,caste,gender,maritalStatus,nationality,relegion,motherTounge,
             		branchCode,operatingRegionCode,aadharNo,pensionCard,rationcard,voterId,health,occpation,educationqualification,category,
             		language,cardIssueFl,bcBranchCode,collector,approver,spouseName,spouseDateOfBirth,nomineeName,nomineeRelation,
-            		cbCheck,bankName,AccountNumber,bankbranchName,renewalFl,panno,barcodeNumber);
+            		cbCheck,bankName,AccountNumber,bankbranchName,renewalFl,panno,barcodeNumber,adharSeedingConstant);
         }
 
     }
@@ -277,7 +225,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         try {
             final AppUser currentUser = this.context.authenticatedUser();            
             final RblGroupDatMapper rm = new RblGroupDatMapper();
-            String Sql ="select"+rm.schema();
+            String Sql ="select"+rm.schema()+" where mg.id in (?)";
             List<RblGroupValidationData>RblGroupValidationDatas=new ArrayList<RblGroupValidationData>();
             RblGroupValidationDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { groupId});
             return RblGroupValidationDatas;
@@ -331,16 +279,16 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
 
     
     @Override
-    public List<RblLoanValidationData> readRblLoanData(final String loanId) {
+    public List<RblLoanValidationData> readRblLoanData(final String clientId) {
         try {
             final AppUser currentUser = this.context.authenticatedUser();            
             final RblLoanDatMapper rm = new RblLoanDatMapper();
-            String Sql ="select"+rm.schema();
+            String Sql ="select"+rm.schema() +"where mc.id in (?)";
             List<RblLoanValidationData>RblLoanValidationDatas=new ArrayList<RblLoanValidationData>();
-            RblLoanValidationDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { loanId});
+            RblLoanValidationDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId});
             return RblLoanValidationDatas;
         } catch (final EmptyResultDataAccessException e) {
-            throw new PartialLoanNotFoundException(Long.parseLong(loanId));
+            throw new PartialLoanNotFoundException(Long.parseLong(clientId));
         }
 
     }
@@ -348,33 +296,26 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
     private static final class RblLoanDatMapper implements RowMapper<RblLoanValidationData> {
 
         public RblLoanDatMapper() {}
-        /*select ml.external_id as externalId,mc.external_id as customerExternalId ,center.external_id as externalCenterId,
-        mg.external_id as groupExternalId, mp.name as loanProductCode,purpose.code_score as loanPurpose,rbl.psl_code as pslcode,
-        ml.principal_amount as loanAmount,'2' as disbursementMode,mp.number_of_repayments as noOfInstallment,
-        ifnull(ml.loan_counter,0) as loanCycle,nlt.loanApplication_Id as barcodeNo,ml.disbursedon_date as loanStratDate,
-        ml.expected_firstrepaymenton_date as repaymentStartDate,ml.expected_disbursedon_date as ExceptedDisbursementDate,
-        rbb.`Bc Branch Code' as bcBranchCode,rbb.collector as colector ,rbb.Approver as approver,rbl.to_Up_flag as TopUpLoanFlag,
-        rbl.hosiptal_cash as hosiptalCash,rbl.prepaid_charge as prepaidCharge,
-        if(mp.repayment_period_frequency_enum=1,2,if(mp.repayment_period_frequency_enum=0,1,if(mp.repayment_period_frequency_enum=2,4,if(mp.repayment_period_frequency_enum=3,7,0)))) as repaymentfrequency
-        from m_client mc
-        left join m_group_client mgc on mgc.client_id =mc.id
-        left join m_group mg on mgc.group_id =mg.id
-        left join m_group center on center.id =mg.parent_id and center.level_id =1
-        left join m_loan ml on ml.client_id =mc.id
-        left join m_product_loan mp on mp.id =ml.product_id
-        left join m_code_value purpose on purpose.id =ml.loanpurpose_cv_id
-        left join m_rblloan rbl on rbl.loan_id =ml.id 
-        left join n_loan_ext nlt on nlt.loan_id =ml.id
-        left join `rbl branch name` rbb on rbb.office_id =mc.office_id
-        where mc.id in (12616,12679,64616,64682)*/
+        
         public String schema() {
-            return   "  mpl.client_id as clientId,c.display_name as clientName, mpl.rpdo_no as rpdoNumber,"
-                    + " mpl.loan_amount as loanAmount,mpl.submitted_date as submittedDate, mcv.code_value as statues, "
-                    + " mpl.remark as remark, if(mpl.is_active=0,'false','true') as isActive"
-                    + " from m_partial_loan mpl "
-                    + " left join m_client c on  mpl.client_id=c.id "
-                    + " left join m_code_value mcv on mcv.id =mpl.status "
-                    + " where mpl.group_id in (select  id from m_group mg  where mg.parent_id= ?)";
+            return   "select ml.external_id as externalId,mc.external_id as customerExternalId ,center.external_id as externalCenterId,"
+                   + "mg.external_id as groupExternalId, mp.name as loanProductCode,purpose.code_score as loanPurpose,rbl.psl_code as pslcode,"
+                    +"ml.principal_amount as loanAmount,'2' as disbursementMode,mp.number_of_repayments as noOfInstallment,"
+                    +"ifnull(ml.loan_counter,0) as loanCycle,nlt.loanApplication_Id as barcodeNo,ml.disbursedon_date as loanStratDate,"
+                    +"ml.expected_firstrepaymenton_date as repaymentStartDate,ml.expected_disbursedon_date as ExceptedDisbursementDate,"
+                    +"rbb.`Bc Branch Code' as bcBranchCode,rbb.collector as colector ,rbb.Approver as approver,rbl.to_Up_flag as TopUpLoanFlag,"
+                    +"rbl.hosiptal_cash as hosiptalCash,rbl.prepaid_charge as prepaidCharge,"
+                    +"if(mp.repayment_period_frequency_enum=1,2,if(mp.repayment_period_frequency_enum=0,1,if(mp.repayment_period_frequency_enum=2,4,if(mp.repayment_period_frequency_enum=3,7,0)))) as repaymentfrequency"
+                    +"from m_client mc"
+                    +"left join m_group_client mgc on mgc.client_id =mc.id"
+                    +"left join m_group mg on mgc.group_id =mg.id"
+                    +"left join m_group center on center.id =mg.parent_id and center.level_id =1"
+                    +"left join m_loan ml on ml.client_id =mc.id"
+                    +"left join m_product_loan mp on mp.id =ml.product_id"
+                    +"left join m_code_value purpose on purpose.id =ml.loanpurpose_cv_id"
+                    +"left join m_rblloan rbl on rbl.loan_id =ml.id "
+                    +"left join n_loan_ext nlt on nlt.loan_id =ml.id"
+                    +"left join `rbl branch name` rbb on rbb.office_id =mc.office_id";
         }        
       	
         @Override
@@ -414,16 +355,16 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
 
 
     @Override
-    public List<RblSavingValidationData> readRblSavingData(final String savingId) {
+    public List<RblSavingValidationData> readRblSavingData(final String clientId) {
         try {
             final AppUser currentUser = this.context.authenticatedUser();            
             final RblSavingDatMapper rm = new RblSavingDatMapper();
-            String Sql ="select"+rm.schema();
+            String Sql ="select"+rm.schema() + "where mc.id in (?)";
             List<RblSavingValidationData>RblSavingValidationDatas=new ArrayList<RblSavingValidationData>();
-            RblSavingValidationDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { savingId});
+            RblSavingValidationDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId});
             return RblSavingValidationDatas;
         } catch (final EmptyResultDataAccessException e) {
-            throw new PartialLoanNotFoundException(Long.parseLong(savingId));
+            throw new PartialLoanNotFoundException(Long.parseLong(clientId));
         }
 
     }
@@ -432,43 +373,36 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
 
         public RblSavingDatMapper() {}
 
-       /* select msa.external_id as externalId,center.external_id as externalCenterId,mc.external_id as customerExternalId,
-        '1' as accountType,msp.name as savingproductCode,msp.name as productName,msa.activatedon_date as accountOpeningDate,
-        title.code_score as nomineeTitle,nc.first_name as nomineeName,relation.code_score as nomineeRlation,nc.date_of_birth as nomineeDateOfBirth,
-        gender.code_score as nomineeGender, concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as nomineeAddressline1,
-        concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as gurdianAddressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as nomineeAddressline2,
-        concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as gurdianAddressline2,ifnull(na.taluka,'') as nomineeAddressline3,
-        ifnull(na.taluka,'') as gurdianAddressline3,nomineecity.code_score as nomineecity,nomineecity.code_score as gurdianCity,
-        nomineestate.code_score as nomineestate,nomineestate.code_score as gurdianState,'02' as nomineeMinor,
-        gurdianTitle.code_score as gurdianTitle,mrbl.gurdian_name as gurdianName,mrbl.gurdian_DatofBirth as gurdianDateofBirth,
-        gurdiangender.code_score as gurdianGender,gurdianrelation.code_score as gurdianRelation,mrbl.gurdian_mobileNo as gurdianPhoneNo,
-        na.pin_code as nomineePincode,na.pin_code as gurdianPincode,rblbranch.Collector as collector,rblbranch.Approver as approver
-         from m_client mc
-                left join m_group_client mgc on mgc.client_id =mc.id
-                left join m_group mg on mgc.group_id =mg.id
-                left join m_group center on center.id =mg.parent_id and center.level_id =1
-                left join m_savings_account msa on msa.client_id =mc.id
-                left join m_savings_product msp on msp.id =msa.id
-                left join n_address na on na.client_id =mc.id and na.address_type_cv_id= 26
-        left join n_coapplicant nc on nc.client_id =mc.id
-        left join m_rblcustomer mrbl on mrbl.client_id =mc.id
-        left join m_code_value title on title.id =nc.salutation_cv_id
-        left join m_code_value relation on relation.id =nc.sp_relationship_cv_id
-        left join m_code_value gender on gender.id =nc.gender_cv_id
-        left join m_code_value nomineecity on nomineecity.id =na.district_cv_id
-        left join m_code_value nomineestate on nomineestate.id =na.state_cv_id
-        left join m_code_value gurdianTitle on gurdianTitle.id =mrbl.title
-        left join m_code_value gurdiangender on gurdiangender.id =mrbl.gurdian_gender
-        left join m_code_value gurdianrelation on gurdianrelation.id =mrbl.relation_cv_id
-        left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id
-        */public String schema() {
-            return   "  mpl.client_id as clientId,c.display_name as clientName, mpl.rpdo_no as rpdoNumber,"
-                    + " mpl.loan_amount as loanAmount,mpl.submitted_date as submittedDate, mcv.code_value as statues, "
-                    + " mpl.remark as remark, if(mpl.is_active=0,'false','true') as isActive"
-                    + " from m_partial_loan mpl "
-                    + " left join m_client c on  mpl.client_id=c.id "
-                    + " left join m_code_value mcv on mcv.id =mpl.status "
-                    + " where mpl.group_id in (select  id from m_group mg  where mg.parent_id= ?)";
+         public String schema() {
+            return   "  select msa.external_id as externalId,center.external_id as externalCenterId,mc.external_id as customerExternalId,"
+                     + "  '1' as accountType,msp.name as savingproductCode,msp.name as productName,msa.activatedon_date as accountOpeningDate,"
+                      +"title.code_score as nomineeTitle,nc.first_name as nomineeName,relation.code_score as nomineeRlation,nc.date_of_birth as nomineeDateOfBirth,"
+                     +"gender.code_score as nomineeGender, concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as nomineeAddressline1,"
+                     +"concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as gurdianAddressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as nomineeAddressline2,"
+                     +"concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as gurdianAddressline2,ifnull(na.taluka,'') as nomineeAddressline3,"
+                     +"ifnull(na.taluka,'') as gurdianAddressline3,nomineecity.code_score as nomineecity,nomineecity.code_score as gurdianCity,"
+                     +"nomineestate.code_score as nomineestate,nomineestate.code_score as gurdianState,'02' as nomineeMinor,"
+                     +"gurdianTitle.code_score as gurdianTitle,mrbl.gurdian_name as gurdianName,mrbl.gurdian_DatofBirth as gurdianDateofBirth,"
+                     +"gurdiangender.code_score as gurdianGender,gurdianrelation.code_score as gurdianRelation,mrbl.gurdian_mobileNo as gurdianPhoneNo,"
+                     +"na.pin_code as nomineePincode,na.pin_code as gurdianPincode,rblbranch.Collector as collector,rblbranch.Approver as approver"
+                     +"from m_client mc"
+                     +"left join m_group_client mgc on mgc.client_id =mc.id"
+                     +"left join m_group mg on mgc.group_id =mg.id"
+                     +"left join m_group center on center.id =mg.parent_id and center.level_id =1"
+                     +"left join m_savings_account msa on msa.client_id =mc.id"
+                     +"left join m_savings_product msp on msp.id =msa.id"
+                     +"left join n_address na on na.client_id =mc.id and na.address_type_cv_id= 26"
+                     +"left join n_coapplicant nc on nc.client_id =mc.id"
+                     +"left join m_rblcustomer mrbl on mrbl.client_id =mc.id"
+                     +"left join m_code_value title on title.id =nc.salutation_cv_id"
+                     +"left join m_code_value relation on relation.id =nc.sp_relationship_cv_id"
+                     +"left join m_code_value gender on gender.id =nc.gender_cv_id"
+                     +"left join m_code_value nomineecity on nomineecity.id =na.district_cv_id"
+                     +"left join m_code_value nomineestate on nomineestate.id =na.state_cv_id"
+                     +"left join m_code_value gurdianTitle on gurdianTitle.id =mrbl.title"
+                     +"left join m_code_value gurdiangender on gurdiangender.id =mrbl.gurdian_gender"
+                     +"left join m_code_value gurdianrelation on gurdianrelation.id =mrbl.relation_cv_id"
+                    +"left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id";
         }        
       	
         @Override

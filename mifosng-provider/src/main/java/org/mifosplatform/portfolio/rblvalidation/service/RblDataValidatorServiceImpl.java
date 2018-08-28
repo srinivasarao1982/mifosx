@@ -39,7 +39,7 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 	}
 
 	@Override
-	public void validateDatafortransfer(Long rblcenterId, String groupId, String clientId) {
+	public void validateDatafortransfer(String rblcenterId, String groupId, String clientId) {
 	    String RBL_BASE_DIR = System.getProperty("user.home") + File.separator + ".mifosx"+File.separator+"RblValidationFile";
 	    try {
 		List<RblCenterValidateData> rblcenterDatas=this.rblDataReadplatformService.readRblCenterData(rblcenterId);

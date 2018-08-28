@@ -48,6 +48,7 @@ public class RblclientDatValidation {
 	private Integer renewalFl;
 	private String panno;
 	private String barcodeNumber;
+	private Integer adharseedingConsatnt;
 	public RblclientDatValidation(String externalId, String externalCenterId, String title, String customerName,
 			String addressline1, String addressline2, String addressline3, String cityCode, String stateCode,
 			Integer pincode, Date dateofBirt, String mobilNo, String caste, String gender, String maritalStatus,
@@ -56,7 +57,7 @@ public class RblclientDatValidation {
 			String occupation, String educationQualification, String category, String language, Integer cardIssueFlag,
 			String bcBranchCode, String collector, String approver, String spouseName, Date spouseDateOfBirth,
 			String nomineeName, String nomineeRelation, Integer cbCheck, String bankName, String bankAccountNo,
-			String bankbranchName, Integer renewalFl,String panno,String barcodeNumber) {
+			String bankbranchName, Integer renewalFl,String panno,String barcodeNumber,Integer adharseedingConsatnt) {
 		super();
 		this.externalId = externalId;
 		this.externalCenterId = externalCenterId;
@@ -102,6 +103,7 @@ public class RblclientDatValidation {
 		this.renewalFl = renewalFl;
 		this.panno=panno;
 		this.barcodeNumber=barcodeNumber;
+		this.adharseedingConsatnt=adharseedingConsatnt;
 	}
 	public String getPanno() {
 		return panno;
@@ -366,6 +368,12 @@ public class RblclientDatValidation {
 	}
 	public void setRenewalFl(Integer renewalFl) {
 		this.renewalFl = renewalFl;
+	}
+	public Integer getAdharseedingConsatnt() {
+		return adharseedingConsatnt;
+	}
+	public void setAdharseedingConsatnt(Integer adharseedingConsatnt) {
+		this.adharseedingConsatnt = adharseedingConsatnt;
 	}
 	
 	
