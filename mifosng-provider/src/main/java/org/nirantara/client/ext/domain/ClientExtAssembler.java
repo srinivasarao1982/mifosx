@@ -153,7 +153,7 @@ public class ClientExtAssembler {
 
         final String splastname = this.fromApiJsonHelper.extractStringNamed("splastname", element);
         if(splastname==null){
-    	    throw new MandatoryFieldException("Father last Name"); 
+    	    throw new MandatoryFieldException("Father Surname Name"); 
         }
         final String externalId2 = this.fromApiJsonHelper.extractStringNamed("externalId2", element);
         if(externalId2==null){
@@ -258,7 +258,7 @@ public class ClientExtAssembler {
 
                     final Long mobileNo = this.fromApiJsonHelper.extractLongNamed("mobileNo", element);
                     
-                    if(mobileNo==null)
+                    if(mobileNo==null &&  addressTypeId==20)
             		{
             	    throw new MandatoryFieldException("mobileNo"); 
                      }
@@ -445,9 +445,7 @@ public class ClientExtAssembler {
                     clientIdentifiers.add(clientIdentifier);
                 }
             }
-            else{
-            	throw new MandatoryFieldException("Address and Identity Proff")
-            }
+            
         }
         return clientIdentifiers;
     }
@@ -579,6 +577,10 @@ public class ClientExtAssembler {
 
                 final String mothersMaidenName = this.fromApiJsonHelper.extractStringNamed("mothersMaidenName", element);
 
+                if(mothersMaidenName==null){
+                	throw new MandatoryFieldException("mothersMaidenName");
+
+                }
                 final String emailId = this.fromApiJsonHelper.extractStringNamed("emailId", element);
 
                 final String fatherFirstName = this.fromApiJsonHelper.extractStringNamed("fatherFirstName", element);
