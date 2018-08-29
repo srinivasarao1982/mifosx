@@ -249,6 +249,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 clientClassification = this.codeValueRepository
                         .findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.CLIENT_CLASSIFICATION, clientClassificationId);
             }
+            else{
+        	    throw new MandatoryFieldException("Religion"); 
+            }
 
             SavingsProduct savingsProduct = null;
             final Long savingsProductId = command.longValueOfParameterNamed(ClientApiConstants.savingsProductIdParamName);

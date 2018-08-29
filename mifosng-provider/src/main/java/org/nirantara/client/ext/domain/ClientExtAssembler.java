@@ -152,9 +152,7 @@ public class ClientExtAssembler {
         final String spmiddlename = this.fromApiJsonHelper.extractStringNamed("spmiddlename", element);
 
         final String splastname = this.fromApiJsonHelper.extractStringNamed("splastname", element);
-        if(splastname==null){
-    	    throw new MandatoryFieldException("Father Surname Name"); 
-        }
+       
         final String externalId2 = this.fromApiJsonHelper.extractStringNamed("externalId2", element);
         if(externalId2==null){
     	    throw new MandatoryFieldException("externalId2"); 
@@ -215,10 +213,7 @@ public class ClientExtAssembler {
                     }
 
                     final String landmark = this.fromApiJsonHelper.extractStringNamed("landmark", element);
-                    if((landmark==null ||  landmark.equals("")) && addressTypeId==20)
-            		{
-            	    throw new MandatoryFieldException("landmark"); 
-                     }
+                    
 
                     final String villageTown = this.fromApiJsonHelper.extractStringNamed("villageTown", element);
                     if((villageTown==null ||  villageTown.equals("")) &&  addressTypeId==20)
@@ -545,9 +540,7 @@ public class ClientExtAssembler {
                 final String middleName = this.fromApiJsonHelper.extractStringNamed("middleName", element);
 
                 final String lastName = this.fromApiJsonHelper.extractStringNamed("lastName", element);
-                if(firstName==null ||firstName=="" ){
-                	throw new MandatoryFieldException("lastName");
-                }
+               
 
                 final Long genderId = this.fromApiJsonHelper.extractLongNamed("genderId", element);
                 CodeValue gender = null;
@@ -577,14 +570,14 @@ public class ClientExtAssembler {
 
                 final String mothersMaidenName = this.fromApiJsonHelper.extractStringNamed("mothersMaidenName", element);
 
-                if(mothersMaidenName==null){
-                	throw new MandatoryFieldException("mothersMaidenName");
-
-                }
+               
                 final String emailId = this.fromApiJsonHelper.extractStringNamed("emailId", element);
 
                 final String fatherFirstName = this.fromApiJsonHelper.extractStringNamed("fatherFirstName", element);
+                if(fatherFirstName==null){
+                	throw new MandatoryFieldException("dateOfBirth");
 
+                }
                 final String fatherMiddleName = this.fromApiJsonHelper.extractStringNamed("fatherMiddleName", element);
 
                 final String fatherLastName = this.fromApiJsonHelper.extractStringNamed("fatherLastName", element);
