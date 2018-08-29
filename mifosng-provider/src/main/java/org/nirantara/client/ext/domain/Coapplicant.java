@@ -53,7 +53,7 @@ public class Coapplicant extends AbstractPersistable<Long> {
     @Column(name = "age", length = 3, nullable = false)
     private Integer age;
 
-    @Column(name = "mothers_maiden_name", length = 150, nullable = false)
+    @Column(name = "mothers_maiden_name", length = 150, nullable = true)
     private String mothersMaidenName;
 
     @Column(name = "email_id", length = 150)
