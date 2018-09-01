@@ -30,9 +30,13 @@ import org.mifosplatform.portfolio.loanaccount.data.SequenceNumberData;
 import org.mifosplatform.portfolio.loanaccount.service.PartialLoanReadPlatformService;
 import org.mifosplatform.portfolio.rblvalidation.data.RblCrdeitResponseData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblCreditBureauData;
+import org.mifosplatform.portfolio.rblvalidation.data.RblLosFileData;
+import org.mifosplatform.portfolio.rblvalidation.service.LosFileReadPlatformService;
 import org.mifosplatform.portfolio.rblvalidation.service.RblCreditBurequReadPlatfoemServie;
 import org.mifosplatform.portfolio.rblvalidation.service.RblDataReadplatformService;
+import org.mifosplatform.portfolio.rblvalidation.service.RblDataValidatorService;
 import org.mifosplatform.portfolio.rblvalidation.service.RblEquifaxWritePlatformService;
+import org.mifosplatform.portfolio.rblvalidation.service.RblLosFileGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -48,6 +52,11 @@ public class RblValidationApiResource {
     private final RblCreditBurequReadPlatfoemServie rblCreditBurequReadPlatfoemServie;
     private final RblEquifaxWritePlatformService rblEquifaxWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
+    private final LosFileReadPlatformService losFileReadPlatformService;
+    private final ToApiJsonSerializer<RblLosFileData> toApiFileJsonSerializerResponse;
+    private final RblDataValidatorService rblDataValidatorService;
+    private final RblLosFileGenerationService rblLosFileGenerationService;
+
 
     
     @Autowired
@@ -57,7 +66,11 @@ public class RblValidationApiResource {
     		final ToApiJsonSerializer<RblCrdeitResponseData> toApiJsonSerializerResponse,
     		final RblCreditBurequReadPlatfoemServie rblCreditBurequReadPlatfoemServie,
     		final RblEquifaxWritePlatformService rblEquifaxWritePlatformService,
-    		final ApiRequestParameterHelper apiRequestParameterHelper
+    		final ApiRequestParameterHelper apiRequestParameterHelper,
+    		final LosFileReadPlatformService losFileReadPlatformService,
+    		final ToApiJsonSerializer<RblLosFileData> toApiFileJsonSerializerResponse,
+    		final RblDataValidatorService rblDataValidatorService,
+    		final RblLosFileGenerationService rblLosFileGenerationService
             ) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -66,13 +79,16 @@ public class RblValidationApiResource {
         this.rblCreditBurequReadPlatfoemServie=rblCreditBurequReadPlatfoemServie;
         this.rblEquifaxWritePlatformService=rblEquifaxWritePlatformService;
         this.apiRequestParameterHelper=apiRequestParameterHelper;
+        this.losFileReadPlatformService=losFileReadPlatformService;
+        this.toApiFileJsonSerializerResponse=toApiFileJsonSerializerResponse;
+        this.rblDataValidatorService=rblDataValidatorService;
+        this.rblLosFileGenerationService=rblLosFileGenerationService;
         
     }
     
     @GET
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-
     public String getParatialLoan(@QueryParam("centerId") final Long centerId,@QueryParam("clientId") final Long clientId,
     		@QueryParam("fromDate") final String fromDate,@QueryParam("toDate") final String toDate,@QueryParam("value") final String valufor,@Context final UriInfo uriInfo) {
 
@@ -100,10 +116,7 @@ public class RblValidationApiResource {
         	
         }
       }
-
-
-   
-    
+      
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -119,8 +132,42 @@ public class RblValidationApiResource {
        return response;
 		}
 
-   
+       // Los File Send And Receive Logic
+    
+    @GET
+    @Path("/file")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getParatialLoan(@QueryParam("fromDate") final String fromDate,@QueryParam("toDate") final String toDate,@QueryParam("fileType") final String fileType,@Context final UriInfo uriInfo) {
 
+
+        this.context.authenticatedUser().validateHasReadPermission(RblApiValidationConstant.RBLDETAILS_RESOURCE_NAME);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        List<RblLosFileData>rblLosFileData=new ArrayList<RblLosFileData>();
+        
+        rblLosFileData =this.losFileReadPlatformService.readLosFile(fromDate,toDate,fileType);
+        	return this.toApiFileJsonSerializerResponse.serialize(settings, rblLosFileData,
+        			RblApiValidationConstant.RBLFILERESPONSE_DATA_PARAMETERS);
+        }
+      
+
+      @POST
+      @Path("/file")
+      @Consumes({ MediaType.APPLICATION_JSON })
+      @Produces({ MediaType.APPLICATION_JSON })
+      public Response create(final String apiRequestBodyAsJson,@QueryParam("centerId") String centerId,@QueryParam("groupId") String groupId,@QueryParam("clintId") String clintId,@QueryParam("command") String command,@Context final UriInfo uriInfo) {
+	
+    	  if(command.equalsIgnoreCase("validate")){
+    		  this.rblDataValidatorService.validateDatafortransfer(centerId, groupId, clintId);
+    	  }
+    	  else{
+    		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId); 
+    	  }
+         Response response = Response.status(400).build();
+	    String [] stringclientsId =clintId.split(",");    
+        response.status(200).build(); 
+          return response;
+	}
 
 
 }

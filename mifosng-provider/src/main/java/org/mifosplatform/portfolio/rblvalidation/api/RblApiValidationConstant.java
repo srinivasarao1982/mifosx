@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 public class RblApiValidationConstant {
 	
@@ -50,11 +51,23 @@ public class RblApiValidationConstant {
 	public static final  String eliagableAmountparamname ="eligible_Amount";
 	public static final  String jsonparamname ="json";
 	
+	//File Related Response
+	public LocalDate fileDate;
+	public String fileName;
+	public String filePath;
+	public String fileType;
+	
+	public static final String  fileDateParamname="filedate";
+	public static final String fileNameparamname="fileName";
+	public static final String  filepathparamname ="filePath";
+	public static final String fileTypeparamname="fileType";
+	
 	 public static final Set<String> RBL_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, barcodeparamname,externalIdparamname,loanAmountParamname,isRenewalLoanparamnam,customerNameparanname,titleparamaname,nameparamname,relationparamnam,line1paramname,
 				line2paramname,line3paramname,citycodeparamname,cityNameparamname,stateCodeparamname,pinparamname,operatingRegionparamname,operatingRegionParamname,
 				dateofbirthparamname,branchcodeparamname,branchNameparamname ));
 	  
 	    public static final Set<String> RBLRESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,  clientIdParamname,requestIdparamname,serviceIdparamname,chhanelIdparamaName,corIdparamname,creditApprovdparamname,rasonparamname,eliagableAmountparamname,jsonparamname));
-	 	  
+	    public static final Set<String> RBLFILERESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,  fileDateParamname,fileNameparamname,filepathparamname,fileTypeparamname));
+ 	  
 
 }

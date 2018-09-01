@@ -102,9 +102,7 @@ public class BulkLoansApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, loanReassignmentData, this.RESPONSE_DATA_PARAMETERS);
     }
-    String str="test";
-    JSONObject json = new JSONObject(str);
-    String xml = XML.toString(json);
+    
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })

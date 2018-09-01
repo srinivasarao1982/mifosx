@@ -26,7 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-
+import org.springframework.stereotype.Service;
+@Service
 public class RblCreditBureauReadPlatformServiceImpl  implements RblCreditBurequReadPlatfoemServie {
 	private final JdbcTemplate jdbcTemplate;
 	private final PlatformSecurityContext context;

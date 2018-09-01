@@ -109,6 +109,7 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		 }
 		 else{
 			 
+			 try{
 			 
 			// JSONObject json = new JSONObject(str);
 			 String xml = XML.toString(rblEquifaxData);
@@ -142,8 +143,11 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 			 
 			 this.credeitBureauResponseRepositoryWrapper.save(creditBureaoResponse);
 		 }
-
-
+	
+		 catch(Exception e){
+			 
+		 }
+		 }
 		
 		return true;
 	

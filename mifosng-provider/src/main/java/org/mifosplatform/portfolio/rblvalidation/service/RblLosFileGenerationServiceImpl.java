@@ -1,9 +1,12 @@
 package org.mifosplatform.portfolio.rblvalidation.service;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
 
 import org.joda.time.DateTime;
 import org.mifosplatform.infrastructure.codes.domain.CodeValueRepositoryWrapper;
@@ -21,13 +24,22 @@ import org.mifosplatform.portfolio.rblvalidation.data.RblGroupValidationData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblLoanValidationData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblSavingValidationData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblclientDatValidation;
+import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRecord;
 import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRepository;
+import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRepositoryWrapper;
 import org.mifosplatform.portfolio.rblvalidation.domain.SendFileRepository;
+import org.mifosplatform.portfolio.rblvalidation.domain.SendFileRepositoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+/*import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
+*/
 @Service
 public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationService {
 
@@ -35,18 +47,24 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 
 	    private final PlatformSecurityContext context;
 	    private final RblDataReadplatformService rblDataReadplatformService;
-	    private final SendFileRepository sendFileRepository;
-	    private final ReceiveFileRepository receiveFileRepository;
+	    //private final SendFileRepository sendFileRepository;
+	   // private final ReceiveFileRepository receiveFileRepository;
+	    private final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper;
+	    private final SendFileRepositoryWrapper sendFileRepositoryWrapper;
 	    	    
 	    @Autowired
 	    public RblLosFileGenerationServiceImpl(final PlatformSecurityContext context,
 	    		final RblDataReadplatformService rblDataReadplatformService,final SendFileRepository sendFileRepository,
-	    		final ReceiveFileRepository receiveFileRepository)
+	    		final ReceiveFileRepository receiveFileRepository,
+	    		final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper,
+	    		final SendFileRepositoryWrapper sendFileRepositoryWrapper)
 	            {
 	        this.context = context;
 	        this.rblDataReadplatformService=rblDataReadplatformService;
-	        this.sendFileRepository =sendFileRepository;
-	        this.receiveFileRepository =receiveFileRepository;
+	        //this.sendFileRepository =sendFileRepository;
+	        //this.receiveFileRepository =receiveFileRepository;
+	        this.receiveFileRepositoryWrapper=receiveFileRepositoryWrapper;
+	        this.sendFileRepositoryWrapper=sendFileRepositoryWrapper;
 	         }
 
 		@Override
@@ -189,5 +207,98 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 			    
 		   }
 	  }
-		}			
+	
+//public Void Transfer File
+		public void transferfile(){
+			/*FileReader reader=new FileReader("db.properties");		      
+		    Properties p=new Properties();  
+		    p.load(reader);
+		     
+		        String SFTPHOST =p.getProperty("host");
+		        int SFTPPORT = 22;
+		        String SFTPUSER = p.getProperty("user");
+		        String SFTPPASS =  p.getProperty("password");
+		        String SFTPWORKINGDIR = p.getProperty("dir");;
+
+				 
+		  JSch jsch = new JSch();
+		        Session session = null;
+		        try {
+		            session = jsch.getSession(SFTPUSER, SFTPHOST, 22);
+		            java.util.Properties config = new java.util.Properties();
+		            config.put("StrictHostKeyChecking", "no");
+		            session.setConfig(config);
+		            session.setPassword(SFTPPASS);
+		            session.connect();
+		            
+		            Channel channel = session.openChannel("sftp");
+		            channel.connect();
+		            ChannelSftp sftpChannel = (ChannelSftp) channel;
+		            sftpChannel.put("/tmplocal/testUpload.txt", "/tmpremote/testUpload.txt");  
+		            sftpChannel.exit();
+		            session.disconnect();
+		        } catch (JSchException e) {
+		            e.printStackTrace();  
+		        } catch (SftpException e) {
+		            e.printStackTrace();
+		        }
+		*/ 
+		 }
+		
+// public void ReceiveFile	
+		
+		public void receivedfile(){
+			/*
+			FileReader reader=new FileReader("db.properties");		      
+		    Properties p=new Properties();  
+		    p.load(reader);
+		     
+		        String SFTPHOST =p.getProperty("host");
+		        int SFTPPORT = 22;
+		        String SFTPUSER = p.getProperty("user");
+		        String SFTPPASS =  p.getProperty("password");
+		        String SFTPWORKINGDIR = p.getProperty("dir");;
+
+		        Session session = null;
+		        Channel channel = null;
+		        ChannelSftp channelSftp = null;
+
+		        try {
+		            JSch jsch = new JSch();
+		            session = jsch.getSession(SFTPUSER, SFTPHOST, SFTPPORT);
+		            session.setPassword(SFTPPASS);
+		            java.util.Properties config = new java.util.Properties();
+		            config.put("StrictHostKeyChecking", "no");
+		            session.setConfig(config);
+		            session.connect();
+		            channel = session.openChannel("sftp");
+		            channel.connect();
+		            channelSftp = (ChannelSftp) channel;
+		            channelSftp.cd(SFTPWORKINGDIR);
+		            Vector filelist = channelSftp.ls(SFTPWORKINGDIR);
+		            for (int i = 0; i < filelist.size(); i++) {
+		            	List<ReceiveFileRecord>	receiveFileRecord=this.receiveFileRepository.getExistingFile(filelist.get(i).toString());
+		                if(receiveFileRecord.size()>0){
+				            sftpChannel.put("/tmplocal/testUpload.txt", "/tmpremote/testUpload.txt");  
+
+		                	ReceiveFileRecord ReceiveFileRecord =new ReceiveFileRecord().
+		            }
+
+		        } catch (Exception ex) {
+		            ex.printStackTrace();
+		        }
+		    }
+*/		//}
+		 
+
+
+		 
+		
+
+		//}
+		 
+		//}
+ }
+}
+//}
 

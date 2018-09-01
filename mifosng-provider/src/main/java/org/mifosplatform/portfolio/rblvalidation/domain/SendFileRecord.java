@@ -14,23 +14,15 @@ import org.mifosplatform.useradministration.domain.AppUser;
 @Table(name = "m_rblsendfile")
 public class SendFileRecord extends AbstractAuditableCustom<AppUser, Long>{
 	
-	
-	@Column(name = "center_id", nullable =false)
-    private Long centerId;	
-	    
+	@Column(name = "file_type", nullable =false)
+    private Long fileType;	
+		    
     @Column(name = "file_Name", nullable =false)
     private String fileName;
     
     @Column(name = "file_path", nullable =false)
     private String filePath;
 
-	public Long getCenterId() {
-		return centerId;
-	}
-
-	public void setCenterId(Long centerId) {
-		this.centerId = centerId;
-	}
 
 	public String getFileName() {
 		return fileName;
@@ -48,9 +40,8 @@ public class SendFileRecord extends AbstractAuditableCustom<AppUser, Long>{
 		this.filePath = filePath;
 	}
 
-	public SendFileRecord(Long centerId, String fileName, String filePath) {
+	public SendFileRecord(String fileName, String filePath) {
 		super();
-		this.centerId = centerId;
 		this.fileName = fileName;
 		this.filePath = filePath;
 	}
