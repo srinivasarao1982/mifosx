@@ -46,6 +46,7 @@ import org.mifosplatform.infrastructure.security.service.RandomPasswordGenerator
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
+import org.mifosplatform.portfolio.client.exception.MobileNumberLengthException;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccount;
 import org.mifosplatform.portfolio.savings.domain.SavingsProduct;
@@ -256,6 +257,9 @@ public final class Client extends AbstractPersistable<Long> {
         final String mobileNo = command.stringValueOfParameterNamed(ClientApiConstants.mobileNoParamName);
         if(mobileNo==null){
     	    throw new MandatoryFieldException("mobileNo"); 
+        }
+        if(mobileNo.length()!=10){
+    	    throw new MobileNumberLengthException(mobileNo.length()); 
         }
 
         final String firstname = command.stringValueOfParameterNamed(ClientApiConstants.firstnameParamName);

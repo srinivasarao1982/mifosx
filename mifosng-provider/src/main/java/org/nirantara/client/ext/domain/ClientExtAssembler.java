@@ -20,6 +20,8 @@ import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifierRepository;
+import org.mifosplatform.portfolio.client.exception.ClientIdentifierNumericxception;
+import org.mifosplatform.portfolio.client.exception.MobileNumberLengthException;
 import org.mifosplatform.portfolio.loanaccount.domain.Loan;
 import org.nirantara.client.ext.exception.DupicateDocumentException;
 import org.nirantara.client.ext.exception.MandatoryFieldException;
@@ -135,6 +137,12 @@ public class ClientExtAssembler {
     	    throw new MandatoryFieldException("aadhaarNo"); 
         }
 
+        if (!(aadhaarNo.matches("[0-9]+") && aadhaarNo.length() > 2)) {
+        	throw new ClientIdentifierNumericxception("Adhar");
+        }
+        if ( aadhaarNo.length() != 12) {
+        	throw new MobileNumberLengthException(aadhaarNo.length());
+        }
         final String panNo = this.fromApiJsonHelper.extractStringNamed("panNo", element);
 
         final Long panFormId = this.fromApiJsonHelper.extractLongNamed("panForm", element);
@@ -408,6 +416,12 @@ public class ClientExtAssembler {
                 CodeValue documentType = null;
                 if (documentTypeId != null) {
                     documentType = this.codeValueRepository.findOneWithNotFoundDetection(documentTypeId);
+                }
+                if(documentType.label().equalsIgnoreCase("Coapplicant-Aadhaar")||documentType.label().equalsIgnoreCase("Aadhaar")){
+                    final String documentKey = this.fromApiJsonHelper.extractStringNamed("documentKey", element);
+                    if (!(documentKey.matches("[0-9]+") && documentKey.length() > 2)) {
+                    	throw new ClientIdentifierNumericxception(documentType.label());
+                    }
                 }
                 final String documentKey = this.fromApiJsonHelper.extractStringNamed("documentKey", element);
                 final String description = this.fromApiJsonHelper.extractStringNamed("documentDescription", element);
