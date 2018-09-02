@@ -589,7 +589,7 @@ public class ClientExtAssembler {
 
                 final String fatherFirstName = this.fromApiJsonHelper.extractStringNamed("fatherFirstName", element);
                 if(fatherFirstName==null){
-                	throw new MandatoryFieldException("dateOfBirth");
+                	throw new MandatoryFieldException("Co-ApplicantFatherFirstName");
 
                 }
                 final String fatherMiddleName = this.fromApiJsonHelper.extractStringNamed("fatherMiddleName", element);
