@@ -80,7 +80,7 @@ public class SequenceNumberApiResource {
 	    public String updateOffice(@PathParam("id") final Long id, final String apiRequestBodyAsJson) {
 
 	        final CommandWrapper commandRequest = new CommandWrapperBuilder() //
-	                .updateOffice(id) //
+	                .updateSequenceNumber(id) //
 	                .withJson(apiRequestBodyAsJson) //
 	                .build();
 

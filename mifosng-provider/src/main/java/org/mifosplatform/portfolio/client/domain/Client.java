@@ -1035,6 +1035,7 @@ public final class Client extends AbstractPersistable<Long> {
         this.addressExt.clear();
     }
 
+
 	public boolean isReprocessed() {
 		return reprocessed;
 	}
@@ -1042,4 +1043,14 @@ public final class Client extends AbstractPersistable<Long> {
 	public void setReprocessed(boolean reprocessed) {
 		this.reprocessed = reprocessed;
 	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+
 }

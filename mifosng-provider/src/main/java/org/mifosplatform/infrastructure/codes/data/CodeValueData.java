@@ -21,32 +21,38 @@ public class CodeValueData implements Serializable {
 
     @SuppressWarnings("unused")
     private final String description;
+    
+    private final Long codescore;
 
-    public static CodeValueData instance(final Long id, final String name, final Integer position) {
+    public static CodeValueData instance(final Long id, final String name, final Integer position,final Long codescore) {
         String description = null;
-        return new CodeValueData(id, name, position, description);
+        return new CodeValueData(id, name, position, description,codescore);
     }
 
     public static CodeValueData instance(final Long id, final String name, final String description) {
         Integer position = null;
-        return new CodeValueData(id, name, position, description);
+        Long codescore=null;
+        return new CodeValueData(id, name, position, description,codescore);
     }
 
     public static CodeValueData instance(final Long id, final String name) {
         String description = null;
         Integer position = null;
-        return new CodeValueData(id, name, position, description);
+        Long codescore=null;
+        return new CodeValueData(id, name, position, description,codescore);
     }
 
     public static CodeValueData instance(final Long id, final String name, final Integer position, final String description) {
-        return new CodeValueData(id, name, position, description);
+    	final Long codescore=null;
+    	return new CodeValueData(id, name, position, description,codescore);
     }
 
-    private CodeValueData(final Long id, final String name, final Integer position, final String description) {
+    private CodeValueData(final Long id, final String name, final Integer position, final String description,final Long codescore) {
         this.id = id;
         this.name = name;
         this.position = position;
         this.description = description;
+        this.codescore=codescore;
     }
 
     public Long getId() {
@@ -56,4 +62,9 @@ public class CodeValueData implements Serializable {
     public String getName() {
         return this.name;
     }
+
+	public Long getCodescore() {
+		return codescore;
+	}
+    
 }

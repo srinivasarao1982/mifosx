@@ -22,21 +22,26 @@ public class RblCustomerDetailsApiConstant {
 	public static final String mothertoungeparamname="mothertoung";
 	public static final String spouseNameparamName="spouseName";
 	public static final String spousedateofbirtparamname="spousedateofbIrt";
+	public static final String  relationparamname ="relation";
+	public static final String gurdiangenderparamName ="gurdiangender";
+	public static final String gurdiantitleParamName ="gurdianTitle";
+	public static final String gurdianMobileNumberParamName ="gurdianMobileNo";
+	
 	
 	public static final String localeParamName = "locale";
     public static final String dateFormatParamName = "dateFormat";
 
 	  public static final Set<String> RBLCUSTOMER_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, clintIdparamnam, pensioncardnoparamName, addaharseedingconstantparamName, healthparamName, 
 			  languagparamName,cardIssueflagparamName,cbcheckparamName,renewalFlag,mothertoungparamname,gurdainnameparamName,gurdiandateofBirt,gurdiangenderparamname,
-			  mothertoungeparamname,spouseNameparamName,spousedateofbirtparamname));
+			  mothertoungeparamname,spouseNameparamName,spousedateofbirtparamname,relationparamname,gurdiangenderparamName,gurdiantitleParamName,gurdianMobileNumberParamName));
 
 	  public static final Set<String> RBLCUSTOMER_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, clintIdparamnam, pensioncardnoparamName, addaharseedingconstantparamName, healthparamName, 
 			  languagparamName,cardIssueflagparamName,cbcheckparamName,renewalFlag,mothertoungparamname,gurdainnameparamName,gurdiandateofBirt,gurdiangenderparamname,
-			  mothertoungeparamname,spouseNameparamName,spousedateofbirtparamname));
+			  mothertoungeparamname,spouseNameparamName,spousedateofbirtparamname,relationparamname,gurdiangenderparamName,gurdiantitleParamName,gurdianMobileNumberParamName));
 
 	  public static final Set<String> RBLCUSTOMER_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, clintIdparamnam, pensioncardnoparamName, addaharseedingconstantparamName, healthparamName, 
 			  languagparamName,cardIssueflagparamName,cbcheckparamName,renewalFlag,mothertoungparamname,gurdainnameparamName,gurdiandateofBirt,gurdiangenderparamname,
-			  mothertoungeparamname,spouseNameparamName,spousedateofbirtparamname));
+			  mothertoungeparamname,spouseNameparamName,spousedateofbirtparamname,relationparamname,gurdiangenderparamName,gurdiantitleParamName,gurdianMobileNumberParamName));
 
 	
 

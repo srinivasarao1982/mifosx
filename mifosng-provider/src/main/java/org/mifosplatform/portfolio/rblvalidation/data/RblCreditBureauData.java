@@ -1,6 +1,7 @@
 package org.mifosplatform.portfolio.rblvalidation.data;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 public class RblCreditBureauData {
 	
@@ -24,11 +25,12 @@ public class RblCreditBureauData {
 	private DateTime dateOfBirth;
 	private String branchCode;
 	private String branchName;
+	private LocalDate checkDate;
 	
 	public RblCreditBureauData(String barcodeNo, String externalId, Long loanAmount, String isRenewalLoan,
 			String customerName, String title, String name, String relation, String line1, String line2, String line3,
 			String cityCode, String cityName, String stateCode, String pin, String operatingRegionCode,
-			String operatingRegionName, DateTime dateOfBirth, String branchCode, String branchName) {
+			String operatingRegionName, DateTime dateOfBirth, String branchCode, String branchName,LocalDate checkDate) {
 		super();
 		this.barcodeNo = barcodeNo;
 		this.externalId = externalId;
@@ -50,6 +52,7 @@ public class RblCreditBureauData {
 		this.dateOfBirth = dateOfBirth;
 		this.branchCode = branchCode;
 		this.branchName = branchName;
+		this.checkDate=checkDate;
 	}
 
 	public String getBarcodeNo() {
@@ -210,6 +213,14 @@ public class RblCreditBureauData {
 
 	public void setBranchName(String branchName) {
 		this.branchName = branchName;
+	}
+
+	public LocalDate getCheckDate() {
+		return checkDate;
+	}
+
+	public void setCheckDate(LocalDate checkDate) {
+		this.checkDate = checkDate;
 	}
 	
 	

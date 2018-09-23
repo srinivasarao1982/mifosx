@@ -51,17 +51,17 @@ public class RblCenterReadPlatformServiceImpl  implements RblCenterReadPlatformS
 
         public String schema() {
             return  "select mrbc.max_individual as maxindividual,mrbc.meting_time as meetingtime, mrbc.house_no as houseNo,"
-            		+" mrbc.street_no as streetNo,mrbc.area_loc as areaLoc,mrbc.landmark as landmark, "
-            		+" mrbc.village as village,mrbc.taluk as taluk,mrbc.district as district,mrbc.state as state,mcv.code_value as districtName,mcv1.code_value as stateName,mrbc.description as description "
+            		+" mrbc.street_no as streetNo,mrbc.area_loc as areaLoc,mrbc.landmark as landmark,mrbc.center_id as centerId, "
+            		+" mrbc.village as village,mrbc.taluk as taluk,mrbc.district as district,mrbc.state as state,mcv.code_value as districtName,mcv1.code_value as stateName,mrbc.description as description,mrbc.pin as pin "
             		+"  from m_rblcenter mrbc join m_code_value mcv on mcv.id=mrbc.district"
-            		+" join m_code_value mcv1 on mcv1.id=mrbc.state";
+            		+" join m_code_value mcv1 on mcv1.id=mrbc.state  ";
         }
 
         @Override
         public RblCenterData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
             final Long maxIndividual = JdbcSupport.getLong(rs, "maxindividual");
-            final Long centerId = JdbcSupport.getLong(rs, "clientId");
+            final Long centerId = JdbcSupport.getLong(rs, "centerId");
             final String meetingtime=rs.getString("meetingtime");;
         	final String houseNumbr=rs.getString("houseNo");;
         	final String StreetNumber=rs.getString("streetNo");;
@@ -73,7 +73,7 @@ public class RblCenterReadPlatformServiceImpl  implements RblCenterReadPlatformS
         	final String state=rs.getString("stateName");;
         	final Long statId=JdbcSupport.getLong(rs, "state");;
         	final Long districtId=JdbcSupport.getLong(rs, "district");;
-        	final Long pincode=JdbcSupport.getLong(rs, "clientId");;
+        	final Long pincode=JdbcSupport.getLong(rs, "pin");;
         	final String description=rs.getString("description");
 
             RblCenterData rblCenterData=RblCenterData.createrblcenter(maxIndividual, centerId, meetingtime, houseNumbr, StreetNumber, areaLocality, landmark, village, taluk, district, state, statId, districtId, district, pincode, description);

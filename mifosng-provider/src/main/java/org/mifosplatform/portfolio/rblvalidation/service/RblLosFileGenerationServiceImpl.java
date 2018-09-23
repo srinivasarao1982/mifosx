@@ -3,6 +3,7 @@ package org.mifosplatform.portfolio.rblvalidation.service;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -27,59 +28,67 @@ import org.mifosplatform.portfolio.rblvalidation.data.RblclientDatValidation;
 import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRecord;
 import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRepository;
 import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRepositoryWrapper;
+import org.mifosplatform.portfolio.rblvalidation.domain.SendFileRecord;
 import org.mifosplatform.portfolio.rblvalidation.domain.SendFileRepository;
 import org.mifosplatform.portfolio.rblvalidation.domain.SendFileRepositoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-/*import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
-*/
+
 @Service
 public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationService {
 
 	 private final static Logger logger = LoggerFactory.getLogger(RblLosFileGenerationServiceImpl.class);
 
 	    private final PlatformSecurityContext context;
-	    private final RblDataReadplatformService rblDataReadplatformService;
-	    //private final SendFileRepository sendFileRepository;
-	   // private final ReceiveFileRepository receiveFileRepository;
+	    private final RblDataReadplatformService rblDataReadplatformService;	    
 	    private final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper;
 	    private final SendFileRepositoryWrapper sendFileRepositoryWrapper;
+	    private final ReceiveFileRepository receiveFileRepository;
+	    
 	    	    
 	    @Autowired
 	    public RblLosFileGenerationServiceImpl(final PlatformSecurityContext context,
 	    		final RblDataReadplatformService rblDataReadplatformService,final SendFileRepository sendFileRepository,
 	    		final ReceiveFileRepository receiveFileRepository,
 	    		final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper,
-	    		final SendFileRepositoryWrapper sendFileRepositoryWrapper)
+	    		final SendFileRepositoryWrapper sendFileRepositoryWrapper
+	    		)
 	            {
 	        this.context = context;
-	        this.rblDataReadplatformService=rblDataReadplatformService;
-	        //this.sendFileRepository =sendFileRepository;
-	        //this.receiveFileRepository =receiveFileRepository;
+	        this.rblDataReadplatformService=rblDataReadplatformService;	        
 	        this.receiveFileRepositoryWrapper=receiveFileRepositoryWrapper;
 	        this.sendFileRepositoryWrapper=sendFileRepositoryWrapper;
+	        this.receiveFileRepository=receiveFileRepository;
 	         }
 
 		@Override
-		public void generateLosFile(String clientId, String centerId, String groupId) {
+		public void generateLosFile(String clientId, String centerId, String groupId,boolean centerDataTobeSent,boolean groupDataTobesend,boolean isreprocess) {
+			List<RblCenterValidateData> rblCenterValidateDatas =new ArrayList<RblCenterValidateData>();
+			List<RblGroupValidationData>readRblGroupDatas=new ArrayList<RblGroupValidationData>();
+			 if(isreprocess){
+			if(centerDataTobeSent){
+			 rblCenterValidateDatas =this.rblDataReadplatformService.readRblCenterData(centerId,groupId);
+			}
 			
-			List<RblCenterValidateData> rblCenterValidateDatas =this.rblDataReadplatformService.readRblCenterData(centerId);
+		     if(groupDataTobesend){
+			readRblGroupDatas=this.rblDataReadplatformService.readRblGroupData(groupId);
+		     }
+			 }
+			 else{
+				 rblCenterValidateDatas =this.rblDataReadplatformService.readRblCenterData(centerId,groupId);
+				 readRblGroupDatas=this.rblDataReadplatformService.readRblGroupData(groupId);
+
+			 }
 			List<RblclientDatValidation>readRblClientDatas=this.rblDataReadplatformService.readRblClientData(clientId);
-			List<RblGroupValidationData>readRblGroupDatas=this.rblDataReadplatformService.readRblGroupData(groupId);
 			List<RblLoanValidationData>readRblLoanDatas=this.rblDataReadplatformService.readRblLoanData(clientId);
 			List<RblSavingValidationData>readRblSavingDatas=this.rblDataReadplatformService.readRblSavingData(clientId);
        
 			 String RBL_BASE_DIR = System.getProperty("user.home") + File.separator + ".mifosx"+File.separator+"RBLLosFile";
 			    try {
-				
-				File rblLosFile =new File (RBL_BASE_DIR,"Nextru_Los__"+new DateTime().toString("yyyyMMdd")+"_"+new DateTime().toString("HH")+"_"+ new DateTime("MM")+".txt");
+				DateTime dt=new DateTime();
+				File rblLosFile =new File (RBL_BASE_DIR,"Nextru_Los__"+ dt.toString("yyyyMMdd")+"_"+dt.toString("HH")+"_"+dt.toString("mm")+".txt");
 				FileWriter fr =null;
 				fr =new FileWriter(rblLosFile);
 				
@@ -87,10 +96,10 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 				for(RblclientDatValidation rblclientDatValidation:readRblClientDatas){	
 					StringBuilder customerData =new StringBuilder();
 					if(rblclientDatValidation.getExternalId().startsWith("555")){
-						customerData.append("NEWCUSTOMER~"+rblclientDatValidation.getExternalId()) ;
+						customerData.append("NEWCUSTOMER~"+rblclientDatValidation.getExternalId()+"|") ;
 					}
 					else{
-						customerData.append("EXISTINGCUSTOMER~"+rblclientDatValidation.getExternalId());
+						customerData.append("EXISTINGCUSTOMER~"+(rblclientDatValidation.getExternalId())+"|");
 					}
 					customerData.append(rblclientDatValidation.getExternalCenterId()).append("|").append(rblclientDatValidation.getTitle()).append("|");
 					customerData.append(rblclientDatValidation.getCustomerName()).append("|").append(rblclientDatValidation.getAddressline1()).append("|");
@@ -113,8 +122,10 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					customerData.append(rblclientDatValidation.getSpouseDateOfBirth()).append("|").append(rblclientDatValidation.getNomineeName()).append("|");
 					customerData.append(rblclientDatValidation.getNomineeRelation()).append("|").append(rblclientDatValidation.getCbCheck()).append("|");
 					customerData.append(rblclientDatValidation.getBankbranchName()).append("|").append(rblclientDatValidation.getBankAccountNo()).append("|");
-					customerData.append(rblclientDatValidation.getBankbranchName()).append("|").append(rblclientDatValidation.getRenewalFl());
-					fr.write(customerData.toString());
+					customerData.append(rblclientDatValidation.getBankbranchName()).append("|").append(rblclientDatValidation.getRenewalFl());					
+					String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
+					String actualfield=customerData.toString().replace("null", "" );
+					fr.write(actualfield + extrafield);
 					fr.write("\n");
 
 				}
@@ -134,9 +145,11 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 						customerData.append(rblLoanValidationData.getColector()).append("|").append(rblLoanValidationData.getApprover()).append("|");
 						customerData.append(rblLoanValidationData.getExceptedDisbursementDate()).append("|").append(rblLoanValidationData.getTopUpLoanFlag()).append("|");
 						customerData.append(rblLoanValidationData.getHosiptalCash()).append("|").append(rblLoanValidationData.getPrepaidCharge());
-				
-						fr.write(customerData.toString());
+						String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
+						String actualfield=customerData.toString().replace("null", "" );
+						fr.write(actualfield + extrafield);
 						fr.write("\n");
+						
 
 		        }
 				
@@ -161,15 +174,17 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					customerData.append(rblSavingValidationData.getGurdianRelation()).append("|").append(rblSavingValidationData.getGurdianPhoneNo()).append("|");
 					customerData.append(rblSavingValidationData.getGurdianPincode()).append("|").append(rblSavingValidationData.getCollector()).append("|");
 					customerData.append(rblSavingValidationData.getApprover());
-					fr.write(customerData.toString());
+					String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
+					String actualfield=customerData.toString().replace("null", "" );
+					fr.write(actualfield + extrafield);					
 					fr.write("\n");
-				
+					
 	        }
 	    
 				for(RblGroupValidationData rblGroupValidationData:readRblGroupDatas){	
 					StringBuilder customerData =new StringBuilder();
 
-					customerData.append("SAVING~") ;
+					customerData.append("GROUP~") ;
 					
 					customerData.append(rblGroupValidationData.getExternalId()).append("|").append(rblGroupValidationData.getCenterExternalId()).append("|");
 					customerData.append(rblGroupValidationData.getCenterName()).append("|").append(rblGroupValidationData.getMaximuncenter()).append("|");
@@ -178,8 +193,10 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					customerData.append(rblGroupValidationData.getFormationDate()).append("|").append(rblGroupValidationData.getMeetinTime()).append("|");
 					customerData.append(rblGroupValidationData.getMeetingfrequency()).append("|").append(rblGroupValidationData.getDistancefromBranch()).append("|");
 					customerData.append(rblGroupValidationData.getBranchCode()).append("|").append(rblGroupValidationData.getOperatingRegionCode());
-					fr.write(customerData.toString());
-					fr.write("\n"); 
+					String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
+					String actualfield=customerData.toString().replace("null", "" );
+					fr.write(actualfield + extrafield);
+					fr.write("\n");
 				}
 	  
 				for(RblCenterValidateData rblCenterValidateData:rblCenterValidateDatas){
@@ -196,109 +213,32 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					customerData.append(rblCenterValidateData.getDescription()).append("|").append(rblCenterValidateData.getPrimaryContact()).append("|");
 					customerData.append(rblCenterValidateData.getPrimaryPhoneNumber()).append("|").append(rblCenterValidateData.getSecondaryContact()).append("|");
 					customerData.append(rblCenterValidateData.getSecondaryPhoneNumner());
-					fr.write(customerData.toString());
+					String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
+					String actualfield=customerData.toString().replace("null", "" );
+					fr.write(actualfield + extrafield);
 					fr.write("\n");
-	        }		
+	        }
 				
 			fr.close();	
+			//SendFileRecord(String fileType, String fileName, String filePath) {
+			SendFileRecord sendFileRecord =new SendFileRecord("Send",rblLosFile.getName(),rblLosFile.getPath());
+			this.sendFileRepositoryWrapper.save(sendFileRecord);
+			
+			//Receive File Logic
+			List<String>fileName =new ArrayList<String>();
+			fileName.add("test");
+			List<ReceiveFileRecord>receiveFileRecords =this.receiveFileRepository.getExistingFile(fileName.get(0));
+			if(receiveFileRecords.size()==0){
+				ReceiveFileRecord receiveFileRecord =new ReceiveFileRecord("received",rblLosFile.getName(),rblLosFile.getPath());
+                this.receiveFileRepositoryWrapper.save(receiveFileRecord);
+				
+			}
+			
 		  }
 		    catch(Exception e){
 			    	
-			    
+			    e.printStackTrace();
 		   }
 	  }
-	
-//public Void Transfer File
-		public void transferfile(){
-			/*FileReader reader=new FileReader("db.properties");		      
-		    Properties p=new Properties();  
-		    p.load(reader);
-		     
-		        String SFTPHOST =p.getProperty("host");
-		        int SFTPPORT = 22;
-		        String SFTPUSER = p.getProperty("user");
-		        String SFTPPASS =  p.getProperty("password");
-		        String SFTPWORKINGDIR = p.getProperty("dir");;
-
-				 
-		  JSch jsch = new JSch();
-		        Session session = null;
-		        try {
-		            session = jsch.getSession(SFTPUSER, SFTPHOST, 22);
-		            java.util.Properties config = new java.util.Properties();
-		            config.put("StrictHostKeyChecking", "no");
-		            session.setConfig(config);
-		            session.setPassword(SFTPPASS);
-		            session.connect();
-		            
-		            Channel channel = session.openChannel("sftp");
-		            channel.connect();
-		            ChannelSftp sftpChannel = (ChannelSftp) channel;
-		            sftpChannel.put("/tmplocal/testUpload.txt", "/tmpremote/testUpload.txt");  
-		            sftpChannel.exit();
-		            session.disconnect();
-		        } catch (JSchException e) {
-		            e.printStackTrace();  
-		        } catch (SftpException e) {
-		            e.printStackTrace();
-		        }
-		*/ 
-		 }
-		
-// public void ReceiveFile	
-		
-		public void receivedfile(){
-			/*
-			FileReader reader=new FileReader("db.properties");		      
-		    Properties p=new Properties();  
-		    p.load(reader);
-		     
-		        String SFTPHOST =p.getProperty("host");
-		        int SFTPPORT = 22;
-		        String SFTPUSER = p.getProperty("user");
-		        String SFTPPASS =  p.getProperty("password");
-		        String SFTPWORKINGDIR = p.getProperty("dir");;
-
-		        Session session = null;
-		        Channel channel = null;
-		        ChannelSftp channelSftp = null;
-
-		        try {
-		            JSch jsch = new JSch();
-		            session = jsch.getSession(SFTPUSER, SFTPHOST, SFTPPORT);
-		            session.setPassword(SFTPPASS);
-		            java.util.Properties config = new java.util.Properties();
-		            config.put("StrictHostKeyChecking", "no");
-		            session.setConfig(config);
-		            session.connect();
-		            channel = session.openChannel("sftp");
-		            channel.connect();
-		            channelSftp = (ChannelSftp) channel;
-		            channelSftp.cd(SFTPWORKINGDIR);
-		            Vector filelist = channelSftp.ls(SFTPWORKINGDIR);
-		            for (int i = 0; i < filelist.size(); i++) {
-		            	List<ReceiveFileRecord>	receiveFileRecord=this.receiveFileRepository.getExistingFile(filelist.get(i).toString());
-		                if(receiveFileRecord.size()>0){
-				            sftpChannel.put("/tmplocal/testUpload.txt", "/tmpremote/testUpload.txt");  
-
-		                	ReceiveFileRecord ReceiveFileRecord =new ReceiveFileRecord().
-		            }
-
-		        } catch (Exception ex) {
-		            ex.printStackTrace();
-		        }
-		    }
-*/		//}
-		 
-
-
-		 
-		
-
-		//}
-		 
-		//}
- }
 }
-//}
 

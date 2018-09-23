@@ -2483,43 +2483,43 @@ public class CommandWrapperBuilder {
         this.actionName = "DELETE";
         this.entityName = "RBLCENETR";
         this.entityId=centerId;
-        this.href = "/rbl/rblcenter"+centerId;
+        this.href = "/rbl/rblcenter/"+centerId;
         return this;
     }
     public CommandWrapperBuilder deleteRblCustomer(final Long customerId) {
         this.actionName = "DELETE";
         this.entityName = "RBLCUSTOMER";
         this.entityId=customerId;
-        this.href = "/rbl/rblcustomer"+customerId;
+        this.href = "/rbl/rblcustomer/"+customerId;
         return this;
     }
     public CommandWrapperBuilder deleteRblLoan(final Long loanId) {
         this.actionName = "DELETE";
         this.entityName = "RBLLOAN";
         this.entityId=loanId;
-        this.href = "/rbl/rblloan"+loanId;
+        this.href = "/rbl/rblloan/"+loanId;
         return this;
     }
     public CommandWrapperBuilder deleteRblGroup(final Long groupId) {
         this.actionName = "DELETE";
         this.entityName = "RBLGROUP";
         this.entityId=groupId;
-        this.href = "/rbl/rblgroup"+groupId;
+        this.href = "/rbl/rblgroup/"+groupId;
         return this;
     }
     
     public CommandWrapperBuilder updateRblCenter(final Long centerId) {
         this.actionName = "UPDATE";
-        this.entityName = "RBLCENETR";
+        this.entityName = "RBLCENTER";
         this.entityId=centerId;
-        this.href = "/rbl/rblcenter"+centerId;
+        this.href = "/rbl/rblcenter/"+centerId;
         return this;
     }
     public CommandWrapperBuilder UpdateRblCustomer(final Long customerId) {
         this.actionName = "UPDATE";
         this.entityName = "RBLCUSTOMER";
         this.entityId=customerId;
-        this.href = "/rbl/rblcustomer"+customerId;
+        this.href = "/rbl/rblcustomer/"+customerId;
         return this;
     }
     public CommandWrapperBuilder UpdateRblLoan(final Long loanId) {
@@ -2533,13 +2533,13 @@ public class CommandWrapperBuilder {
         this.actionName = "UPDATE";
         this.entityName = "RBLGROUP";
         this.entityId=groupId;
-        this.href = "/rbl/rblgroup"+groupId;
+        this.href = "/rbl/rblgroup/"+groupId;
         return this;
     }
     
     public CommandWrapperBuilder createRblCenter() {
         this.actionName = "CREATE";
-        this.entityName = "RBLCENETR";
+        this.entityName = "RBLCENTER";
         this.href = "/rbl/rblcenter";
         return this;
     }
@@ -2550,7 +2550,7 @@ public class CommandWrapperBuilder {
         return this;
     }
     public CommandWrapperBuilder createRblLoan() {
-        this.actionName = "CRATE";
+        this.actionName = "CREATE";
         this.entityName = "RBLLOAN";
         this.href = "/rbl/rblloan/";
         return this;

@@ -19,11 +19,15 @@ import javax.ws.rs.core.UriInfo;
 import org.mifosplatform.commands.domain.CommandWrapper;
 import org.mifosplatform.commands.service.CommandWrapperBuilder;
 import org.mifosplatform.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.mifosplatform.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.mifosplatform.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.mifosplatform.infrastructure.core.api.ApiRequestParameterHelper;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.mifosplatform.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.portfolio.group.domain.Group;
+import org.mifosplatform.portfolio.group.domain.GroupRepository;
 import org.mifosplatform.portfolio.loanaccount.api.PartialLoanApiConstant;
 import org.mifosplatform.portfolio.loanaccount.data.PartialLoanData;
 import org.mifosplatform.portfolio.loanaccount.data.SequenceNumberData;
@@ -31,6 +35,9 @@ import org.mifosplatform.portfolio.loanaccount.service.PartialLoanReadPlatformSe
 import org.mifosplatform.portfolio.rblvalidation.data.RblCrdeitResponseData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblCreditBureauData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblLosFileData;
+import org.mifosplatform.portfolio.rblvalidation.data.RblValidatefileData;
+import org.mifosplatform.portfolio.rblvalidation.exception.CbCheckStatus;
+import org.mifosplatform.portfolio.rblvalidation.exception.GrtNotCompletedException;
 import org.mifosplatform.portfolio.rblvalidation.service.LosFileReadPlatformService;
 import org.mifosplatform.portfolio.rblvalidation.service.RblCreditBurequReadPlatfoemServie;
 import org.mifosplatform.portfolio.rblvalidation.service.RblDataReadplatformService;
@@ -48,6 +55,7 @@ public class RblValidationApiResource {
     private final PlatformSecurityContext context;
     private final RblDataReadplatformService rblDataReadplatformService;
     private final ToApiJsonSerializer<RblCreditBureauData> toApiJsonSerializer;
+    private final ToApiJsonSerializer<RblValidatefileData> toApiJsonValidateSerializer;
     private final ToApiJsonSerializer<RblCrdeitResponseData> toApiJsonSerializerResponse;
     private final RblCreditBurequReadPlatfoemServie rblCreditBurequReadPlatfoemServie;
     private final RblEquifaxWritePlatformService rblEquifaxWritePlatformService;
@@ -56,6 +64,8 @@ public class RblValidationApiResource {
     private final ToApiJsonSerializer<RblLosFileData> toApiFileJsonSerializerResponse;
     private final RblDataValidatorService rblDataValidatorService;
     private final RblLosFileGenerationService rblLosFileGenerationService;
+    private final GroupRepository groupRepository;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
 
 
     
@@ -70,7 +80,10 @@ public class RblValidationApiResource {
     		final LosFileReadPlatformService losFileReadPlatformService,
     		final ToApiJsonSerializer<RblLosFileData> toApiFileJsonSerializerResponse,
     		final RblDataValidatorService rblDataValidatorService,
-    		final RblLosFileGenerationService rblLosFileGenerationService
+    		final RblLosFileGenerationService rblLosFileGenerationService,
+    		final GroupRepository groupRepository,
+    		final ConfigurationReadPlatformService configurationReadPlatformService,
+    		final ToApiJsonSerializer<RblValidatefileData> toApiJsonValidateSerializer
             ) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -83,6 +96,11 @@ public class RblValidationApiResource {
         this.toApiFileJsonSerializerResponse=toApiFileJsonSerializerResponse;
         this.rblDataValidatorService=rblDataValidatorService;
         this.rblLosFileGenerationService=rblLosFileGenerationService;
+        this.groupRepository=groupRepository;
+        this.configurationReadPlatformService=configurationReadPlatformService;
+        this.toApiJsonValidateSerializer=toApiJsonValidateSerializer;
+;
+
         
     }
     
@@ -90,7 +108,7 @@ public class RblValidationApiResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String getParatialLoan(@QueryParam("centerId") final Long centerId,@QueryParam("clientId") final Long clientId,
-    		@QueryParam("fromDate") final String fromDate,@QueryParam("toDate") final String toDate,@QueryParam("value") final String valufor,@Context final UriInfo uriInfo) {
+    		@QueryParam("fromDate") final String fromDate,@QueryParam("toDate") final String toDate,@QueryParam("valufor") final String valufor,@QueryParam("clientcbcheck") final boolean clientcbcheck,@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(RblApiValidationConstant.RBLDETAILS_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
@@ -99,36 +117,48 @@ public class RblValidationApiResource {
         List<RblCreditBureauData>rblCreditBureauErrorData=new ArrayList<RblCreditBureauData>();
 
         if(valufor.equalsIgnoreCase("request")){
-        	rblCreditBureauData =this.rblCreditBurequReadPlatfoemServie.getbreauRequstData(centerId, clientId, fromDate, toDate);
+        	rblCreditBureauData =this.rblCreditBurequReadPlatfoemServie.getbreauRequstData(centerId, clientId, fromDate, toDate,clientcbcheck);
         	return this.toApiJsonSerializer.serialize(settings, rblCreditBureauData,
         			RblApiValidationConstant.RBL_REQUEST_DATA_PARAMETERS);
         }
         else if(valufor.equalsIgnoreCase("response")){
-        	rblCreditBureauErrorData =this.rblCreditBurequReadPlatfoemServie.getbreauResponseData(centerId, clientId, fromDate, toDate);
-        	return this.toApiJsonSerializer.serialize(settings, rblCreditBureauData,
-        			RblApiValidationConstant.RBL_REQUEST_DATA_PARAMETERS);
-        }
-        else{
-        	rblCrdeitResponseData =this.rblCreditBurequReadPlatfoemServie.getbreauErrorData(centerId, clientId, fromDate, toDate);
+        	rblCrdeitResponseData =this.rblCreditBurequReadPlatfoemServie.getbreauErrorData(centerId, clientId, fromDate, toDate,clientcbcheck);
         	return this.toApiJsonSerializerResponse.serialize(settings, rblCrdeitResponseData,
         			RblApiValidationConstant.RBLRESPONSE_DATA_PARAMETERS);
-
+        	   }
+        else{
         	
+        	rblCreditBureauErrorData =this.rblCreditBurequReadPlatfoemServie.getbreauResponseData(centerId, clientId, fromDate, toDate,clientcbcheck);
+        	return this.toApiJsonSerializer.serialize(settings, rblCreditBureauErrorData,
+        			RblApiValidationConstant.RBL_REQUEST_DATA_PARAMETERS);
+	
         }
       }
       
+    @GET
+    @Path("/validatefile")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getParatialLoan(@QueryParam("centerId") final Long centerId,
+    		@QueryParam("fromDate") final String fromDate,@QueryParam("toDate") final String toDate,@QueryParam("fileType") final String fileType,@Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(RblApiValidationConstant.RBLDETAILS_RESOURCE_NAME);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        List<RblValidatefileData>rblValidateData=new ArrayList<RblValidatefileData>();
+        
+        rblValidateData=this.rblCreditBurequReadPlatfoemServie.getValidateFileData(centerId, fromDate, toDate, fileType);
+        return this.toApiJsonValidateSerializer.serialize(settings, rblValidateData,
+    			RblApiValidationConstant.RBLRESPONSE_VALIDATE_DATA_PARAMETERS);
+    }
+    
+   
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public Response create(final String apiRequestBodyAsJson,@QueryParam("clintId") String clintId) {
+    public Response create(final String apiRequestBodyAsJson,@QueryParam("clintId") String clintId,@QueryParam("isValidate") boolean isValidate) {
     	
-        Response response = Response.status(400).build();
-    	String [] stringclientsId =clintId.split(",");
-       for(String clientsId :stringclientsId){
-    	   Long clientId =Long.parseLong(clientsId);
-    	   this.rblEquifaxWritePlatformService.rblequifaxIntregation(clientId);
-       }
-       response.status(200).build(); 
+        Response response = Response.status(200).build();    	
+    	   this.rblEquifaxWritePlatformService.rblequifaxIntregation(clintId,isValidate);     
        return response;
 		}
 
@@ -155,18 +185,30 @@ public class RblValidationApiResource {
       @Path("/file")
       @Consumes({ MediaType.APPLICATION_JSON })
       @Produces({ MediaType.APPLICATION_JSON })
-      public Response create(final String apiRequestBodyAsJson,@QueryParam("centerId") String centerId,@QueryParam("groupId") String groupId,@QueryParam("clintId") String clintId,@QueryParam("command") String command,@Context final UriInfo uriInfo) {
+      public Response create(final String apiRequestBodyAsJson,@QueryParam("centerId") String centerId,@QueryParam("groupId") String groupId,@QueryParam("clintId") String clintId,
+    		   @QueryParam("command") String command, @QueryParam("centerDatatobesent") boolean centerDatatobesent,
+    		   @QueryParam("groupDatatobesend") boolean groupDatatobesend,@QueryParam("isImagetobesent") boolean isImagetobesent,@QueryParam("isreprocess") boolean isreprocess,@Context final UriInfo uriInfo) {
 	
     	  if(command.equalsIgnoreCase("validate")){
     		  this.rblDataValidatorService.validateDatafortransfer(centerId, groupId, clintId);
+     		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId,centerDatatobesent,groupDatatobesend,isreprocess); 
+
     	  }
     	  else{
-    		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId); 
+    		  GlobalConfigurationPropertyData  globalConfigurationPropertyData =this.configurationReadPlatformService.retrieveGlobalConfiguration((long)21);
+    		  if(globalConfigurationPropertyData.isEnabled()){
+    		  Group groupData=this.groupRepository.findCenterById(Long.parseLong(centerId));
+    		  if(groupData.getIsgrtCompleted()==0){
+    			  throw new GrtNotCompletedException(groupData.getName()+"-"+groupData.getId());
+    		  }
+    		  if(groupData.getIscbChecked()==0){
+    			  throw new CbCheckStatus(groupData.getName()+"-"+groupData.getId());
+    		  }
+    		  }
+    		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId,centerDatatobesent,groupDatatobesend,isreprocess); 
     	  }
-         Response response = Response.status(400).build();
-	    String [] stringclientsId =clintId.split(",");    
-        response.status(200).build(); 
-          return response;
+         Response response = Response.status(200).build();       
+         return response;
 	}
 
 

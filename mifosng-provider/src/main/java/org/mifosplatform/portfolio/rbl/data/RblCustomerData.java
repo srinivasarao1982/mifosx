@@ -2,6 +2,8 @@ package org.mifosplatform.portfolio.rbl.data;
 
 import java.util.Date;
 
+import org.joda.time.LocalDate;
+
 public class RblCustomerData {
 
 	private final Long clientId;
@@ -14,26 +16,31 @@ public class RblCustomerData {
 	private final Integer renwalflag;
 	private final String mothertoung;
 	private final String gurdainName;
-	private final Date gurdiandateofBirth;
+	private final LocalDate gurdiandateofBirth;
 	private final String spouseName;
-	private final Date spousedateofbIrt;
+	private final LocalDate spousedateofbIrt;
 	private final Long gurdiangender;
+	private final Long relation;
+	private final Long gurdianTitle;
+	private final String gurdianMobileNo;
 	
-	
+		
 
 	public static RblCustomerData create(final Long clientId, final String pensionCard, final Long adharsdingconstant,
 			final Integer health, final String language, final Integer cardIssueFlag, final Integer cbCheck,
 			final Integer renewalFlag, final String mothertounge, final String gurdianName,
-			final Date guedianDateOfBirth, final String spouseName, final Date spouseDateOfBirth,final Long gurdiangender) {
+			final LocalDate guedianDateOfBirth, final String spouseName, final LocalDate spouseDateOfBirth,final Long gurdiangender,
+			final Long relation,final Long gurdianTitle,final String gurdianMobileNo) {
 
 		return new RblCustomerData(clientId, pensionCard, adharsdingconstant, health, language, cardIssueFlag, cbCheck,
-				renewalFlag, mothertounge, gurdianName, guedianDateOfBirth, spouseName, spouseDateOfBirth,gurdiangender);
+				renewalFlag, mothertounge, gurdianName, guedianDateOfBirth, spouseName, spouseDateOfBirth,gurdiangender
+				,relation,gurdianTitle,gurdianMobileNo);
 
 	}
 
 	public RblCustomerData(Long clientId, String pensionCard, Long adharsdingconstant, Integer health, String language,
 			Integer cardIssueFlag, Integer cbCheck, Integer renewalFlag, String mothertounge, String gurdianName,
-			Date guedianDateOfBirth, String spouseName, Date spouseDateOfBirth,Long gurdiangender) {
+			LocalDate guedianDateOfBirth, String spouseName, LocalDate spouseDateOfBirth,Long gurdiangender,final Long relation,final Long gurdianTitle,final String gurdianMobileNo) {
 		super();
 		this.clientId = clientId;
 		this.pensioncard = pensionCard;
@@ -49,6 +56,9 @@ public class RblCustomerData {
 		this.spouseName = spouseName;
 		this.spousedateofbIrt = spouseDateOfBirth;
 		this.gurdiangender=gurdiangender;
+		this.relation=relation;
+		this.gurdianTitle=gurdianTitle;
+		this.gurdianMobileNo=gurdianMobileNo;
 	}
 
 	public Long getClientId() {
@@ -91,7 +101,7 @@ public class RblCustomerData {
 		return gurdainName;
 	}
 
-	public Date getGurdiandateofBirth() {
+	public LocalDate getGurdiandateofBirth() {
 		return gurdiandateofBirth;
 	}
 
@@ -99,8 +109,24 @@ public class RblCustomerData {
 		return spouseName;
 	}
 
-	public Date getSpousedateofbIrt() {
+	public LocalDate getSpousedateofbIrt() {
 		return spousedateofbIrt;
+	}
+
+	public Long getGurdiangender() {
+		return gurdiangender;
+	}
+
+	public Long getRelation() {
+		return relation;
+	}
+
+	public Long getGurdianTitle() {
+		return gurdianTitle;
+	}
+
+	public String getGurdianMobileNo() {
+		return gurdianMobileNo;
 	}
 
 	

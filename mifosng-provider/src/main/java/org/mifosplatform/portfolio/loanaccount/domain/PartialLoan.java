@@ -139,6 +139,11 @@ public Map<String, Object> update(final JsonCommand command) {
             actualChanges.put(PartialLoanApiConstant.statusparamname, newValue);
         }
         
+        if (command.isChangeInIntegerParameterNamed(PartialLoanApiConstant.isdisburseparamname,this.isDisubrse )) {
+            final Integer newValue = command.integerValueOfParameterNamed(PartialLoanApiConstant.isdisburseparamname);
+            this.isDisubrse=newValue;
+        }
+        
         if (command.isChangeInStringParameterNamed(PartialLoanApiConstant.remarkparamname, this.remark)) {
             final String newValue = command.stringValueOfParameterNamed(PartialLoanApiConstant.remarkparamname);
             actualChanges.put(PartialLoanApiConstant.remarkparamname, newValue);

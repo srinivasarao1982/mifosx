@@ -49,7 +49,13 @@ public class RblGroup extends AbstractAuditableCustom<AppUser, Long>{
 		 return new  RblGroup(groupId,maximumCenter,groupType,minNumber,maxNumber,distanceFromCenter,meetingTime);
 	 }
 	 
-	 public Map<String, Object> update(final JsonCommand command) {
+	 
+	 public RblGroup() {
+		super();
+	}
+
+
+	public Map<String, Object> update(final JsonCommand command) {
 			
 	        final Map<String, Object> actualChanges = new LinkedHashMap<>(9);
 

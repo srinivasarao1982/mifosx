@@ -13,7 +13,7 @@ import org.mifosplatform.useradministration.domain.AppUser;
 public class ReceiveFileRecord extends AbstractAuditableCustom<AppUser, Long>{
 
 	@Column(name = "file_type", nullable =false)
-    private Long fileType;	
+    private String fileType;	
 	    
     @Column(name = "file_Name", nullable =false)
     private String fileName;
@@ -21,11 +21,11 @@ public class ReceiveFileRecord extends AbstractAuditableCustom<AppUser, Long>{
     @Column(name = "file_path", nullable =false)
     private String filePath;
 
-	public Long getFileType() {
+	public String getFileType() {
 		return fileType;
 	}
 
-	public void setFileType(Long fileType) {
+	public void setFileType(String fileType) {
 		this.fileType = fileType;
 	}
 
@@ -45,7 +45,7 @@ public class ReceiveFileRecord extends AbstractAuditableCustom<AppUser, Long>{
 		this.filePath = filePath;
 	}
 
-	public ReceiveFileRecord(Long fileType, String fileName, String filePath) {
+	public ReceiveFileRecord(String fileType, String fileName, String filePath) {
 		super();
 		this.fileType = fileType;
 		this.fileName = fileName;

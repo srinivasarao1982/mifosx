@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.mifosplatform.infrastructure.core.domain.JdbcSupport;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
@@ -21,6 +22,7 @@ import org.mifosplatform.portfolio.rblvalidation.data.RblGurdianData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblHeaderData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblNomineeData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblOperatingRegion;
+import org.mifosplatform.portfolio.rblvalidation.data.RblValidatefileData;
 import org.mifosplatform.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -42,20 +44,29 @@ public class RblCreditBureauReadPlatformServiceImpl  implements RblCreditBurequR
 	}
   
 	@Override
-    public List<RblCreditBureauData> getbreauRequstData(final Long clientId,final Long centerId,String fromDate,String toDate) {
+    public List<RblCreditBureauData> getbreauRequstData(final Long centerId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck) {
         try {
             final AppUser currentUser = this.context.authenticatedUser();
             
             final RblCreditBureauDataMapper rm = new RblCreditBureauDataMapper();
-            String Sql ="select"+rm.schema() +"where mcr.center_id=?";
+            
+            String Sql ="select"+rm.schema() + "where ";
+            if(clientcbcheck){
+           	 Sql =Sql+ "  mcr.client_id= "+clientId;
+	
+            }else{
+           if(  centerId !=null){
+        	   Sql=Sql + " mcr.center_id= "+centerId ;
+           }
             if(clientId!=null){
-            	 Sql =Sql+ " and mcr.client_id=?";
+            	 Sql =Sql+ " and mcr.client_id= "+clientId;
             }
             if(fromDate!=null && toDate!=null){
-            	Sql =Sql+ " and mcr.createdDate between ? and ?";
+            	Sql =Sql+ "  and mcr.created_date between '"+fromDate+"' and '"+toDate+"'";
+            }
             }
             List<RblCreditBureauData>rblCreditBureauData=new ArrayList<RblCreditBureauData>();
-            rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] { centerId,clientId,fromDate,toDate});
+            rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] { });
             return rblCreditBureauData;
             //return rblCreditBureauData.get(0);
         } catch (final EmptyResultDataAccessException e) {
@@ -68,13 +79,13 @@ public class RblCreditBureauReadPlatformServiceImpl  implements RblCreditBurequR
         public RblCreditBureauDataMapper() {}
 
         public String schema() {
-            return " select mcr.center_id as centerId,mcr.client_id as clientId,mcr.barcode_no as barcdode,mcr.external_id as externalId,"
-                   +"mcr.is_Renewal_Loan as renewalfl,mcr.loanAmount as loanAmount,mcr.customer_Name as customerName,mcr.title as title,mcr.name as name,"
-                   +"mcr.relation as rlation,mcr.line1 as line1,mcr.line2 as line2,mcr.line3 as line3,mcr.city_code as cityCode,"
-                   +"mcr.city_Name as cityName,mcr.state_code as stateCode,mcr.pin as pincode,mcr.operating_RegionCode as operatingRegion,"
-                   +"mcr.operating_RegionName as operatingRegionName,mcr.dateOfBirth as dateOfBirth,mcr.branch_code as branchCode,"
-                   +"mcr.branch_name as branchName"
-                   +"from m_creditbureau_request mcr";
+            return "  mcr.center_id as centerId,mcr.client_id as clientId,mcr.barcode_no as barcdode,mcr.external_id as externalId, "
+                   +"mcr.is_Renewal_Loan as renewalfl,mcr.loanAmount as loanAmount,mcr.customer_Name as customerName,mcr.title as title,mcr.name as name, "
+                   +"mcr.relation as rlation,mcr.line1 as line1,mcr.line2 as line2,mcr.line3 as line3,mcr.city_code as cityCode, "
+                   +"mcr.city_Name as cityName,mcr.state_code as stateCode,mcr.pin as pincode,mcr.operating_RegionCode as operatingRegion, "
+                   +"mcr.operating_RegionName as operatingRegionName,mcr.dateOfBirth as dateOfBirth,mcr.branch_code as branchCode, "
+                   +"mcr.branch_name as branchName,mcr.created_date as checkedDate "
+                   +"from m_creditbureau_request mcr ";
 
         }
         @Override
@@ -101,29 +112,38 @@ public class RblCreditBureauReadPlatformServiceImpl  implements RblCreditBurequR
         	final   DateTime dateOfBirth=new DateTime(rs.getDate("dateOfBirth"));
         	final   String branchCode=rs.getString("branchCode");
         	final   String branchName=rs.getString("branchName");
+        	final LocalDate checkdate =JdbcSupport.getLocalDate(rs, "checkedDate");
 
             return new RblCreditBureauData(barcodeNo,externalId,loanAmount,isRenewalLoan,customerName,title,name,relation,line1,
-            		line2,line3,cityCode,cityName,stateCode,pin,operatingRegionCode,operatingRegionName,dateOfBirth,branchCode,branchName);
+            		line2,line3,cityCode,cityName,stateCode,pin,operatingRegionCode,operatingRegionName,dateOfBirth,branchCode,branchName,checkdate);
         }
             		
 
     }
  
- 
- public List<RblCreditBureauData> getbreauResponseData(final Long clientId,final Long centerId,String fromDate,String toDate) {
+ @Override
+ public List<RblCreditBureauData> getbreauResponseData(final Long centerId,final Long clientId ,String fromDate,String toDate,final boolean clientcbcheck) {
      try {
          final AppUser currentUser = this.context.authenticatedUser();
          
          final RblCreditBureauResponseDataMapper rm = new RblCreditBureauResponseDataMapper();
-         String Sql ="select"+rm.schema() +"where mcr.center_id=?";
-         if(clientId!=null){
-         	 Sql =Sql+ " and mcr.client_id=?";
+         String Sql ="select"+rm.schema() +"where ";
+         if(clientcbcheck){
+          	 Sql =Sql+ "  mcr.client_id= "+clientId;
+
+         }else{
+         if(  centerId !=null){
+      	   Sql=Sql + " mcr.center_id= "+centerId ;
          }
-         if(fromDate!=null && toDate!=null){
-         	Sql =Sql+ " and mcr.createdDate between ? and ?";
+          if(clientId!=null){
+          	 Sql =Sql+ " and mcr.client_id= "+clientId;
+          }
+          if(fromDate!=null && toDate!=null){
+          	Sql =Sql+ " and mcr.created_date between '"+fromDate+"' and '"+toDate+"'";
+          }
          }
          List<RblCreditBureauData>rblCreditBureauData=new ArrayList<RblCreditBureauData>();
-         rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] { centerId,clientId,fromDate,toDate});
+         rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] {});
          //return rblCreditBureauData.get(0);
          return rblCreditBureauData;
      } catch (final EmptyResultDataAccessException e) {
@@ -136,13 +156,13 @@ private static final class RblCreditBureauResponseDataMapper implements RowMappe
      public RblCreditBureauResponseDataMapper() {}
 
      public String schema() {
-         return " select mcr.center_id as centerId,mcr.client_id as clientId,mcr.barcode_no as barcdode,mcr.external_id as externalId,"
-                +"mcr.is_Renewal_Loan as renewalfl,mcr.loanAmount as loanAmount,mcr.customer_Name as customerName,mcr.title as title,mcr.name as name,"
-                +"mcr.relation as rlation,mcr.line1 as line1,mcr.line2 as line2,mcr.line3 as line3,mcr.city_code as cityCode,"
-                +"mcr.city_Name as cityName,mcr.state_code as stateCode,mcr.pin as pincode,mcr.operating_RegionCode as operatingRegion,"
-                +"mcr.operating_RegionName as operatingRegionName,mcr.dateOfBirth as dateOfBirth,mcr.branch_code as branchCode,"
-                +"mcr.branch_name as branchName"
-                +"from m_creditbureau_response mcr";
+         return "  mcr.center_id as centerId,mcr.client_id as clientId,mcr.barcode_no as barcdode,mcr.external_id as externalId, "
+                +"mcr.is_Renewal_Loan as renewalfl,mcr.loanAmount as loanAmount,mcr.customer_Name as customerName,mcr.title as title,mcr.name as name, "
+                +"mcr.relation as rlation,mcr.line1 as line1,mcr.line2 as line2,mcr.line3 as line3,mcr.city_code as cityCode, "
+                +"mcr.city_Name as cityName,mcr.state_code as stateCode,mcr.pin as pincode,mcr.operating_RegionCode as operatingRegion, "
+                +"mcr.operating_RegionName as operatingRegionName,mcr.dateOfBirth as dateOfBirth,mcr.branch_code as branchCode, "
+                +"mcr.branch_name as branchName,mcr.created_date  as checkDate "
+                +"from m_creditbureau_error mcr ";
 
      }
      @Override
@@ -169,28 +189,37 @@ private static final class RblCreditBureauResponseDataMapper implements RowMappe
      	final   DateTime dateOfBirth=new DateTime(rs.getDate("dateOfBirth"));
      	final   String branchCode=rs.getString("branchCode");
      	final   String branchName=rs.getString("branchName");
+    	final LocalDate checkdate =JdbcSupport.getLocalDate(rs, "checkDate");
+
 
          return new RblCreditBureauData(barcodeNo,externalId,loanAmount,isRenewalLoan,customerName,title,name,relation,line1,
-         		line2,line3,cityCode,cityName,stateCode,pin,operatingRegionCode,operatingRegionName,dateOfBirth,branchCode,branchName);
+         		line2,line3,cityCode,cityName,stateCode,pin,operatingRegionCode,operatingRegionName,dateOfBirth,branchCode,branchName,checkdate);
      }
          		
 
  }
-
-public List<RblCrdeitResponseData> getbreauErrorData(final Long clientId,final Long centerId,String fromDate,String toDate) {
+@Override
+public List<RblCrdeitResponseData> getbreauErrorData(final Long centerId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck) {
     try {
         final AppUser currentUser = this.context.authenticatedUser();
         
         final RblCrdeitErrorDataMapper rm = new RblCrdeitErrorDataMapper();
-        String Sql ="select"+rm.schema() +"where mcr.center_id=?";
-        if(clientId!=null){
-        	 Sql =Sql+ " and mcr.client_id=?";
+        String Sql ="select"+rm.schema() +"where ";
+        if(clientcbcheck){
+        	 Sql =Sql+ "  mce.client_id= "+clientId;
+	
+        }else{
+        if(  centerId !=null){
+     	   Sql=Sql + " mce.center_id= "+centerId ;
         }
-        if(fromDate!=null && toDate!=null){
-        	Sql =Sql+ " and mcr.createdDate between ? and ?";
-        }
+         if(clientId!=null){
+         	 Sql =Sql+ " and mce.client_id= "+clientId;
+         }
+         if(fromDate!=null && toDate!=null){
+         	Sql =Sql+ " and mce.created_date between"+ "'"+fromDate+"'"+" and" + "'"+toDate+"'";
+         }}
         List<RblCrdeitResponseData>rblCrdeitResponseData=new ArrayList<RblCrdeitResponseData>();
-        rblCrdeitResponseData = this.jdbcTemplate.query(Sql, rm, new Object[] { centerId,clientId,fromDate,toDate});
+        rblCrdeitResponseData = this.jdbcTemplate.query(Sql, rm, new Object[] { });
        // return rblCrdeitResponseData.get(0);
         return rblCrdeitResponseData;
     } catch (final EmptyResultDataAccessException e) {
@@ -203,9 +232,9 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
     public RblCrdeitErrorDataMapper() {}
 
     public String schema() {
-        return " select mce.client_id as clientId,mce.request_uid as requestId,mce.service_name as serviceName,mce.channel_id as channelId,"
-               +"mce.cor_Id as corId,mce.credit_Approved as creditApproved,mce.reason as region,mce.eligible_Amount as eligibalAmount "
-               +"from m_creditbureau_response mce";
+        return "  mce.client_id as clientId,mce.request_uid as requestId,mce.service_name as serviceName,mce.channel_id as channelId, "
+               +"mce.cor_Id as corId,mce.credit_Approved as creditApproved,mce.reason as region,mce.eligible_Amount as eligibalAmount,mce.created_date  as checkDate  "
+               +"from m_creditbureau_response mce ";
 
 
     }
@@ -220,9 +249,65 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
     	final   String corId=rs.getString("corId");
     	final   String creditApproved=rs.getString("creditApproved");
     	final   String region=rs.getString("region");
-    	final Long eligibalAmount =JdbcSupport.getLong(rs, "eligibalAmount");    	
+    	final Long eligibalAmount =JdbcSupport.getLong(rs, "eligibalAmount"); 
+    	final LocalDate checkdate =JdbcSupport.getLocalDate(rs, "checkDate");
         return new RblCrdeitResponseData(clientId,requestId,serviceName,channelId,corId,creditApproved,region,
-        		eligibalAmount,null);
+        		eligibalAmount,null,checkdate);
+    }
+        		
+
+}
+
+//List<RblValidatefileData>getValidateFileData(final Long centerId,final String fromDate,final String toDate,final String fileType);
+
+@Override
+public List<RblValidatefileData> getValidateFileData( Long centerId,  String fromDate,String toDate,final String fileType) {
+    try {
+        final AppUser currentUser = this.context.authenticatedUser();
+        
+        final RblValidateDataMapper rm = new RblValidateDataMapper();
+        String Sql ="select"+rm.schema() +"where ";        
+       
+         
+         if(fromDate!=null && toDate!=null){
+         	Sql =Sql+ "  mce.created_date between"+ "'"+fromDate+"'"+" and" + "'"+toDate+"'";
+         }
+         if(fileType!=null){
+        	 Sql =Sql + " and mce.file_type ="+"'"+fileType+"'"; 
+         }
+        List<RblValidatefileData>rblCrdeitResponseData=new ArrayList<RblValidatefileData>();
+        rblCrdeitResponseData = this.jdbcTemplate.query(Sql, rm, new Object[] { });
+       // return rblCrdeitResponseData.get(0);
+        return rblCrdeitResponseData;
+    } catch (final EmptyResultDataAccessException e) {
+        throw new PartialLoanNotFoundException(centerId);
+    }
+
+}
+	
+private static final class RblValidateDataMapper implements RowMapper<RblValidatefileData> {
+    public RblValidateDataMapper() {}
+
+    public String schema() {
+        return "  mg.display_name as centerName,mce.file_type as fileType,mce.file_name as fileName,mce.file_location as fileLocation, "
+               +"mce.created_date as createdDate   "
+               +"from m_rblvalidatefile mce "
+               +" join m_group mg on mg.id=mce.center_id ";
+
+
+    }
+    @Override
+    public RblValidatefileData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+        
+    	final   String centerName =rs.getString("centerName");
+    	final   String fileType=rs.getString("fileType");
+    	final   String fileLocation=rs.getString("fileLocation");
+    	final   String fileName=rs.getString("fileName");
+    	final LocalDate checkdate =JdbcSupport.getLocalDate(rs, "createdDate");
+    	
+    	return  new RblValidatefileData(centerName,fileType,fileName,fileLocation,checkdate);
+        
     }
         		
 
@@ -234,9 +319,9 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
 	            final AppUser currentUser = this.context.authenticatedUser();
 	            
 	            final RblClientsDataDataMapper rm = new RblClientsDataDataMapper();
-	            String Sql ="select"+rm.schema();
+	            String Sql ="select "+rm.schema();
 	            List<RblClientsData>rblCreditBureauData=new ArrayList<RblClientsData>();
-	            rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId});
+	            rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId,clientId,clientId,clientId});
 	            return rblCreditBureauData.get(0);
 	        } catch (final EmptyResultDataAccessException e) {
 	            throw new PartialLoanNotFoundException(clientId);
@@ -250,22 +335,22 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
 	        public RblClientsDataDataMapper() {}
 
 	        public String schema() {
-	            return "select mc.external_id as externalId,nct.external_Id2 as barccodeNo,mp.loan_amount as partialLoanAmount,mc.display_name as customerName,"
-	                    +"mp.loan_amount as loanAmount,if(mrbl.renewal_fl=0,'Y','N') as renewalFl,title.code_score as title,nct.pan_no as pan,mc.mobile_no as mobileNo,"
+	            return "  mc.external_id as externalId,nct.external_Id2 as barccodeNo,mp.loan_amount as partialLoanAmount,mc.display_name as customerName, "
+	                    +"mp.loan_amount as loanAmount,if(mrbl.renewal_fl=0,'Y','N') as renewalFl,title.code_score as title,nct.pan_no as pan,mc.mobile_no as mobileNo, "
 	                    +"mc.date_of_birth as dateofBirth, if(gender.code_value like 'Mal%',01,02) gender,rbl.`Branch Code` as branchCode,rblbranchName.code_value as branchName ,"
-	                    +"rbl.operatingregion_code as operatingRegion,rbl.operatingRegion_Name as OperatingRegionName,"
-		                +"(select document_key from m_client_identifier where client_id=? and document_type_id=40)  adhar,"
-		                +"(select document_key from m_client_identifier where client_id=? 84675 and document_type_id=41) voterId,"
-		                +"(select document_key from m_client_identifier where client_id=?84675 and document_type_id=43)   ration " 
+	                    +"rbl.`operating region` as operatingRegion,rbl.`bc branch code` as OperatingRegionName, "
+		                +"(select document_key from m_client_identifier where client_id=? and document_type_id=40)  adhar, "
+		                +"(select document_key from m_client_identifier where client_id=?  and document_type_id=41) voterId, "
+		                +"(select document_key from m_client_identifier where client_id=?  and document_type_id=43)   ration  " 
 	                    +"from m_client mc "
-	                    +"left join m_partial_loan1 mp on mc.id=mp.client_id"
-	                    +"left join n_client_ext nct on mc.id=nct.client_id"
-	                    +"left join m_rblcustomer mrbl  on mc.id=mrbl.client_id"
-	                    +"left join m_client_identifier mci on mci.client_id=mc.id"
-	                    +"left join m_code_value gender on mc.gender_cv_id=gender.id"
-	                    +"left join m_code_value title on nc.salutation_cv_id=title.id"
-	                    +"left join `RBL Branch Name` rbl on  rbl.office_id=mc.id"
-	                    +"left join m_code_value rblbranchName on rblbranchName.id=rbl.`RBL_Branch_cd_RBL Branch`"
+	                    +"left join m_partial_loan1 mp on mc.id=mp.client_id "
+	                    +"left join n_client_ext nct on mc.id=nct.client_id "
+	                    +"left join m_rblcustomer mrbl  on mc.id=mrbl.client_id "
+	                    +"left join m_client_identifier mci on mci.client_id=mc.id "
+	                    +"left join m_code_value gender on mc.gender_cv_id=gender.id "
+	                    +"left join m_code_value title on nct.salutation_cv_id=title.id "
+	                    +"left join `RBL Branch Name` rbl on  rbl.office_id=mc.id "
+	                    +"left join m_code_value rblbranchName on rblbranchName.id=rbl.`RBL_Branch_cd_RBL Branch` "
 	                    +"where mc.id=? ";
 	        }
 	        @Override
@@ -304,15 +389,15 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
 		            final AppUser currentUser = this.context.authenticatedUser();
 		            
 		            final RblAddressDataMapper rm = new RblAddressDataMapper();
-		            String Sql ="select"+rm.schema();
+		            String Sql ="select "+rm.schema();
 		             if(iscoClient){
-		            	 Sql=Sql   +"and na.address_type_cv_id=20 and client_id=?"; 
+		            	 Sql=Sql   +"where na.address_type_cv_id=20 and mc.id="+clientId; 
 		             }else{
-		            	 Sql=Sql   +"and na.address_type_cv_id=26 and client_id=?";  
+		            	 Sql=Sql   +"where na.address_type_cv_id=26 and mc.id="+clientId;  
 		             }
 
 		            List<RblAddressData>rblAddressData=new ArrayList<RblAddressData>();
-		            rblAddressData = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId});
+		            rblAddressData = this.jdbcTemplate.query(Sql, rm, new Object[] {});
 		            return rblAddressData.get(0);
 		        } catch (final EmptyResultDataAccessException e) {
 		            throw new PartialLoanNotFoundException(clientId);
@@ -324,13 +409,13 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
 		        public RblAddressDataMapper() {}
 
 		        public String schema() {
-		            return " select CONCAT(na.house_no,na.street_no) as line1,(na.area_locality,na.taluka) as line2,na.village_town as line3, "
-	                      +" mcv.code_description as cityCode,mcv.code_value as cityName,state.code_description as stateCode,"
-	                      +"state.code_value as stateName,na.pin_code as pincode"
+		            return "  CONCAT(ifnull(na.house_no,''),ifnull(na.street_no,'')) as line1,concat(ifnull(na.area_locality,''),ifnull(na.taluka,'')) as line2,na.village_town as line3,  "
+	                      +" mcv.code_score as cityCode,mcv.code_value as cityName,state.code_score as stateCode, "
+	                      +"state.code_value as stateName,na.pin_code as pincode "
 	                      +"from m_client mc "
-	                      +"left join n_address na on na.client_id=mc.id "
-	                      +"left join m_code_value mcv on mcv.id=na.district_cv_id"
-	                      +"left join m_code_value state on state.id=na.state_cv_id";
+	                      +"left join n_address na on na.client_id=mc.id  "
+	                      +"left join m_code_value mcv on mcv.id=na.district_cv_id "
+	                      +"left join m_code_value state on state.id=na.state_cv_id ";
 		        }
 		        @Override
 		        public RblAddressData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
@@ -355,11 +440,12 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
 	            final AppUser currentUser = this.context.authenticatedUser();
 	            
 	            final RblNomineeDataMapper rm = new RblNomineeDataMapper();
-	            String Sql ="select"+rm.schema();	             
+	            String Sql ="select "+rm.schema()+"where mc.id="+clientId;
+	            
 
 	            List<RblNomineeData>rblNomineeDatas=new ArrayList<RblNomineeData>();
 	            RblAddressData rblAddressData =getAddressData( clientId,true);
-	            rblNomineeDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId});
+	            rblNomineeDatas = this.jdbcTemplate.query(Sql, rm, new Object[] {});
 	            RblNomineeData rblNomineeData =rblNomineeDatas.get(0);
 	            RblGurdianData rblGurdianData =rblNomineeData.getGuardian();
 	            rblGurdianData.setAddress(rblAddressData);
@@ -375,21 +461,21 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
 	        public RblNomineeDataMapper() {}
 
 	        public String schema() {
-	            return "select mcv.code_score as title, concat(nc.first_name,ifnull(nc.middle_name,''),ifnull(nc.last_name,'')) as nomineeName,"
-	                   +"relation.code_score as relation,nc.date_of_birth as dateofBirth,gender.code_score as gender,null as pan,"
-	                   +"null as minor,null as nomineeId,null as nomineeAddressID ,gurdianTitle.code_value as  gurdiantitle,"
-	                   +"gurdainrelation.code_value as gurdianrelation,gurdianGender.code_value as gurdiangender,mrbl.gurdian_name as gurdianName,"
-	                   + "mrbl.gurdian_DatofBirth as gurdianDob"
-	                   +"from m_client mc "
-	                   +"left join n_coapplicant nc on mc.id=nc.client_id"
-	                   +"left join m_code_value mcv on mcv.id=nc.salutation_cv_id"
-	                   +"left join m_code_value relation on relation.id =nc.sp_relationship_cv_id"
+	            return "  mcv.code_score as title, concat(nc.first_name,ifnull(nc.middle_name,''),ifnull(nc.last_name,'')) as nomineeName, "
+	                   +"relation.code_score as relation,nc.date_of_birth as dateofBirth,gender.code_score as gender,null as pan, "
+	                   +"null as minor,null as nomineeId,null as nomineeAddressID ,gurdianTitle.code_value as  gurdiantitle, "
+	                   +"gurdainrelation.code_value as gurdianrelation,gurdianGender.code_value as gurdiangender,mrbl.gurdian_name as gurdianName, "
+	                   + "mrbl.gurdian_DatofBirth as gurdianDob "
+	                   +"from m_client mc  "
+	                   +"left join n_coapplicant nc on mc.id=nc.client_id "
+	                   +"left join m_code_value mcv on mcv.id=nc.salutation_cv_id "
+	                   +"left join m_code_value relation on relation.id =nc.sp_relationship_cv_id "
 	                   +"left join m_code_value gender on gender.id=nc.gender_cv_id "
-	                   +"left join m_rblcustomer mrbl on mrbl.client_id=mc.id"
+	                   +"left join m_rblcustomer mrbl on mrbl.client_id=mc.id "
 	                   +"left join m_code_value gurdianTitle on gurdianTitle.id=mrbl.title "
-	                   +"left join m_code_value gurdainrelation on gurdainrelation.id=mrbl.relation_cv_id"
-	                   + "left join m_code_value gurdianGender on gurdianGender.id=mrbl.gurdian_gender"
-	                   +"where mc.id=?";
+	                   +"left join m_code_value gurdainrelation on gurdainrelation.id=mrbl.relation_cv_id "
+	                   + "left join m_code_value gurdianGender on gurdianGender.id=mrbl.gurdian_gender ";
+	                
 	        }
 	        @Override
 	        public RblNomineeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {

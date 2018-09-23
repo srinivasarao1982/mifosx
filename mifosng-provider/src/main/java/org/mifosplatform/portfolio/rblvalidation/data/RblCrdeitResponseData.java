@@ -1,5 +1,7 @@
 package org.mifosplatform.portfolio.rblvalidation.data;
 
+import org.joda.time.LocalDate;
+
 public class RblCrdeitResponseData {
 	private Long clientId;
 	private String requestUid;
@@ -10,10 +12,10 @@ public class RblCrdeitResponseData {
 	private String reason;
 	private Long eligible_Amount;
 	private String json;
-	
+	private LocalDate checkdate;
 	
 	public RblCrdeitResponseData(Long clientId, String requestUid, String serviceName, String chhanelId, String corId,
-			String credit_Approved, String reason, Long eligible_Amount, String json) {
+			String credit_Approved, String reason, Long eligible_Amount, String json,LocalDate checkdate) {
 		super();
 		this.clientId = clientId;
 		this.requestUid = requestUid;
@@ -24,6 +26,7 @@ public class RblCrdeitResponseData {
 		this.reason = reason;
 		this.eligible_Amount = eligible_Amount;
 		this.json = json;
+		this.checkdate=checkdate;
 	}
 	public Long getClientId() {
 		return clientId;
@@ -78,6 +81,12 @@ public class RblCrdeitResponseData {
 	}
 	public void setJson(String json) {
 		this.json = json;
+	}
+	public LocalDate getCheckdate() {
+		return checkdate;
+	}
+	public void setCheckdate(LocalDate checkdate) {
+		this.checkdate = checkdate;
 	}
 	
 

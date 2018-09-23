@@ -111,7 +111,14 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
              }
            final String taluk=command.stringValueOfParameterNamed(RblCenterDeatilsApiConstant.talukparamname);
            final Long district =command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.districtparamname);                
+             if(district==null){
+            	 throw new MandatoryParameterException("district"); 
+             }
            final Long state=command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.stateparamname);
+            if(state==null){
+           	 throw new MandatoryParameterException("state");
+	
+            }
            final Long pin=command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.pincodeparamName);
            if(pin!=null){
           	 String regex = "\\d+";
@@ -195,8 +202,17 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
             			throw new MustbeBetweenException("village",1,500); 
                     }
                   final String taluk=command.stringValueOfParameterNamed(RblCenterDeatilsApiConstant.talukparamname);
+                    if(taluk==null){
+                    	throw new MandatoryParameterException("taluk");
+                    }
                   final Long district =command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.districtparamname);                
+                    if(district==null){
+                    	throw new MandatoryParameterException("district");	
+                    }
                   final Long state=command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.stateparamname);
+                 if(state==null){
+                	 throw new MandatoryParameterException("state");
+                 }
                   final Long pin=command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.pincodeparamName);
                   if(pin!=null){
                  	 String regex = "\\d+";

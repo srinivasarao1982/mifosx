@@ -16,7 +16,7 @@ public class CreditBureauValidationError extends AbstractAuditableCustom<AppUser
 	@Column(name = "center_id", nullable =false)
     private Long centerId;
 	
-	@Column(name = "clientId_id", nullable =false)
+	@Column(name = "client_id", nullable =false)
     private Long clientId;
 	
     @Column(name = "barcode_no", length = 256)

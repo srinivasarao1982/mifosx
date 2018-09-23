@@ -57,7 +57,9 @@ public class RblCustomerReadPlatformServiceImpl implements RblCustomerReadPlatfo
             return  "select    mrblc.client_id as clientId,mrblc.pension_card as pensioncard,mrblc.adharSeeding_constant as adharseeingconstant"
 	                +",mrblc.health as health,mrblc.language as language,mrblc.card_issue_fl as cardissueFl,mrblc.cb_check as cbcheck"
 	                +",mrblc.renewal_fl as renwalfl,mrblc.mother_tounge as montherTounge,mrblc.gurdian_name gurdianName,mrblc.gurdian_gender as gurdiangender,"
-	                +" mrblc.gurdian_DatofBirth as gurdiandateofbirth,mrblc.spouse_name as spouseName,mrblc.spouse_DatofBirth as spouseDateOfbirth";
+	                +" mrblc.gurdian_DatofBirth as gurdiandateofbirth,mrblc.spouse_name as spouseName,mrblc.spouse_DatofBirth as spouseDateOfbirth,"
+	                +" mrblc.relation_cv_id as relation,mrblc.gurdian_mobileNo as gurdianMobileNo,mrblc.title as gurdianTitle ";
+	              
         }
 
         @Override
@@ -79,9 +81,13 @@ public class RblCustomerReadPlatformServiceImpl implements RblCustomerReadPlatfo
         	final LocalDate spouseDateOfBirth=JdbcSupport.getLocalDate(rs, "spouseDateOfbirth");
         	final String spouseName=rs.getString("spouseName");
             final Long gurdiangender = JdbcSupport.getLong(rs, "gurdiangender");
+            final Long relation=JdbcSupport.getLong(rs, "relation");
+            final String gurdianMobileNo=rs.getString("gurdianMobileNo");
+            final Long gurdianTitle =JdbcSupport.getLong(rs,"gurdianTitle"); 
 
 
-        	RblCustomerData rblCustomerData=RblCustomerData.create(clientId, pensionCard, adharsdingconstant, health, language, cardIssueFlag, cbCheck, renewalFlag, mothertounge, gurdianName, guedianDateOfBirth.toDate(), spouseName, spouseDateOfBirth.toDate(),gurdiangender);
+        	RblCustomerData rblCustomerData=RblCustomerData.create(clientId, pensionCard, adharsdingconstant, health, language, cardIssueFlag, cbCheck, renewalFlag, mothertounge, gurdianName, guedianDateOfBirth, spouseName, spouseDateOfBirth,gurdiangender,
+        			relation,gurdianTitle,gurdianMobileNo);
           return rblCustomerData;
         }
 

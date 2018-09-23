@@ -11,6 +11,7 @@
  */
 package org.mifosplatform.portfolio.client.service;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,8 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepository;
+import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
@@ -109,6 +112,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final ClientExtAssembler clientExtAssembler;
     private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
+    private final SequenceNumberRepository sequenceNumberRepository;
 
     @Autowired
     public ClientWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -120,7 +124,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService,
             final CommandProcessingService commandProcessingService, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientExtAssembler clientExtAssembler,
-            final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService) {
+            final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService,
+            final SequenceNumberRepository sequenceNumberRepository) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.officeRepository = officeRepository;
@@ -139,6 +144,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.clientExtAssembler = clientExtAssembler;
         this.clientIdentifierWritePlatformService = clientIdentifierWritePlatformService;
+        this.sequenceNumberRepository=sequenceNumberRepository;
     }
 
     @Transactional
@@ -271,7 +277,13 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             this.clientRepository.save(newClient);
-
+            
+            Long seqId =(long) 1;
+            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+            BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newClient.getExternalId())+1);
+            organasitionSequenceNumber.updateSeqNumber(seqNumber);
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+            
             if (newClient.isAccountNumberRequiresAutoGeneration()) {
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);
                 newClient.updateAccountNo(accountNumberGenerator.generate(newClient, accountNumberFormat));

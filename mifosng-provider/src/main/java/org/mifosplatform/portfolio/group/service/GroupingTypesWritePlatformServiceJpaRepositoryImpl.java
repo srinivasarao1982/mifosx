@@ -5,6 +5,7 @@
  */
 package org.mifosplatform.portfolio.group.service;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,8 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepository;
+import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.office.exception.InvalidOfficeException;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
 import org.mifosplatform.organisation.staff.domain.Staff;
@@ -91,6 +94,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
     private final ConfigurationDomainService configurationDomainService;
     private final SavingsAccountRepository savingsAccountRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
+    private final SequenceNumberRepository sequenceNumberRepository;
 
     @Autowired
     public GroupingTypesWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -100,7 +104,8 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final LoanRepository loanRepository, final SavingsAccountRepository savingsRepository,
             final CodeValueRepositoryWrapper codeValueRepository, final CommandProcessingService commandProcessingService,
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
-            final SavingsAccountRepository savingsAccountRepository, final LoanRepositoryWrapper loanRepositoryWrapper) {
+            final SavingsAccountRepository savingsAccountRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
+            final SequenceNumberRepository sequenceNumberRepository) {
         this.context = context;
         this.groupRepository = groupRepository;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -117,6 +122,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
         this.configurationDomainService = configurationDomainService;
         this.savingsAccountRepository = savingsAccountRepository;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
+        this.sequenceNumberRepository=sequenceNumberRepository;
     }
 
     private CommandProcessingResult createGroupingType(final JsonCommand command, final GroupTypes groupingType, final Long centerId) {
@@ -126,6 +132,9 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             
             final Long isnewcenter =command.longValueOfParameterNamed(GroupingTypesApiConstants.isnewcenterParamName);
             final Long iscbcheckrequired=command.longValueOfParameterNamed(GroupingTypesApiConstants.iscbchekrequiredparamName);  
+            final Long iscbchecked=command.longValueOfParameterNamed(GroupingTypesApiConstants.iscbcheckedparamName);  
+            final Long isgrtCompleted=command.longValueOfParameterNamed(GroupingTypesApiConstants.isgrtCompletedparamname);  
+
             final AppUser currentUser = this.context.authenticatedUser();
             Long officeId = null;
             Group parentGroup = null;
@@ -165,7 +174,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             }
 
             final Group newGroup = Group.newGroup(groupOffice, staff, parentGroup, groupLevel, name, externalId, active, activationDate,
-                    clientMembers, groupMembers, submittedOnDate, currentUser,isnewcenter,iscbcheckrequired);
+                    clientMembers, groupMembers, submittedOnDate, currentUser,isnewcenter,iscbcheckrequired,iscbchecked,isgrtCompleted);
 
             boolean rollbackTransaction = false;
             if (newGroup.isActive()) {
@@ -190,6 +199,23 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
 
             // pre-save to generate id for use in group hierarchy
             this.groupRepository.save(newGroup);
+            
+            if(groupingType.getId()==1){
+            Long seqId =(long) 3;
+            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+            BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newGroup.getExternalId())+1);
+            organasitionSequenceNumber.updateSeqNumber(seqNumber);
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+            }
+            else{
+            	Long seqId =(long) 2;
+                OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+                BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newGroup.getExternalId())+1);
+                organasitionSequenceNumber.updateSeqNumber(seqNumber);
+                this.sequenceNumberRepository.save(organasitionSequenceNumber);
+	
+            }
+  
 
             /*
              * Generate hierarchy for a new center/group and all the child

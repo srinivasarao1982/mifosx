@@ -19,8 +19,8 @@ public class PartialLoanRepositoryWrapper {
 	        return partialLoan;
 	    }
 
-	    public PartialLoan findActiveLoansByLoanIdAndGroupId(Long clientId, Long groupId,int status) {
-	         final PartialLoan partialLoan = this.repository.findByClientIdAndGroupIdAndLoanStatus(clientId, groupId, status);
+	    public PartialLoan findActiveLoansByLoanIdAndGroupId(Long clientId, Long groupId,int status,int isDisburse) {
+	         final PartialLoan partialLoan = this.repository.findByClientIdAndGroupIdAndLoanStatus(clientId, groupId, status,isDisburse);
 	        return partialLoan;
 	    }
 	    

@@ -22,7 +22,7 @@ public class UpdateRblCustomerCommandHandler  implements NewCommandSourceHandler
 	    @Override
 	    public CommandProcessingResult processCommand(final JsonCommand command) {
 
-	        return this.rblCustomerWritePlatformService.updateRblCustomer(command.getClientId(),  command);
+	        return this.rblCustomerWritePlatformService.updateRblCustomer(command.entityId(),  command);
 	    }
 
 }

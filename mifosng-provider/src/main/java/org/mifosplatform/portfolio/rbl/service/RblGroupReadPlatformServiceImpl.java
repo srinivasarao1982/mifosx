@@ -55,7 +55,7 @@ public class RblGroupReadPlatformServiceImpl  implements RblGroupReadPlatformSer
         public String schema() {
             return   "select mrbg.maximum_center as maximumcenter,mrbg.group_type as groupType,mrbg.min_number as minNumber,"
             		+ "mrbg.max_numbeer as maxNumber,mrbg.distance_from_center as distancefromCenter,mrbg.meeting_time as meetingTime"	 
-            		 +"from m_rblgroup mrbg ";
+            		 +"  from m_rblgroup mrbg   ";
             		}
 
         @Override

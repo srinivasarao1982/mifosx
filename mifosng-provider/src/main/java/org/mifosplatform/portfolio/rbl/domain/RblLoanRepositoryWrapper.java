@@ -14,7 +14,7 @@ public class RblLoanRepositoryWrapper  {
     }
 
     public RblLoan findOneWithNotFoundDetection(final Long id) {
-        final RblLoan rblGroup = this.repository.findOne(id);
+        final RblLoan rblGroup = this.repository.findByLoanId(id);
         if (rblGroup == null) { throw new LoanNotFoundException(id); }
         return rblGroup;
     }

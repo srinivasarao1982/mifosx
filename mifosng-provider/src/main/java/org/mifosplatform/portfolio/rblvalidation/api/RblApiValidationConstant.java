@@ -39,6 +39,7 @@ public class RblApiValidationConstant {
 	public static final String dateofbirthparamname ="dateOfBirth";
 	public static final String branchcodeparamname ="branchCode";
 	public static final String branchNameparamname ="branchName";
+	public static final String checkdateparamname="checkdate";
 
 	//Response
 	public static final  String  clientIdParamname ="clientId";
@@ -52,22 +53,32 @@ public class RblApiValidationConstant {
 	public static final  String jsonparamname ="json";
 	
 	//File Related Response
-	public LocalDate fileDate;
+	/*public LocalDate fileDate;
 	public String fileName;
 	public String filePath;
 	public String fileType;
+	
+	public String centerName;
+	public String fileType;
+	public String fileName;
+	public String fileLocation;
+	public LocalDate fileDate;*/
 	
 	public static final String  fileDateParamname="filedate";
 	public static final String fileNameparamname="fileName";
 	public static final String  filepathparamname ="filePath";
 	public static final String fileTypeparamname="fileType";
+	public static final String fileLocationParamname="fileLocation";
+	public static final String centerNameParamname="centerName";
 	
 	 public static final Set<String> RBL_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, barcodeparamname,externalIdparamname,loanAmountParamname,isRenewalLoanparamnam,customerNameparanname,titleparamaname,nameparamname,relationparamnam,line1paramname,
 				line2paramname,line3paramname,citycodeparamname,cityNameparamname,stateCodeparamname,pinparamname,operatingRegionparamname,operatingRegionParamname,
-				dateofbirthparamname,branchcodeparamname,branchNameparamname ));
+				dateofbirthparamname,branchcodeparamname,branchNameparamname,checkdateparamname ));
 	  
-	    public static final Set<String> RBLRESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,  clientIdParamname,requestIdparamname,serviceIdparamname,chhanelIdparamaName,corIdparamname,creditApprovdparamname,rasonparamname,eliagableAmountparamname,jsonparamname));
-	    public static final Set<String> RBLFILERESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,  fileDateParamname,fileNameparamname,filepathparamname,fileTypeparamname));
- 	  
+	    public static final Set<String> RBLRESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,  clientIdParamname,requestIdparamname,serviceIdparamname,chhanelIdparamaName,corIdparamname,creditApprovdparamname,rasonparamname,eliagableAmountparamname,jsonparamname,checkdateparamname));
+	    public static final Set<String> RBLFILERESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,  fileDateParamname,fileNameparamname,filepathparamname,fileTypeparamname,checkdateparamname));
+	    public static final Set<String> RBLRESPONSE_VALIDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,  	    fileDateParamname,fileNameparamname,filepathparamname,fileTypeparamname,fileLocationParamname,centerNameParamname
+));
+
 
 }

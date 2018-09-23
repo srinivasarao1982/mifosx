@@ -100,7 +100,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                 final CodeValue status=null;
                 final boolean isfreashImport=command.booleanPrimitiveValueOfParameterNamed("freshImport");
                 PartialLoan partialLoanforDelete=null;
-                partialLoanforDelete= this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1);
+                partialLoanforDelete= this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1,0);
 
                 if(isfreashImport){
                     if(partialLoanforDelete!=null){
@@ -132,7 +132,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
            
 	    	try{
 	        this.context.authenticatedUser();	
-	        final  PartialLoan partialLoanforUpdate = this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1);
+	        final  PartialLoan partialLoanforUpdate = this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1,0);
              if(partialLoanforUpdate!=null){
 	        this.partialLoanDataValidator.validateUpdateBankDetails(command);
             final Map<String, Object> changes = partialLoanforUpdate.update(command);
@@ -187,7 +187,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
            
 	    	try{
 	        this.context.authenticatedUser();	
-	        final PartialLoan partialLoanforDelete = this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1);
+	        final PartialLoan partialLoanforDelete = this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1,0);
              this.partialLoanRepositoryWrapper.delete(partialLoanforDelete);
 	            return new CommandProcessingResultBuilder() //
 	                    .withEntityId(partialLoanforDelete.getId()) //

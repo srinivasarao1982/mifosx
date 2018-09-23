@@ -3,6 +3,8 @@ package org.mifosplatform.portfolio.rbl.service;
 import java.util.Map;
 
 import org.joda.time.LocalDate;
+import org.mifosplatform.infrastructure.codes.domain.CodeValue;
+import org.mifosplatform.infrastructure.codes.domain.CodeValueRepository;
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResultBuilder;
@@ -30,14 +32,17 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 	private final PlatformSecurityContext context;
 	private final RblCustomerRepositoryWrapper rblCustomerRepositoryWrapper;
 	private final ClientRepositoryWrapper clientRepositoryWrapper;
+	private final CodeValueRepository codeValueRepository;
 
 	@Autowired
 	public RblCustomerWritePlatformServiceImpl(final PlatformSecurityContext context,
 			final RblCustomerRepositoryWrapper rblCustomerRepositoryWrapper,
-			final ClientRepositoryWrapper clientRepositoryWrapper) {
+			final ClientRepositoryWrapper clientRepositoryWrapper,
+			final CodeValueRepository codeValueRepository ) {
 		this.context = context;
 		this.rblCustomerRepositoryWrapper = rblCustomerRepositoryWrapper;
 		this.clientRepositoryWrapper = clientRepositoryWrapper;
+		this.codeValueRepository =codeValueRepository;
 
 	}
 
@@ -71,7 +76,7 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.cardIssueflagparamName);
 			if (cardIssueFlag != null) {
 				if (cardIssueFlag > 1) {
-					throw new MustbeBetweenException("Card Issue Flag", 1, 7);
+					throw new MustbeBetweenException("Card Issue Flag", 0, 1);
 				}
 			} else {
 				throw new MandatoryParameterException("card Issue Flag");
@@ -80,7 +85,7 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.cbcheckparamName);
 			if (cbCheck != null) {
 				if (cbCheck > 1) {
-					throw new MustbeBetweenException("CB check", 1, 7);
+					throw new MustbeBetweenException("CB check", 0, 1);
 				}
 			}
 			final Integer renewalFlag = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.renewalFlag);
@@ -96,10 +101,22 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					.localDateValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiandateofBirt);
 			final LocalDate spouseDateOfBirth = command
 					.localDateValueOfParameterNamed(RblCustomerDetailsApiConstant.spousedateofbirtparamname);
+			
+			 Long gurdiantitle =command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiantitleParamName);
+			if(gurdiantitle!=null){
+			CodeValue gurdianTitleCodeValue = this.codeValueRepository.findOne(gurdiantitle);
+			gurdiantitle  =(long) gurdianTitleCodeValue.codeScore();
+			}
+			final String gurdianMobileNo =command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdianMobileNumberParamName);
+             Long gurdianRelation =command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.relationparamname);
+			if(gurdianRelation!=null){
+				CodeValue gurdianRelationCodeValue = this.codeValueRepository.findOne(gurdianRelation);
+	             gurdianRelation =(long)gurdianRelationCodeValue.codeScore();
 
+			}
 			RblCustomer rblCustomer = RblCustomer.create(client, pensionCard, adharseedingConstant, health, language,
 					cardIssueFlag, cbCheck, renewalFlag, motherTounge, gurdianName, gurdianDateOfBirth.toDate(),
-					spouseName, spouseDateOfBirth.toDate(),gurdiangender);
+					spouseName, spouseDateOfBirth.toDate(),gurdiangender,gurdianRelation,gurdianMobileNo,gurdiantitle);
 			this.rblCustomerRepositoryWrapper.save(rblCustomer);
 			return new CommandProcessingResultBuilder() //
 					.withCommandId(rblCustomer.getId()) //
@@ -143,7 +160,7 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.cardIssueflagparamName);
 			if (cardIssueFlag != null) {
 				if (cardIssueFlag > 1) {
-					throw new MustbeBetweenException("Card Issue Flag", 1, 7);
+					throw new MustbeBetweenException("Card Issue Flag",0, 1);
 				}
 			} else {
 				throw new MandatoryParameterException("card Issue Flag");
@@ -152,7 +169,7 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.cbcheckparamName);
 			if (cbCheck != null) {
 				if (cbCheck > 1) {
-					throw new MustbeBetweenException("CB check", 1, 7);
+					throw new MustbeBetweenException("CB check", 0, 1);
 				}
 			}
 

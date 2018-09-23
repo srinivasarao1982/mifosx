@@ -41,7 +41,7 @@ public class RblLoanReadPlatformServiceImpl implements  RblLoanReadPlatformServi
 	    final AppUser currentUser = this.context.authenticatedUser();
         
          RblLoanDataMapper rm = new RblLoanDataMapper();
-        String Sql =rm.schema() + "where rbill.loan_id=?";
+        String Sql =rm.schema() + "where rbll.loan_id=?";
         RblLoanData rblLoanData =null;
         rblLoanData = this.jdbcTemplate.queryForObject(Sql, rm, new Object[] { loanId});
         return rblLoanData;
@@ -56,22 +56,22 @@ public class RblLoanReadPlatformServiceImpl implements  RblLoanReadPlatformServi
 
         public String schema() {
             return    
-            		 "select rbll.loan_id as loanId,rbll.pslcode as plscode,rbll.to_Up_flag as touupFlag,rbllhosiptalcash as hospitalcash,"
-            		 +"rbll.prepaid_charge as prepaidcharge from m_rblloan rbll";
+            		 "select rbll.id as id, rbll.loan_id as loanId,rbll.psl_code as plscode,rbll.to_Up_flag as touupFlag,rbll.hosiptal_cash as hospitalcash,"
+            		 +" rbll.prepaid_charge as prepaidcharge from m_rblloan rbll ";
             		 }
 
         @Override
         public RblLoanData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
 ;
-
-            final Integer pslcode=JdbcSupport.getInteger(rs,"pslcode");;
-        	final Integer touupFlag=JdbcSupport.getInteger(rs,"touupFlag");;
+            final Long id=JdbcSupport.getLong(rs,"id"); 
+            final Integer pslcode=JdbcSupport.getInteger(rs,"plscode");
+        	final Integer touupFlag=JdbcSupport.getInteger(rs,"touupFlag");
         	final String hosiptalcash=rs.getString("hospitalcash");
         	final String prepaidcharge=rs.getString("prepaidcharge");        	
 
 
-        	RblLoanData rblLoanData=RblLoanData.create(pslcode, touupFlag, hosiptalcash, prepaidcharge);
+        	RblLoanData rblLoanData=RblLoanData.create(id,pslcode, touupFlag, hosiptalcash, prepaidcharge);
         	return rblLoanData;
         }
 	}

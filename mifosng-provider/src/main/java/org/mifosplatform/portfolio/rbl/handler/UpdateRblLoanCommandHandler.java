@@ -23,7 +23,7 @@ public class UpdateRblLoanCommandHandler implements NewCommandSourceHandler {
 	    @Override
 	    public CommandProcessingResult processCommand(final JsonCommand command) {
 
-	        return this.rblLoanWritePlatformService.updateRblLoan(command.getLoanId(),  command);
+	        return this.rblLoanWritePlatformService.updateRblLoan(command.entityId(),  command);
 	    } 
 
 }

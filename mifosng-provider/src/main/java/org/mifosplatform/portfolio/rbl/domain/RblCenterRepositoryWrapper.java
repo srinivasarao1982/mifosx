@@ -14,7 +14,7 @@ public class RblCenterRepositoryWrapper {
 	    }
 
 	    public RblCenter findOneWithNotFoundDetection(final Long id) {
-	        final RblCenter rblCenter = this.repository.findOne(id);
+	        final RblCenter rblCenter = this.repository.findByCenterId(id);
 	        if (rblCenter == null) { throw new LoanNotFoundException(id); }
 	        return rblCenter;
 	    }

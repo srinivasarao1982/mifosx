@@ -2,19 +2,21 @@ package org.mifosplatform.portfolio.rbl.data;
 
 public class RblLoanData {
 
+	private Long id;
 	private Integer pslcode;
 	private Integer topUpflag;
 	private String hosiptalCash;
 	private String prpaidcharge;
 
-	public static RblLoanData create(final Integer pslcode, final Integer topUpflag, final String hosiptalCash,
+	public static RblLoanData create(final Long id,final Integer pslcode, final Integer topUpflag, final String hosiptalCash,
 			final String prpaidcharge) {
 
-		return new RblLoanData(pslcode, topUpflag, hosiptalCash, prpaidcharge);
+		return new RblLoanData(id,pslcode, topUpflag, hosiptalCash, prpaidcharge);
 	}
 
-	public RblLoanData(Integer pslcode, Integer topUpflag, String hosiptalCash, String prpaidcharge) {
+	public RblLoanData(Long id,Integer pslcode, Integer topUpflag, String hosiptalCash, String prpaidcharge) {
 		super();
+		this.id=id;
 		this.pslcode = pslcode;
 		this.topUpflag = topUpflag;
 		this.hosiptalCash = hosiptalCash;
@@ -51,6 +53,14 @@ public class RblLoanData {
 
 	public void setPrpaidcharge(String prpaidcharge) {
 		this.prpaidcharge = prpaidcharge;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 }

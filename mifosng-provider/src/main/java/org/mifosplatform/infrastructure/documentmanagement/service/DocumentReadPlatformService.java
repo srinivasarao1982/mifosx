@@ -16,6 +16,8 @@ public interface DocumentReadPlatformService {
 
     FileData retrieveFileData(String entityType, Long entityId, Long documentId);
 
+    FileData retrieveRblFileData(String fileName, String fileLocation);
+
     DocumentData retrieveDocument(String entityType, Long entityId, Long documentId);
 
 }

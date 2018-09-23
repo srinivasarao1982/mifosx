@@ -315,7 +315,7 @@ public class RblApiExtraResource {
 	        		RblCustomerDetailsApiConstant.RBLCUSTOMER_RESPONSE_DATA_PARAMETERS);
 	    }
 	    @GET
-	    @Path("/rblloan{loanId}")
+	    @Path("/rblloan/{loanId}")
 	    @Consumes({ MediaType.APPLICATION_JSON })
 	    @Produces({ MediaType.APPLICATION_JSON })
 	    public String getRblLoan(@PathParam("loanId") final Long loanId, @Context final UriInfo uriInfo) {

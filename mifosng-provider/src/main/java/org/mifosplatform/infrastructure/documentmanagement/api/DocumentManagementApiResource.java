@@ -1,16 +1,19 @@
-/**
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/.
- */
+
 package org.mifosplatform.infrastructure.documentmanagement.api;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -177,6 +180,63 @@ public class DocumentManagementApiResource {
         final ResponseBuilder response = Response.ok(fileData.file());
         response.header("Content-Disposition", "attachment; filename=\"" + fileData.name() + "\"");
         response.header("Content-Type", fileData.contentType());
+
+        return response.build();
+    }
+    
+    @GET
+    @Path("{documentId}/rblattachment/{fileName}/{filelocation}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    public Response downloadrblFile(@PathParam("entityType") final String entityType, @PathParam("entityId") final Long entityId,
+            @PathParam("documentId") final Long documentId,@PathParam("fileName") final String fileName,@PathParam("filelocation") final String filelocation
+            ) throws IOException {
+
+        this.context.authenticatedUser().validateHasReadPermission(this.SystemEntityType);
+        File my_file =null;
+        File my_file1=null;
+        if (entityId==1){
+        	my_file = new File("C:/Users/Keshav/.mifosx/RblValidationFile/"+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
+            my_file1 = new File("C:/Users/Keshav/.mifosx/RblValidationFile/"+fileName+"test");
+          
+           FileOutputStream out = new  FileOutputStream(my_file1);
+            FileInputStream in = new FileInputStream(my_file);
+            byte[] buffer = new byte[4096];
+            int length;
+            while ((length = in.read(buffer)) > 0){
+               out.write(buffer, 0, length);
+            }
+            in.close();
+            out.flush();
+            out.close();
+        }
+       	else{
+       	if(entityType.equalsIgnoreCase("send")){
+        my_file = new File("C:/Users/Keshav/.mifosx/RBLLosFile/"+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
+        my_file1 = new File("C:/Users/Keshav/.mifosx/RBLLosFile/"+fileName+"test");
+       	}
+       	if (entityType.equalsIgnoreCase("receive")){
+       		my_file = new File("C:/Users/Keshav/.mifosx/RBLLosFileReceive/"+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
+            my_file1 = new File("C:/Users/Keshav/.mifosx/RBLLosFileReceive/"+fileName+"test");
+     	
+       	}
+        
+       FileOutputStream out = new  FileOutputStream(my_file1);
+        FileInputStream in = new FileInputStream(my_file);
+        byte[] buffer = new byte[4096];
+        int length;
+        while ((length = in.read(buffer)) > 0){
+           out.write(buffer, 0, length);
+        }
+        in.close();
+        out.flush();
+        out.close();
+        }
+        final ResponseBuilder response = Response.ok(my_file);
+        
+        
+        response.header("Content-Disposition", "attachment; filename=\"" +fileName + "\"");
+        response.header("Content-Type", "text/plain");
 
         return response.build();
     }

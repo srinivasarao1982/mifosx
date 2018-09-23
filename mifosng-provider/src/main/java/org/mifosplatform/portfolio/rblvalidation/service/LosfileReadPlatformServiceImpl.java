@@ -45,13 +45,20 @@ public class LosfileReadPlatformServiceImpl implements LosFileReadPlatformServic
             final RblLosFileDataMapper rm = new RblLosFileDataMapper();
             String Sql =rm.schema() ;
             if(fileType.equalsIgnoreCase("received")){
-            	 Sql =Sql+ "from m_rblreceivefile where mrblf.created_date between '"+fromDate+"'"+"and'"+toDate+"'" ;
-            }
+            	 Sql =Sql+ "from m_rblreceivefile  mrblf ";
+            	if(fromDate!=null && toDate!=null){		 
+            		 Sql =Sql+"	 where mrblf.created_date between '" +fromDate+ "'"+"and'" +toDate+ "'" ;
+            	}		 		
+              }
             else{
-           	 Sql =Sql+ "from m_rblsendfile where mrblf.created_date between '"+fromDate+"'"+"and'"+toDate+"'" ;
+           	 Sql =Sql+ "from m_rblsendfile mrblf ";
+            
+           	if(fromDate!=null && toDate!=null){		 
+       		 Sql =Sql+"	 where mrblf.created_date between '" +fromDate+ "'"+"and'" +toDate+ "'" ;
+         	}
             }
             List<RblLosFileData>rblLosFileDatas=new ArrayList<RblLosFileData>();
-            rblLosFileDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { fromDate,toDate});
+            rblLosFileDatas = this.jdbcTemplate.query(Sql, rm, new Object[] {});
             return rblLosFileDatas;
         } catch (final EmptyResultDataAccessException e) {
             throw new NoFileFoundException(fromDate,toDate);

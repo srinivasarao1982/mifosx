@@ -10,7 +10,7 @@ import org.mifosplatform.portfolio.rblvalidation.data.RblclientDatValidation;
 
 public interface RblDataReadplatformService {
 	
-	List<RblCenterValidateData>readRblCenterData(String centerId);
+	List<RblCenterValidateData>readRblCenterData(String centerId,String groupId);
 	List<RblclientDatValidation>readRblClientData(String clientId);
 	List<RblGroupValidationData>readRblGroupData(String groupId);
 	List<RblLoanValidationData>readRblLoanData(String clientId);

@@ -377,12 +377,12 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
     		String [] clientIddetails=clientIds.split(",");
     		for(String clientId:clientIddetails){
     			Long client =Long.parseLong(clientId);
-    			boolean result =this.rblEquifaxWritePlatformService.rblequifaxIntregation(client);    			
-    			if(result){
+    		//	boolean result =this.rblEquifaxWritePlatformService.rblequifaxIntregation(client);    			
+    			/*if(result){
     				sucessCount=sucessCount+1;
     			}else{
     				failureCount =failureCount+1;
-    			}
+    			}*/
     		}
     	}
         logger.info(ThreadLocalContextUtil.getTenant().getName() + ": Results affected SucessResult Are : " + sucessCount +"Failure Result Are "+failureCount);

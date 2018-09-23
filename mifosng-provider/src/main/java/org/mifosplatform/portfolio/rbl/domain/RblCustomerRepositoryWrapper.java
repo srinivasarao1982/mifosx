@@ -14,7 +14,7 @@ public class RblCustomerRepositoryWrapper{
     }
 
     public RblCustomer findOneWithNotFoundDetection(final Long id) {
-        final RblCustomer rblCustomer = this.repository.findOne(id);
+        final RblCustomer rblCustomer = this.repository.findByClientId(id);
         if (rblCustomer == null) { throw new LoanNotFoundException(id); }
         return rblCustomer;
     }

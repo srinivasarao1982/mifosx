@@ -37,20 +37,24 @@ public class CodeValue extends AbstractPersistable<Long> {
     @ManyToOne
     @JoinColumn(name = "code_id", nullable = false)
     private Code code;
+    
+    @Column (name ="code_score")
+    private Long codeScore;
 
-    public static CodeValue createNew(final Code code, final String label, final int position, final String description) {
-        return new CodeValue(code, label, position, description);
+    public static CodeValue createNew(final Code code, final String label, final int position, final String description,final Integer codeScore) {
+        return new CodeValue(code, label, position, description,codeScore );
     }
 
     protected CodeValue() {
         //
     }
 
-    private CodeValue(final Code code, final String label, final int position, final String description) {
+    private CodeValue(final Code code, final String label, final int position, final String description,final Integer codescore) {
         this.code = code;
         this.label = StringUtils.defaultIfEmpty(label, null);
         this.position = position;
         this.description = description;
+        this.codeScore =codeScore;
     }
 
     public String label() {
@@ -60,6 +64,11 @@ public class CodeValue extends AbstractPersistable<Long> {
     public int position() {
         return this.position;
     }
+    
+    public Long codeScore() {
+        return this.codeScore;
+    }
+    
 
     public static CodeValue fromJson(final Code code, final JsonCommand command) {
 
@@ -69,7 +78,7 @@ public class CodeValue extends AbstractPersistable<Long> {
         if (position == null) {
             position = new Integer(0);
         }
-        return new CodeValue(code, label, position.intValue(),description);
+        return new CodeValue(code, label, position.intValue(),description,0);
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -101,6 +110,6 @@ public class CodeValue extends AbstractPersistable<Long> {
     }
 
     public CodeValueData toData() {
-        return CodeValueData.instance(getId(), this.label, this.position);
+        return CodeValueData.instance(getId(), this.label, this.position,this.codeScore);
     }
 }

@@ -23,6 +23,6 @@ public class UpdateRblGroupCommandHandler implements NewCommandSourceHandler{
 	    @Override
 	    public CommandProcessingResult processCommand(final JsonCommand command) {
 
-	        return this.rblGroupWritePlatformService.updateRblGroup(command.getGroupId(),command);
+	        return this.rblGroupWritePlatformService.updateRblGroup(command.entityId(),command);
 	    }
 }
