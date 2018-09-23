@@ -373,6 +373,12 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             this.context.validateAccessRights(clientHierarchy);
 
             final Map<String, Object> changes = clientForUpdate.update(command);
+            
+            //nextru specific - do set isClientReprocessed flag
+            if(changes.containsKey(ClientApiConstants.isReprocessedParamName)){
+            	final Boolean newValue = command.booleanObjectValueOfParameterNamed(ClientApiConstants.isReprocessedParamName);
+            	clientForUpdate.setReprocessed(newValue);
+            }
 
             if (changes.containsKey(ClientApiConstants.staffIdParamName)) {
 

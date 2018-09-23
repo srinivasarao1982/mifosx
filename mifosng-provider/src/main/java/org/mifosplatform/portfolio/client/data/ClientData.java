@@ -84,6 +84,7 @@ final public class ClientData implements Comparable<ClientData> {
     
     //Nirantara
     private final ClientDetailedData clientDetailedData;
+    private final Boolean isReprocessed;
     
     public static ClientData template(final Long officeId, final LocalDate joinedDate, final Collection<OfficeData> officeOptions,
             final Collection<StaffData> staffOptions, final Collection<CodeValueData> narrations,
@@ -121,11 +122,12 @@ final public class ClientData implements Comparable<ClientData> {
         final String centerName=null;
         final Long groupId=null;
         final Long centerId=null;
+        final  Boolean isReprocessed = null;
         return new ClientData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
                 middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, joinedDate, imageId, staffId,
                 staffName, officeOptions, groups, staffOptions, narrations, genderOptions, timeline, savingProductOptions,
                 savingsProductId, savingsProductName, savingsAccountId, savingAccountOptions, clientType, clientClassification,
-                clientTypeOptions, clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId);
+                clientTypeOptions, clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
 
     }
 
@@ -152,7 +154,7 @@ final public class ClientData implements Comparable<ClientData> {
 				templateData.clientTypeOptions,
 				templateData.clientClassificationOptions,
 				templateData.clientDetailedData,clientData.groupName,clientData.centerName,
-				clientData.groupId,clientData.centerId);
+				clientData.groupId,clientData.centerId,clientData.isReprocessed);
 
 	}
     
@@ -166,7 +168,7 @@ final public class ClientData implements Comparable<ClientData> {
                 clientData.genderOptions, clientData.timeline, clientData.savingProductOptions, clientData.savingsProductId,
                 clientData.savingsProductName, clientData.savingsAccountId, clientData.savingAccountOptions, clientData.clientType,
                 clientData.clientClassification, clientData.clientTypeOptions, clientData.clientClassificationOptions, clientDetailedData,
-                clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId);
+                clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId,clientData.isReprocessed);
 				
 	}
 
@@ -192,7 +194,7 @@ final public class ClientData implements Comparable<ClientData> {
 				savingAccountOptions, clientData.clientType,
 				clientData.clientClassification, clientData.clientTypeOptions,
 				clientData.clientClassificationOptions,
-				clientData.clientDetailedData,clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId);
+				clientData.clientDetailedData,clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId,clientData.isReprocessed);
 
 	}
 
@@ -216,7 +218,7 @@ final public class ClientData implements Comparable<ClientData> {
 				clientData.clientClassification, clientData.clientTypeOptions,
 				clientData.clientClassificationOptions,
 				clientData.clientDetailedData,clientData.groupName,clientData.centerName,
-				clientData.groupId,clientData.centerId);
+				clientData.groupId,clientData.centerId,clientData.isReprocessed);
 
 	}
 
@@ -258,6 +260,7 @@ final public class ClientData implements Comparable<ClientData> {
 		final String centerName =null;
 		final Long groupId =null;
 		final Long centerId =null;
+		final  Boolean isReprocessed = null;
 		return new ClientData(accountNo, status, subStatus, officeId,
 				officeName, transferToOfficeId, transferToOfficeName, id,
 				firstname, middlename, lastname, fullname, displayName,
@@ -267,7 +270,7 @@ final public class ClientData implements Comparable<ClientData> {
 				savingProductOptions, savingsProductId, savingsProductName,
 				savingsAccountId, savingAccountOptions, clientType,
 				clientClassification, clientTypeOptions,
-				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId);
+				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
 	}
 
 	public static ClientData lookup(final Long id, final String displayName,
@@ -309,6 +312,7 @@ final public class ClientData implements Comparable<ClientData> {
 		final String centerName = null;
 		final Long groupId = null;
 		final Long centerId = null;
+		final  Boolean isReprocessed = null;
 		return new ClientData(accountNo, status, subStatus, officeId,
 				officeName, transferToOfficeId, transferToOfficeName, id,
 				firstname, middlename, lastname, fullname, displayName,
@@ -318,7 +322,7 @@ final public class ClientData implements Comparable<ClientData> {
 				savingProductOptions, savingsProductId, savingsProductName,
 				savingsAccountId, savingAccountOptions, clientType,
 				clientClassification, clientTypeOptions,
-				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId);
+				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
 
 	}
 
@@ -328,7 +332,8 @@ final public class ClientData implements Comparable<ClientData> {
             final String externalId, final String mobileNo, final LocalDate dateOfBirth, final CodeValueData gender,
             final LocalDate activationDate, final Long imageId, final Long staffId, final String staffName,
             final ClientTimelineData timeline, final Long savingsProductId, final String savingsProductName, final Long savingsAccountId,
-            final CodeValueData clientType, final CodeValueData clientClassification, final String groupName,final String centerName,final Long groupId,final Long centerId) {
+            final CodeValueData clientType, final CodeValueData clientClassification, final String groupName,final String centerName,
+            final Long groupId,final Long centerId, final Boolean isReprocessed) {
 
         final Collection<OfficeData> allowedOffices = null;
         final Collection<GroupGeneralData> groups = null;
@@ -343,7 +348,7 @@ final public class ClientData implements Comparable<ClientData> {
                 middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate, imageId, staffId,
                 staffName, allowedOffices, groups, staffOptions, closureReasons, genderOptions, timeline, savingProductOptions,
                 savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification, clientTypeOptions,
-                clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId);
+                clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
 
     }
 
@@ -358,7 +363,8 @@ final public class ClientData implements Comparable<ClientData> {
             final Collection<SavingsProductData> savingProductOptions, final Long savingsProductId, final String savingsProductName,
             final Long savingsAccountId, final Collection<SavingsAccountData> savingAccountOptions, final CodeValueData clientType,
             final CodeValueData clientClassification, final Collection<CodeValueData> clientTypeOptions,
-            final Collection<CodeValueData> clientClassificationOptions,final ClientDetailedData clientDetailedData, final String groupName,final String centerName,final Long groupId,final Long centerId) {
+            final Collection<CodeValueData> clientClassificationOptions,final ClientDetailedData clientDetailedData, final String groupName,final String centerName,
+            final Long groupId,final Long centerId, final Boolean isReprocessed) {
         this.accountNo = accountNo;
         this.status = status;
         if (status != null) {
@@ -416,6 +422,7 @@ final public class ClientData implements Comparable<ClientData> {
         this.centerName=centerName;
         this.groupId=groupId;
         this.centerId=centerId;
+        this.isReprocessed = isReprocessed;
 
     }
 

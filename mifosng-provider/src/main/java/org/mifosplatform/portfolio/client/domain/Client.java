@@ -248,6 +248,9 @@ public final class Client extends AbstractPersistable<Long> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
     private List<Coapplicant> coapplicant = new ArrayList<>();
 
+    // nextru specific - to identify if client re-login after 1st time failure of verification by RBL
+    @Column(name="is_reprocessed")
+    private boolean reprocessed;
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
             final JsonCommand command) {
@@ -588,7 +591,11 @@ public final class Client extends AbstractPersistable<Long> {
             final LocalDate newValue = command.localDateValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
             this.submittedOnDate = newValue.toDate();
         }
-
+       
+        if(command.isChangeInBooleanParameterNamed(ClientApiConstants.isReprocessedParamName,isReprocessed())){
+        	final boolean valueAsInput = command.booleanPrimitiveValueOfParameterNamed(ClientApiConstants.isReprocessedParamName);
+        	actualChanges.put(ClientApiConstants.isReprocessedParamName, valueAsInput);
+        }
         validate();
 
         deriveDisplayName();
@@ -1028,4 +1035,11 @@ public final class Client extends AbstractPersistable<Long> {
         this.addressExt.clear();
     }
 
+	public boolean isReprocessed() {
+		return reprocessed;
+	}
+
+	public void setReprocessed(boolean reprocessed) {
+		this.reprocessed = reprocessed;
+	}
 }
