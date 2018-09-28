@@ -469,12 +469,12 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			if(rblclientsData.getMobilNo()==null){
 				fr.write(rblclientsData.getMobilNo() +"  Customer Mobile Number Cannot Be Null"+"\n");
 			}else{
-				if(!(rblclientsData.getMobilNo().length()!=10)){
+				if((rblclientsData.getMobilNo().length()!=10)){
 					fr.write(rblclientsData.getMobilNo() +"  Customer Mobile Number must be equal to 10 digit"+"\n");
 				}
 			}			
 			if(rblclientsData.getGender()==null){
-				fr.write(rblclientsData.getMobilNo() +"  Customer Gender Cannot  Be Null"+"\n");
+				fr.write(rblclientsData.getGender() +"  Customer Gender Cannot  Be Null"+"\n");
 			}
 			
 			if(rblclientsData.getBranchCode()==null){

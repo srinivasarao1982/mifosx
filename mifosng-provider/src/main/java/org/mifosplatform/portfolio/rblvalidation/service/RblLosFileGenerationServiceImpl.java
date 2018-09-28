@@ -127,7 +127,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					String actualfield=customerData.toString().replace("null", "" );
 					fr.write(actualfield + extrafield);
 					fr.write("\n");
-
+					fr.write("\n");
 				}
 				
 				for(RblLoanValidationData rblLoanValidationData:readRblLoanDatas){	
@@ -149,7 +149,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 						String actualfield=customerData.toString().replace("null", "" );
 						fr.write(actualfield + extrafield);
 						fr.write("\n");
-						
+						fr.write("\n");
 
 		        }
 				
@@ -178,7 +178,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					String actualfield=customerData.toString().replace("null", "" );
 					fr.write(actualfield + extrafield);					
 					fr.write("\n");
-					
+					fr.write("\n");
 	        }
 	    
 				for(RblGroupValidationData rblGroupValidationData:readRblGroupDatas){	
@@ -196,6 +196,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
 					String actualfield=customerData.toString().replace("null", "" );
 					fr.write(actualfield + extrafield);
+					fr.write("\n");
 					fr.write("\n");
 				}
 	  
@@ -216,6 +217,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
 					String actualfield=customerData.toString().replace("null", "" );
 					fr.write(actualfield + extrafield);
+					fr.write("\n");
 					fr.write("\n");
 	        }
 				

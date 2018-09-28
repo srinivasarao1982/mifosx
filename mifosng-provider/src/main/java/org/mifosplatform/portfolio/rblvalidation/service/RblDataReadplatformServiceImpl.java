@@ -161,8 +161,8 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                  +"left join m_code_value profession on profession.id =nct.profession_cv_id "
                 +"left join m_code_value edu on edu.id=nct.educational_qualification_cv_id "
                 +"left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id "
-                 +"left join n_coapplicant nco on nco.id =nco.client_id "   
-                +"left join m_code_value nomineeRelation on nomineeRelation.id=nco.client_id "
+                 +"left join n_coapplicant nco on nco.client_id =mc.id "   
+                +"left join m_code_value nomineeRelation on nomineeRelation.id=nco.sp_relationship_cv_id "
                +"left join m_bankdetails bankdtails on bankdtails.client_id = mc.id ";
 
         }        
@@ -396,7 +396,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                      +"left join m_group mg on mgc.group_id =mg.id "
                      +"left join m_group center on center.id =mg.parent_id and center.level_id =1 "
                      +"left join m_savings_account msa on msa.client_id =mc.id "
-                     +"left join m_savings_product msp on msp.id =msa.id "
+                     +"left join m_savings_product msp on msp.id =msa.product_id "
                      +"left join n_address na on na.client_id =mc.id and na.address_type_cv_id= 26 "
                      +"left join n_coapplicant nc on nc.client_id =mc.id "
                      +"left join m_rblcustomer mrbl on mrbl.client_id =mc.id "
