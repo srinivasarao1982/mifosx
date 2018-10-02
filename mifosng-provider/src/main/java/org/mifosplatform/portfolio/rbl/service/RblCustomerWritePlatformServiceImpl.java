@@ -58,16 +58,16 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					throw new MustbeBetweenException("pension card length", 1, 50);
 				}
 			}
-			final Long adharseedingConstant = command
-					.longValueOfParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName);
+			final String adharseedingConstant = command
+					.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName);
 			if (adharseedingConstant != null) {
-				if (adharseedingConstant > 2) {
+				if (Integer.parseInt(adharseedingConstant) > 2) {
 					throw new MustbeBetweenException("adhar seeding Constan", 1, 2);
 				}
 			}
-			final Integer health = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.healthparamName);
+			final String health = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.healthparamName);
 			if (health != null) {
-				if (health > 7) {
+				if (Integer.parseInt(health) > 7) {
 					throw new MustbeBetweenException("health", 1, 7);
 				}
 			}
@@ -88,8 +88,8 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					throw new MustbeBetweenException("CB check", 0, 1);
 				}
 			}
-			final Integer renewalFlag = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.renewalFlag);
-			final Integer gurdiangender = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname);
+			final Long renewalFlag = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.renewalFlag);
+			final Long gurdiangender = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname);
 
 			final String motherTounge = command
 					.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.mothertoungeparamname);
@@ -103,17 +103,17 @@ public class RblCustomerWritePlatformServiceImpl implements RblCustomerWritePlat
 					.localDateValueOfParameterNamed(RblCustomerDetailsApiConstant.spousedateofbirtparamname);
 			
 			 Long gurdiantitle =command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiantitleParamName);
-			if(gurdiantitle!=null){
+			/*if(gurdiantitle!=null){
 			CodeValue gurdianTitleCodeValue = this.codeValueRepository.findOne(gurdiantitle);
-			gurdiantitle  =(long) gurdianTitleCodeValue.codeScore();
-			}
+			gurdiantitle  = Long.parseLong(gurdianTitleCodeValue.codeScore());
+			}*/
 			final String gurdianMobileNo =command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdianMobileNumberParamName);
              Long gurdianRelation =command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.relationparamname);
-			if(gurdianRelation!=null){
-				CodeValue gurdianRelationCodeValue = this.codeValueRepository.findOne(gurdianRelation);
-	             gurdianRelation =(long)gurdianRelationCodeValue.codeScore();
+			/*if(gurdianRelation!=null){
+				CodeValue gurdianRelationCodeValue = this.codeValueRepository.findOne(Long.parseLong(gurdianRelation));
+	             gurdianRelation =gurdianRelationCodeValue.codeScore();
 
-			}
+			}*/
 			RblCustomer rblCustomer = RblCustomer.create(client, pensionCard, adharseedingConstant, health, language,
 					cardIssueFlag, cbCheck, renewalFlag, motherTounge, gurdianName, gurdianDateOfBirth.toDate(),
 					spouseName, spouseDateOfBirth.toDate(),gurdiangender,gurdianRelation,gurdianMobileNo,gurdiantitle);

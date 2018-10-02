@@ -248,7 +248,7 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			}
 			
 			if(rblgroupData.getMinumNumber()!=null){
-				if(!((rblgroupData.getMinumNumber()>3) && (rblgroupData.getMinumNumber()<=4))){
+				if(((rblgroupData.getMinumNumber()<3) || (rblgroupData.getMinumNumber()>4))){
 					fr.write(rblgroupData.getMinumNumber() +"  Minimum Number must be between 3 to 4" +"\n");
 				}
 			}else{
@@ -501,7 +501,7 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 				fr.write(rblclientsData.getCardIssueFlag() +"  Card Issue Flag Cannot  Be Null"+"\n");
 			}
 			else{
-				if(!(rblclientsData.getCardIssueFlag()>0) && (rblclientsData.getCardIssueFlag()<=2)){
+				if((rblclientsData.getCardIssueFlag()<0) || (rblclientsData.getCardIssueFlag()>1)){
 					fr.write(rblclientsData.getCardIssueFlag() +"  card Issue Flag must be between0 and 1"+"\n");
 				}
 			}

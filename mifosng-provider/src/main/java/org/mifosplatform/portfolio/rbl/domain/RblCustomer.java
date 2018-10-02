@@ -33,14 +33,14 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
 	@Column(name = "pension_card", length = 50)
     private String pensionCard;
 	
-	@Column(name = "adharSeeding_constant", length = 8)
-    private Long adharseedingconstant;
+	@Column(name = "adharSeeding_constant")
+    private String adharseedingconstant;
 	
 	@Column(name = "health" )
-    private Integer health;
+    private String health;
 	
 	@Column(name = "gurdian_gender" )
-    private Integer gurdiangender;
+    private Long  gurdiangender;
 	
 	@Column(name = "language")
     private String language;
@@ -56,7 +56,7 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
     private Integer cbCheck;
 	
 	@Column(name = "renewal_fl")
-    private Integer renewalFl;
+    private Long renewalFl;
 	
 	@Column(name = "mother_tounge")
     private String motheroung;
@@ -85,9 +85,9 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
 	
 	
 	
-	public static RblCustomer create(final Client client, final String pensionCard, final Long adharseedingconstant,final  Integer health, final String language,
-			final Integer cardIssueFl,final Integer cbCheck, final Integer renewalFl, final String motheroung, final String gurdianName,
-			final Date gurdianDateOfBirth, final String spouseName, final Date spouseDateOfBirth,final Integer gurdiangender,final Long relation,final String gurdianMobileNo,final Long Title){
+	public static RblCustomer create(final Client client, final String pensionCard, final String adharseedingconstant,final  String health, final String language,
+			final Integer cardIssueFl,final Integer cbCheck, final Long renewalFl, final String motheroung, final String gurdianName,
+			final Date gurdianDateOfBirth, final String spouseName, final Date spouseDateOfBirth,final Long gurdiangender,final Long relation,final String gurdianMobileNo,final Long Title){
 		 return new RblCustomer(client,pensionCard,adharseedingconstant,health,language,cardIssueFl,cbCheck,renewalFl,motheroung,gurdianName,gurdianDateOfBirth,spouseName,spouseDateOfBirth,gurdiangender,
 				 relation,gurdianMobileNo,Title); 
 	}
@@ -106,14 +106,14 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
             this.pensionCard=newValue;
         }
         
-        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName, this.adharseedingconstant)) {
-            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName);
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName, this.adharseedingconstant)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName);
             actualChanges.put(RblCustomerDetailsApiConstant.addaharseedingconstantparamName, newValue);
             this.adharseedingconstant=newValue;
         }
         
-        if (command.isChangeInIntegerParameterNamed(RblCustomerDetailsApiConstant.healthparamName, this.health)) {
-            final Integer newValue = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.healthparamName);
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.healthparamName, this.health)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.healthparamName);
             actualChanges.put(RblCustomerDetailsApiConstant.healthparamName, newValue);
             this.health=newValue;
         }
@@ -130,8 +130,8 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
             this.cardIssueFl=newValue;
         }
         
-        if (command.isChangeInIntegerParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname, this.gurdiangender)) {
-            final Integer newValue = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname);
+        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname, this.gurdiangender)) {
+            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname);
             actualChanges.put(RblCustomerDetailsApiConstant.gurdiangenderparamname, newValue);
             this.gurdiangender=newValue;
         }
@@ -141,8 +141,8 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
             this.cbCheck=newValue;
         }
         
-        if (command.isChangeInIntegerParameterNamed(RblCustomerDetailsApiConstant.renewalFlag, this.renewalFl)) {
-            final Integer newValue = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.renewalFlag);
+        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.renewalFlag, this.renewalFl)) {
+            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.renewalFlag);
             actualChanges.put(RblCustomerDetailsApiConstant.renewalFlag, newValue);
             this.renewalFl=newValue;
         }
@@ -217,9 +217,9 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
          return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.spouseDateOfBirth), null);
      }
     
-	public RblCustomer(Client client, String pensionCard, Long adharseedingconstant, Integer health, String language,
-			Integer cardIssueFl, Integer cbCheck, Integer renewalFl, String motheroung, String gurdianName,
-			Date gurdianDateOfBirth, String spouseName, Date spouseDateOfBirth,Integer gurdiangender,
+	public RblCustomer(Client client, String pensionCard, String adharseedingconstant, String health, String language,
+			Integer cardIssueFl, Integer cbCheck, Long renewalFl, String motheroung, String gurdianName,
+			Date gurdianDateOfBirth, String spouseName, Date spouseDateOfBirth,Long gurdiangender,
 			final Long relation,final String gurdianmobileNo,final Long title ) {
 		super();
 		this.client = client;
@@ -257,19 +257,19 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
 		this.pensionCard = pensionCard;
 	}
 
-	public Long getAdharseedingconstant() {
+	public String getAdharseedingconstant() {
 		return adharseedingconstant;
 	}
 
-	public void setAdharseedingconstant(Long adharseedingconstant) {
+	public void setAdharseedingconstant(String adharseedingconstant) {
 		this.adharseedingconstant = adharseedingconstant;
 	}
 
-	public Integer getHealth() {
+	public String getHealth() {
 		return health;
 	}
 
-	public void setHealth(Integer health) {
+	public void setHealth(String health) {
 		this.health = health;
 	}
 
@@ -297,11 +297,11 @@ public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
 		this.cbCheck = cbCheck;
 	}
 
-	public Integer getRenewalFl() {
+	public Long getRenewalFl() {
 		return renewalFl;
 	}
 
-	public void setRenewalFl(Integer renewalFl) {
+	public void setRenewalFl(Long renewalFl) {
 		this.renewalFl = renewalFl;
 	}
 

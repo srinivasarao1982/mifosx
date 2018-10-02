@@ -8,8 +8,8 @@ public class RblCustomerData {
 
 	private final Long clientId;
 	private final String pensioncard;
-	private final Long adharseedingconstant;
-	private final Integer health;
+	private final String adharseedingconstant;
+	private final String health;
 	private final String language;
 	private final Integer caedissueflag;
 	private final Integer cbchck;
@@ -26,8 +26,8 @@ public class RblCustomerData {
 	
 		
 
-	public static RblCustomerData create(final Long clientId, final String pensionCard, final Long adharsdingconstant,
-			final Integer health, final String language, final Integer cardIssueFlag, final Integer cbCheck,
+	public static RblCustomerData create(final Long clientId, final String pensionCard, final String adharsdingconstant,
+			final String health, final String language, final Integer cardIssueFlag, final Integer cbCheck,
 			final Integer renewalFlag, final String mothertounge, final String gurdianName,
 			final LocalDate guedianDateOfBirth, final String spouseName, final LocalDate spouseDateOfBirth,final Long gurdiangender,
 			final Long relation,final Long gurdianTitle,final String gurdianMobileNo) {
@@ -38,7 +38,7 @@ public class RblCustomerData {
 
 	}
 
-	public RblCustomerData(Long clientId, String pensionCard, Long adharsdingconstant, Integer health, String language,
+	public RblCustomerData(Long clientId, String pensionCard, String adharsdingconstant, String health, String language,
 			Integer cardIssueFlag, Integer cbCheck, Integer renewalFlag, String mothertounge, String gurdianName,
 			LocalDate guedianDateOfBirth, String spouseName, LocalDate spouseDateOfBirth,Long gurdiangender,final Long relation,final Long gurdianTitle,final String gurdianMobileNo) {
 		super();
@@ -69,11 +69,11 @@ public class RblCustomerData {
 		return pensioncard;
 	}
 
-	public Long getAdharseedingconstant() {
+	public String getAdharseedingconstant() {
 		return adharseedingconstant;
 	}
 
-	public Integer getHealth() {
+	public String getHealth() {
 		return health;
 	}
 

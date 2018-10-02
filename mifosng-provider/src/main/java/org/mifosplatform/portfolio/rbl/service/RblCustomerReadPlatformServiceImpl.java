@@ -69,8 +69,8 @@ public class RblCustomerReadPlatformServiceImpl implements RblCustomerReadPlatfo
 
             final Long clientId = JdbcSupport.getLong(rs, "clientId");
             final String pensionCard = rs.getString( "pensioncard");
-            final Long adharsdingconstant = JdbcSupport.getLong(rs, "adharseeingconstant");
-            final Integer health=JdbcSupport.getInteger(rs,"health");;
+            final String adharsdingconstant = rs.getString( "adharseeingconstant");
+            final String health=rs.getString("health");;
         	final String language=rs.getString("language");;
         	final Integer cardIssueFlag=JdbcSupport.getInteger(rs,"cardissueFl");;
         	final Integer cbCheck=JdbcSupport.getInteger(rs,"cbcheck");;

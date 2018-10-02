@@ -22,32 +22,31 @@ public class CodeValueData implements Serializable {
     @SuppressWarnings("unused")
     private final String description;
     
-    private final Long codescore;
+    private final String codescore;
 
-    public static CodeValueData instance(final Long id, final String name, final Integer position,final Long codescore) {
+    public static CodeValueData instance(final Long id, final String name, final Integer position,final String codescore) {
         String description = null;
         return new CodeValueData(id, name, position, description,codescore);
     }
 
     public static CodeValueData instance(final Long id, final String name, final String description) {
         Integer position = null;
-        Long codescore=null;
+        String codescore=null;
         return new CodeValueData(id, name, position, description,codescore);
     }
 
     public static CodeValueData instance(final Long id, final String name) {
         String description = null;
         Integer position = null;
-        Long codescore=null;
+        String codescore=null;
         return new CodeValueData(id, name, position, description,codescore);
     }
 
-    public static CodeValueData instance(final Long id, final String name, final Integer position, final String description) {
-    	final Long codescore=null;
+    public static CodeValueData instance(final Long id, final String name, final Integer position, final String description,final String codescore) {
     	return new CodeValueData(id, name, position, description,codescore);
     }
 
-    private CodeValueData(final Long id, final String name, final Integer position, final String description,final Long codescore) {
+    private CodeValueData(final Long id, final String name, final Integer position, final String description,final String codescore) {
         this.id = id;
         this.name = name;
         this.position = position;
@@ -63,7 +62,7 @@ public class CodeValueData implements Serializable {
         return this.name;
     }
 
-	public Long getCodescore() {
+	public String getCodescore() {
 		return codescore;
 	}
     

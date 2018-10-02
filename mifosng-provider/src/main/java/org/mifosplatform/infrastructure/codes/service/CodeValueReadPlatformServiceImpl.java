@@ -46,7 +46,7 @@ public class CodeValueReadPlatformServiceImpl implements CodeValueReadPlatformSe
             final String value = rs.getString("value");
             final Integer position = rs.getInt("position");
             final String description = rs.getString("description");
-            final Long codescore =rs.getLong("codescore");
+            final String codescore =rs.getString("codescore");
             return CodeValueData.instance(id, value, position, codescore);
         }
     }

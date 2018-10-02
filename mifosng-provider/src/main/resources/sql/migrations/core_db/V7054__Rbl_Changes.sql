@@ -24,8 +24,8 @@ CREATE TABLE `m_rblcustomer` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
 	`client_id` BIGINT(20) NULL DEFAULT NULL,
 	`pension_card` VARCHAR(50) NULL DEFAULT NULL,
-	`adharSeeding_constant` INT(11) NULL DEFAULT NULL,
-	`health` INT(11) NULL DEFAULT NULL,
+	`adharSeeding_constant` VARCHAR(50) NULL DEFAULT NULL,
+	`health` VARCHAR(50) NULL DEFAULT NULL,
 	`language` VARCHAR(50) NULL DEFAULT NULL,
 	`card_issue_fl` INT(11) NULL DEFAULT NULL,
 	`cb_check` INT(11) NULL DEFAULT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE `m_rblcustomer` (
 	`gurdian_mobileNo` VARCHAR(10) NULL DEFAULT NULL,
 	`title` INT(11) NULL DEFAULT NULL,
 	PRIMARY KEY (`id`)
-);
+)
 
 CREATE TABLE `m_rblgroup` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,

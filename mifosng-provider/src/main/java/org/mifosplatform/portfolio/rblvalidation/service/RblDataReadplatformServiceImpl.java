@@ -62,7 +62,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
       
         public String schema() {
             return   "  mg.external_id as externalId,mg.display_name as centerName,mg.activation_date,s.display_name as serviceAgent, "
-                     +"mrblc.max_individual as maxIndividual,meetingTime.code_value as meetingTime,concat(ifnull(mrblc.house_no,''),ifnull(mrblc.street_no ,'')) as addressline1 ,"
+                     +"mrblc.max_individual as maxIndividual,mrblc.meting_time as meetingTime,concat(ifnull(mrblc.house_no,''),ifnull(mrblc.street_no ,'')) as addressline1 ,"
                      +" concat (ifnull(mrblc.area_loc,''),ifnull(mrblc.landmark,'')) as addressline2,ifnull(mrblc.village,'') as addressLine3,district.code_score as cityCode, "
                      +"state.code_score as state,mrblc.pin as pincode,rblb.`operating region` as OperatingRegion,rblb.`Branch Code` as branchCode, "
                      +"mrblc.description as description,mg.activation_date as formationDate, "
@@ -214,7 +214,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             final Integer renewalFl=JdbcSupport.getInteger(rs, "renewalFl");
             final  String panno =rs.getString("panNo");
         	final String barcodeNumber =rs.getString("barcodeNumber");
-        	final Integer adharSeedingConstant =JdbcSupport.getInteger(rs, "adharSeedingConstant");
+        	final String adharSeedingConstant =rs.getString( "adharSeedingConstant");
            
             return new RblclientDatValidation(externalId,externalCenterId,title,customerName,addressLine1,addressLine2,addressLine3,
             		cityCode,stateCode,pincode,dateofBirt,mobileNumber,caste,gender,maritalStatus,nationality,relegion,motherTounge,
@@ -307,12 +307,22 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             return   "  ml.external_id as externalId,mc.external_id as customerExternalId ,center.external_id as externalCenterId,"
                    + "mg.external_id as groupExternalId, mp.name as loanProductCode,purpose.code_score as loanPurpose,rbl.psl_code as pslcode,"
                     +"ml.principal_amount as loanAmount,'2' as disbursementMode,mp.number_of_repayments as noOfInstallment,"
-                    +"ifnull(ml.loan_counter,0) as loanCycle,nlt.loanApplication_Id as barcodeNo,ml.disbursedon_date as loanStratDate,"
+                    +"ifnull(ml.loan_counter,1) as loanCycle,nlt.loanApplication_Id as barcodeNo,ml.disbursedon_date as loanStratDate,"
                     +"ml.expected_firstrepaymenton_date as repaymentStartDate,ml.expected_disbursedon_date as ExceptedDisbursementDate,"
                     +"rbb.`bc branch code` as bcBranchCode,rbb.collector as colector ,rbb.approver as approver,rbl.to_Up_flag as TopUpLoanFlag,"
                     +"rbl.hosiptal_cash as hosiptalCash,rbl.prepaid_charge as prepaidCharge,"
-                    +"if(mp.repayment_period_frequency_enum=1,2,if(mp.repayment_period_frequency_enum=0,1,if(mp.repayment_period_frequency_enum=2,4,if(mp.repayment_period_frequency_enum=3,7,0)))) as repaymentfrequency"
+                    +"nc.first_name as nomineeName, concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as nomineeAddressline1,"
+                    +"concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as gurdianAddressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as nomineeAddressline2,"
+                    +"concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as gurdianAddressline2,ifnull(na.taluka,'') as nomineeAddressline3,"
+                    +"ifnull(na.taluka,'') as gurdianAddressline3,nomineecity.code_score as nomineecity,nomineecity.code_score as gurdianCity,"
+                    +"gurdianTitle.code_score as gurdianTitle,mrbl.gurdian_name as gurdianName,mrbl.gurdian_DatofBirth as gurdianDateofBirth,"
+                    +"gurdiangender.code_score as gurdianGender,gurdianrelation.code_score as gurdianRelation,Round(datediff(curdate(),nc.date_of_birth)/365) as nomineeAge,"
+                    +"nomineestate.code_score as nomineestate,nomineestate.code_score as gurdianState,'02' as nomineeMinor,relation.code_score as nomineeRlation,nc.date_of_birth as nomineeDateOfBirth,gender.code_score as nomineeGender, "
+                    +"if(mp.repayment_period_frequency_enum=1,'02',if(mp.repayment_period_frequency_enum=0,'01',if(mp.repayment_period_frequency_enum=2,'04',if(mp.repayment_period_frequency_enum=3,'07',0)))) as repaymentfrequency "
                     +" from m_client mc "
+                    + "left join n_coapplicant nc on nc.client_id =mc.id "
+                    + "left join n_address na on na.client_id =mc.id and na.address_type_cv_id= 26 "
+                    +"left join m_rblcustomer mrbl on mrbl.client_id =mc.id "                    
                     +"left join m_group_client mgc on mgc.client_id =mc.id "
                     +"left join m_group mg on mgc.group_id =mg.id "
                     +"left join m_group center on center.id =mg.parent_id and center.level_id =1 "
@@ -321,6 +331,14 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                     +"left join m_code_value purpose on purpose.id =ml.loanpurpose_cv_id "
                     +"left join m_rblloan rbl on rbl.loan_id =ml.id "
                     +"left join n_loan_ext nlt on nlt.loan_id =ml.id "
+                    +"left join m_code_value title on title.id =nc.salutation_cv_id "
+                    +"left join m_code_value relation on relation.id =nc.sp_relationship_cv_id "
+                    +"left join m_code_value gender on gender.id =nc.gender_cv_id "
+                    +"left join m_code_value nomineecity on nomineecity.id =na.district_cv_id "
+                    +"left join m_code_value nomineestate on nomineestate.id =na.state_cv_id "
+                    +"left join m_code_value gurdianTitle on gurdianTitle.id =mrbl.title "
+                    +"left join m_code_value gurdiangender on gurdiangender.id =mrbl.gurdian_gender "
+                    +"left join m_code_value gurdianrelation on gurdianrelation.id =mrbl.relation_cv_id "
                     +"left join `rbl branch name` rbb on rbb.office_id =mc.office_id ";
         }        
       	
@@ -332,13 +350,15 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         	final String customerExternalId =rs.getString("customerExternalId");
             final String centerExtrenalId=rs.getString("externalCenterId");
             final String groupExternalId =rs.getString("groupExternalId");
-            final String loanProductCode =rs.getString("loanProductCode");
+             String loanProductCode =rs.getString("loanProductCode");
+             String []str =loanProductCode.split("-");
+             loanProductCode=str[2];
             final Integer loanPurpose =JdbcSupport.getInteger(rs, "loanPurpose"); 
             final Integer pslcode =JdbcSupport.getInteger(rs, "pslcode"); 
             final Long loanAmount =JdbcSupport.getLong(rs, "loanAmount"); 
             final String disbursementMode =rs.getString("disbursementMode");
             final Integer noofInstallments =JdbcSupport.getInteger(rs, "noOfInstallment");
-            final Integer repaymentfrequency =JdbcSupport.getInteger(rs, "repaymentfrequency");
+            final String repaymentfrequency =rs.getString("repaymentfrequency");
             final Integer loanCycle =JdbcSupport.getInteger(rs, "loanCycle");            
             final String barcodeNo =rs.getString("barcodeNo");
             final Date  loanStratDate =rs.getDate("loanStratDate");
@@ -351,10 +371,35 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             final String hosiptalCash =rs.getString("hosiptalCash");
             final String prepaidCharge =rs.getString("prepaidCharge");
             
+            final String nomineeName =rs.getString("nomineeName");
+            final String nomineeAddressline1=rs.getString("nomineeAddressline1");
+            final String nomineeAddressline2 =rs.getString("nomineeAddressline2");
+            final String nomineeAddressline3 =rs.getString("nomineeAddressline3");
+            final String nomineeRlation =rs.getString("nomineeRlation");
+            final Date nomineeDateOfBirth =rs.getDate("nomineeDateOfBirth") ;
+            final String nomineeAge=rs.getString("nomineeAge");
+            final String nomineeGender =rs.getString("nomineeGender");
+            final String nomineestate =rs.getString("nomineestate");
+            final String nomineecity =rs.getString("nomineecity");
+            final String nomineeMinor =rs.getString("nomineeMinor");
+            final String gurdianTitle =rs.getString("gurdianTitle");
+            final String gurdianName =rs.getString("gurdianName");
+            final Date gurdianDateofBirth =rs.getDate("gurdianDateofBirth");
+            final String gurdianGender =rs.getString("gurdianGender");
+            final String gurdianAddressline1=rs.getString("gurdianAddressline1");
+            //final String gurdianAddressline2 =rs.getString("gurdianAddressline2");
+           // final String gurdianAddressline3 =rs.getString("gurdianAddressline3");
+          //  final String gurdianState =rs.getString("gurdianState");
+          //  final String gurdianCity =rs.getString("gurdianCity");
+            final String gurdianRelation =rs.getString("gurdianRelation");
+
             
             return new RblLoanValidationData(externalId,customerExternalId,centerExtrenalId,groupExternalId,loanProductCode,loanPurpose,
             		pslcode,loanAmount,disbursementMode,noofInstallments,repaymentfrequency,loanCycle,barcodeNo,loanStratDate,
-            		repaymentStartDate,bcBranchCode,colector,approver,ExceptedDisbursementDate,TopUpLoanFlag,hosiptalCash,prepaidCharge);
+            		repaymentStartDate,bcBranchCode,colector,approver,ExceptedDisbursementDate,TopUpLoanFlag,hosiptalCash,prepaidCharge,
+            		nomineeName,nomineeAddressline1,nomineeAddressline2,nomineeAddressline3,nomineeRlation,nomineeDateOfBirth,nomineeAge
+            		,nomineeGender,nomineestate,nomineecity,nomineeMinor,gurdianTitle,gurdianName,gurdianDateofBirth,gurdianGender,gurdianAddressline1,
+            		gurdianRelation);
         }
 
     }
@@ -418,7 +463,9 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         	final String customerExternalId =rs.getString("customerExternalId");
             final String centerExtrenalId=rs.getString("externalCenterId");
             final String accountType =rs.getString("accountType");
-            final String savingproductCode =rs.getString("savingproductCode");
+             String savingproductCode =rs.getString("savingproductCode");
+             String [] productCodeArray =savingproductCode.split("-");
+             savingproductCode=productCodeArray[1];
             final String productName =rs.getString("productName");
             final Date accountOpeningDate=rs.getDate("accountOpeningDate");
             final String nomineeTitle =rs.getString("nomineeTitle");

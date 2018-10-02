@@ -8,6 +8,9 @@ import java.util.Date;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.json.XML;
+import org.mifosplatform.infrastructure.codes.data.CodeValueData;
+import org.mifosplatform.infrastructure.codes.domain.CodeValue;
+import org.mifosplatform.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
@@ -29,8 +32,14 @@ import org.mifosplatform.portfolio.rblvalidation.domain.ValidatefileRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.google.gson.JsonObject;
+
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.group.domain.Group;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoan;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepositoryWrapper;
+import org.mifosplatform.portfolio.loanaccount.service.PartialLoanWriteplatformService;
 
 @Service
 public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatformService {
@@ -43,6 +52,8 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
     private final CreditBureauRequestRepositoryWrapper creditBureauRequestRepositoryWrapper;
     private final CredeitBureauResponseRepositoryWrapper credeitBureauResponseRepositoryWrapper;
     private final ValidateRblFileRepository validateRblFileRepository;
+    private final PartialLoanRepositoryWrapper partialLoanRepositoryWrapper;
+    private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
 
 	@Autowired
 	public RblEquifaxWritePlatformServiceImpl(final PlatformSecurityContext context,
@@ -51,7 +62,9 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 			final ClientRepositoryWrapper clientRepository,final CreditBureauValidationErrorRepositoryWrapper creditBureauValidationErrorRepositoryWrapper,
 			final CreditBureauRequestRepositoryWrapper creditBureauRequestRepositoryWrapper,
 			final CredeitBureauResponseRepositoryWrapper credeitBureauResponseRepositoryWrapper,
-			final ValidateRblFileRepository validateRblFileRepository) {
+			final ValidateRblFileRepository validateRblFileRepository,
+			final PartialLoanRepositoryWrapper partialLoanRepositoryWrapper,
+			final CodeValueRepositoryWrapper codeValueRepositoryWrapper) {
 		this.context = context;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.codeValueReadPlatformService = codeValueReadPlatformService;
@@ -61,6 +74,8 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		this.creditBureauRequestRepositoryWrapper=creditBureauRequestRepositoryWrapper;
 		this.credeitBureauResponseRepositoryWrapper =credeitBureauResponseRepositoryWrapper;
 		this.validateRblFileRepository=validateRblFileRepository;
+		this.partialLoanRepositoryWrapper=partialLoanRepositoryWrapper;
+		this.codeValueRepositoryWrapper=codeValueRepositoryWrapper;
 	}
 
 	@Override
@@ -184,9 +199,9 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 			 fileNames =centerName+"_validatefile"+new DateTime().toString("ddmmyyyhhmmss")+".txt";
 				fr =new FileWriter(rblcentervalidatefile);	
 			 }
-				fr.write("===========Start Writing for Client External Id============"+  rblClientsData.getExternalId()  +"\n");
-				 fr.write(Error);
-				 fr.write("\n");
+		fr.write("===========Start Writing for Client External Id============"+  rblClientsData.getExternalId()  +"\n");
+		fr.write(Error);
+		fr.write("\n");
 		}
 		else{
 		 if(isError){
@@ -197,13 +212,13 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 					 rblClientsData.getDateOfBirth(), rblClientsData.getBranchCode(), rblClientsData.getBranchName(), Error, clientId);
 					this.creditBureauValidationErrorRepositoryWrapper.save(creditBureauValidationError);    		    
 					return false;    
-		 }
+		      }
 		 else{
 			 
 			
 			 
 					JSONObject json = new JSONObject(rblEquifaxData);
-					String xml = XML.toString(json);
+					String xml = XML.toString(json,"getConsumerCreditReport");
 					 System.out.println("xml formate is"+xml);
 			 
 			 // url to be called
@@ -234,7 +249,29 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 				 final Client clientforUpdate =this.clientRepository.findOneWithNotFoundDetection(clientId);
 				 ClientStatus status = ClientStatus.REJECTED;
 				 clientforUpdate.setStatus(status.getValue());
-				 this.clientRepository.saveAndFlush(clientforUpdate);
+				 this.clientRepository.saveAndFlush(clientforUpdate);				 
+				 Long groupId=(long) 0;
+				 for(Group group :clientforUpdate.getGroups()){
+					 groupId= group.getId();
+				 }
+			  CodeValue codevaluseStatus =this.codeValueRepositoryWrapper.findOneWithNotFoundDetection((long) 288);
+			  final  PartialLoan partialLoanforUpdate = this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1,0);
+			  partialLoanforUpdate.updatestatus(codevaluseStatus);
+			  partialLoanforUpdate.updateisActive(0);
+			  this.partialLoanRepositoryWrapper.saveAndFlush(partialLoanforUpdate);
+			 }
+			 else{				 
+				 Long groupId=(long) 0;
+				 final Client clientforUpdate =this.clientRepository.findOneWithNotFoundDetection(clientId);
+				 for(Group group :clientforUpdate.getGroups()){
+					 groupId= group.getId();
+				 }
+			        CodeValue codevaluseStatus =this.codeValueRepositoryWrapper.findOneWithNotFoundDetection((long) 289);
+					  final  PartialLoan partialLoanforUpdate = this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1,0);
+					  partialLoanforUpdate.updatestatus(codevaluseStatus);
+					  partialLoanforUpdate.updateisActive(0);
+				  this.partialLoanRepositoryWrapper.saveAndFlush(partialLoanforUpdate);
+
 			 }
 			 JSONObject rsponse =(JSONObject) RblCreditBureauResponseData.getJSONObject("getConsumerCreditReport").getJSONObject("Header");
 			 CreditBureaoResponse creditBureaoResponse=
@@ -250,17 +287,17 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		  e.printStackTrace();	 
 		  }
 	  }
-    	if(isValidate){
+    if(isValidate){
     		try {
     			 fr.close();			
     			  ValidatefileRecord validatefileRecord = new ValidatefileRecord(centersId,"CB",fileNames,fileLocation);
     		      this.validateRblFileRepository.save(validatefileRecord); 
         	    }
-    		catch (IOException e) {
+    	catch (IOException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
     		}
-    	}
+    }
     	
 		return true;
 	

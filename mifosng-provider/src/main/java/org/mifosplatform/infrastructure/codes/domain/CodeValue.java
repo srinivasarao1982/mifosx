@@ -39,7 +39,7 @@ public class CodeValue extends AbstractPersistable<Long> {
     private Code code;
     
     @Column (name ="code_score")
-    private Long codeScore;
+    private String codeScore;
 
     public static CodeValue createNew(final Code code, final String label, final int position, final String description,final Integer codeScore) {
         return new CodeValue(code, label, position, description,codeScore );
@@ -65,7 +65,7 @@ public class CodeValue extends AbstractPersistable<Long> {
         return this.position;
     }
     
-    public Long codeScore() {
+    public String codeScore() {
         return this.codeScore;
     }
     

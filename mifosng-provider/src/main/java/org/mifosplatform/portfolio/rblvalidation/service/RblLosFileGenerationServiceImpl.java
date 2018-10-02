@@ -88,7 +88,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 			 String RBL_BASE_DIR = System.getProperty("user.home") + File.separator + ".mifosx"+File.separator+"RBLLosFile";
 			    try {
 				DateTime dt=new DateTime();
-				File rblLosFile =new File (RBL_BASE_DIR,"Nextru_Los__"+ dt.toString("yyyyMMdd")+"_"+dt.toString("HH")+"_"+dt.toString("mm")+".txt");
+				File rblLosFile =new File (RBL_BASE_DIR,"NEXTRU_LOS__"+ dt.toString("yyyyMMdd")+"_"+dt.toString("HH")+"_"+dt.toString("mm")+".txt");
 				FileWriter fr =null;
 				fr =new FileWriter(rblLosFile);
 				
@@ -145,7 +145,8 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 						customerData.append(rblLoanValidationData.getColector()).append("|").append(rblLoanValidationData.getApprover()).append("|");
 						customerData.append(rblLoanValidationData.getExceptedDisbursementDate()).append("|").append(rblLoanValidationData.getTopUpLoanFlag()).append("|");
 						customerData.append(rblLoanValidationData.getHosiptalCash()).append("|").append(rblLoanValidationData.getPrepaidCharge());
-						String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
+						String extrafield=" |"+"|"+"POL3"+"|"+"|"+"|"+"|"+"|"+rblLoanValidationData.getNomineeName()+"|"+rblLoanValidationData.getGurdianAddressline1()+"|"+rblLoanValidationData.getNomineeAddressline2()+"|"+rblLoanValidationData.getNomineeAddressline3()+"|"+rblLoanValidationData.getNomineeRlation()+"|"+rblLoanValidationData.getNomineeDateOfBirth()+"|"+
+						rblLoanValidationData.getNomineeAge()+"|"+rblLoanValidationData.getNomineeGender()+"|"+"|"+"|"+"|"+"|"+rblLoanValidationData.getGurdianTitle()+"|"+rblLoanValidationData.getGurdianName()+"|"+rblLoanValidationData.getGurdianDateofBirth()+"|"+rblLoanValidationData.getGurdianGender()+"|"+rblLoanValidationData.getGurdianAddressline1()+"|"+rblLoanValidationData.getGurdianRelation()+"|"+"|"+"|"+"|"+"|"+"|" ; 
 						String actualfield=customerData.toString().replace("null", "" );
 						fr.write(actualfield + extrafield);
 						fr.write("\n");
@@ -167,6 +168,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					customerData.append(rblSavingValidationData.getNomineeAddressline1()).append("|").append(rblSavingValidationData.getNomineeAddressline2()).append("|");
 					customerData.append(rblSavingValidationData.getNomineeAddressline3()).append("|").append(rblSavingValidationData.getNomineecity()).append("|");
 					customerData.append(rblSavingValidationData.getNomineestate()).append("|").append(rblSavingValidationData.getNomineePincode()).append("|");
+					customerData.append(rblSavingValidationData.getNomineeMinor()).append("|").append(rblSavingValidationData.getGurdianTitle()).append("|");
 					customerData.append(rblSavingValidationData.getGurdianName()).append("|").append(rblSavingValidationData.getGurdianDateofBirth()).append("|");
 					customerData.append(rblSavingValidationData.getGurdianGender()).append("|").append(rblSavingValidationData.getGurdianAddressline1()).append("|");
 					customerData.append(rblSavingValidationData.getGurdianAddressline2()).append("|").append(rblSavingValidationData.getGurdianAddressline3()).append("|");
