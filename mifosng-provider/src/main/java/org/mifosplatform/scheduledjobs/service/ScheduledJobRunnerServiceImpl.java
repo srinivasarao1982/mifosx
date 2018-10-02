@@ -19,6 +19,7 @@ import org.mifosplatform.infrastructure.core.exception.PlatformApiDataValidation
 import org.mifosplatform.infrastructure.core.service.DateUtils;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSourceServiceFactory;
 import org.mifosplatform.infrastructure.core.service.ThreadLocalContextUtil;
+import org.mifosplatform.infrastructure.documentmanagement.service.DocumentWritePlatformService;
 import org.mifosplatform.infrastructure.jobs.annotation.CronTarget;
 import org.mifosplatform.infrastructure.jobs.exception.JobExecutionException;
 import org.mifosplatform.infrastructure.jobs.service.JobName;
@@ -51,6 +52,7 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
     private final DepositAccountReadPlatformService depositAccountReadPlatformService;
     private final DepositAccountWritePlatformService depositAccountWritePlatformService;
     private final RblEquifaxWritePlatformService rblEquifaxWritePlatformService;
+    private final DocumentWritePlatformService documentWritePlatformService;
 
     @Autowired
     public ScheduledJobRunnerServiceImpl(final RoutingDataSourceServiceFactory dataSourceServiceFactory,
@@ -58,13 +60,15 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
             final SavingsAccountChargeReadPlatformService savingsAccountChargeReadPlatformService,
             final DepositAccountReadPlatformService depositAccountReadPlatformService,
             final DepositAccountWritePlatformService depositAccountWritePlatformService,
-            final RblEquifaxWritePlatformService rblEquifaxWritePlatformService) {
+            final RblEquifaxWritePlatformService rblEquifaxWritePlatformService,
+            final DocumentWritePlatformService documentWritePlatformService) {
         this.dataSourceServiceFactory = dataSourceServiceFactory;
         this.savingsAccountWritePlatformService = savingsAccountWritePlatformService;
         this.savingsAccountChargeReadPlatformService = savingsAccountChargeReadPlatformService;
         this.depositAccountReadPlatformService = depositAccountReadPlatformService;
         this.depositAccountWritePlatformService = depositAccountWritePlatformService;
         this.rblEquifaxWritePlatformService=rblEquifaxWritePlatformService;
+        this.documentWritePlatformService = documentWritePlatformService;
     }
 
     @Transactional
@@ -388,4 +392,13 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
         logger.info(ThreadLocalContextUtil.getTenant().getName() + ": Results affected SucessResult Are : " + sucessCount +"Failure Result Are "+failureCount);
 
 	}
+
+	@Override
+	@Transactional
+	@CronTarget(jobName = JobName.DOWNLOAD_RBL_DOCUMENTS_SCHEDULE)
+	public void downloadDocumentFromRemoteServer() {
+		this.documentWritePlatformService.downloadDocumentFromRemoteHost();
+		logger.info(ThreadLocalContextUtil.getTenant().getName() + "Documents Downloaded Sucessfully . . !");
+	}
+
 }

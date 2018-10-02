@@ -38,7 +38,9 @@ import org.mifosplatform.infrastructure.documentmanagement.data.DocumentData;
 import org.mifosplatform.infrastructure.documentmanagement.data.FileData;
 import org.mifosplatform.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.mifosplatform.infrastructure.documentmanagement.service.DocumentWritePlatformService;
+import org.mifosplatform.infrastructure.documentmanagement.service.DocumentWritePlatformServiceJpaRepositoryImpl.DOCUMENT_MANAGEMENT_ENTITY;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.portfolio.client.domain.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -62,16 +64,19 @@ public class DocumentManagementApiResource {
     private final DocumentWritePlatformService documentWritePlatformService;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final ToApiJsonSerializer<DocumentData> toApiJsonSerializer;
+    private final ClientRepository clientRepository;
 
     @Autowired
     public DocumentManagementApiResource(final PlatformSecurityContext context,
             final DocumentReadPlatformService documentReadPlatformService, final DocumentWritePlatformService documentWritePlatformService,
-            final ApiRequestParameterHelper apiRequestParameterHelper, final ToApiJsonSerializer<DocumentData> toApiJsonSerializer) {
+            final ApiRequestParameterHelper apiRequestParameterHelper, final ToApiJsonSerializer<DocumentData> toApiJsonSerializer,
+            final ClientRepository clientRepository) {
         this.context = context;
         this.documentReadPlatformService = documentReadPlatformService;
         this.documentWritePlatformService = documentWritePlatformService;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.toApiJsonSerializer = toApiJsonSerializer;
+        this.clientRepository = clientRepository;
     }
 
     @GET
@@ -79,10 +84,11 @@ public class DocumentManagementApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String retreiveAllDocuments(@Context final UriInfo uriInfo, @PathParam("entityType") final String entityType,
             @PathParam("entityId") final Long entityId) {
-
+    	// Nextru Specific - Clients and loans related documents storing into single folder - RBI related changes
+        final String commonEntityType = DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString();
         this.context.authenticatedUser().validateHasReadPermission(this.SystemEntityType);
 
-        final Collection<DocumentData> documentDatas = this.documentReadPlatformService.retrieveAllDocuments(entityType, entityId);
+        final Collection<DocumentData> documentDatas = this.documentReadPlatformService.retrieveAllDocuments(commonEntityType, entityId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, documentDatas, this.RESPONSE_DATA_PARAMETERS);
@@ -94,7 +100,8 @@ public class DocumentManagementApiResource {
     public String createDocument(@PathParam("entityType") final String entityType, @PathParam("entityId") final Long entityId,
             @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
             @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart,
-            @FormDataParam("name") final String name, @FormDataParam("description") final String description) {
+            @FormDataParam("name") final String name, @FormDataParam("description") final String description,
+            @FormDataParam("documentType") final String documentType) {
 
         /**
          * TODO: also need to have a backup and stop reading from stream after
@@ -105,9 +112,17 @@ public class DocumentManagementApiResource {
          * TODO: need to extract the actual file type and determine if they are
          * permissable
          **/
-        final DocumentCommand documentCommand = new DocumentCommand(null, null, entityType, entityId, name, fileDetails.getFileName(),
+    	// Nextru Specific - Clients and loans related documents storing into single folder - RBI related changes
+        final String commonEntityType = DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString();
+        String fileName = null;
+        String documentName = documentType.replaceAll(" ", ""); // removing whitespace in documentType name
+        if(entityType.equals(DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString()) || entityType.equals(DOCUMENT_MANAGEMENT_ENTITY.LOANS.toString())){
+        	fileName = this.documentWritePlatformService.documentNameGenerator(entityId, documentName);
+        }else{
+        	fileName = fileDetails.getFileName();
+        }
+        final DocumentCommand documentCommand = new DocumentCommand(null, null, commonEntityType,entityId, name,fileName,
                 fileSize, bodyPart.getMediaType().toString(), description, null);
-
         final Long documentId = this.documentWritePlatformService.createDocument(documentCommand, inputStream);
 
         return this.toApiJsonSerializer.serialize(CommandProcessingResult.resourceResult(documentId, null));
@@ -126,6 +141,8 @@ public class DocumentManagementApiResource {
         final Set<String> modifiedParams = new HashSet<>();
         modifiedParams.add("name");
         modifiedParams.add("description");
+     // Nextru Specific - Clients and loans related documents storing into single folder - RBI related changes
+        final String commonEntityType = DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString();
 
         /***
          * Populate Document command based on whether a file has also been
@@ -137,10 +154,10 @@ public class DocumentManagementApiResource {
             modifiedParams.add("size");
             modifiedParams.add("type");
             modifiedParams.add("location");
-            documentCommand = new DocumentCommand(modifiedParams, documentId, entityType, entityId, name, fileDetails.getFileName(),
+            documentCommand = new DocumentCommand(modifiedParams, documentId, commonEntityType, entityId, name, fileDetails.getFileName(),
                     fileSize, bodyPart.getMediaType().toString(), description, null);
         } else {
-            documentCommand = new DocumentCommand(modifiedParams, documentId, entityType, entityId, name, null, null, null, description,
+            documentCommand = new DocumentCommand(modifiedParams, documentId, commonEntityType, entityId, name, null, null, null, description,
                     null);
         }
         /***
@@ -158,10 +175,11 @@ public class DocumentManagementApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String getDocument(@PathParam("entityType") final String entityType, @PathParam("entityId") final Long entityId,
             @PathParam("documentId") final Long documentId, @Context final UriInfo uriInfo) {
-
+    	// Nextru Specific - Clients and loans related documents storing into single folder - RBI related changes
+        final String commonEntityType = DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString();
         this.context.authenticatedUser().validateHasReadPermission(this.SystemEntityType);
 
-        final DocumentData documentData = this.documentReadPlatformService.retrieveDocument(entityType, entityId, documentId);
+        final DocumentData documentData = this.documentReadPlatformService.retrieveDocument(commonEntityType, entityId, documentId);
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, documentData, this.RESPONSE_DATA_PARAMETERS);
@@ -173,10 +191,11 @@ public class DocumentManagementApiResource {
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public Response downloadFile(@PathParam("entityType") final String entityType, @PathParam("entityId") final Long entityId,
             @PathParam("documentId") final Long documentId) {
-
+    	// Nextru Specific - Clients and loans related documents storing into single folder - RBI related changes
+        final String commonEntityType = DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString();
         this.context.authenticatedUser().validateHasReadPermission(this.SystemEntityType);
 
-        final FileData fileData = this.documentReadPlatformService.retrieveFileData(entityType, entityId, documentId);
+        final FileData fileData = this.documentReadPlatformService.retrieveFileData(commonEntityType, entityId, documentId);
         final ResponseBuilder response = Response.ok(fileData.file());
         response.header("Content-Disposition", "attachment; filename=\"" + fileData.name() + "\"");
         response.header("Content-Type", fileData.contentType());
@@ -247,8 +266,9 @@ public class DocumentManagementApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String deleteDocument(@PathParam("entityType") final String entityType, @PathParam("entityId") final Long entityId,
             @PathParam("documentId") final Long documentId) {
-
-        final DocumentCommand documentCommand = new DocumentCommand(null, documentId, entityType, entityId, null, null, null, null, null,
+    	// Nextru Specific - Clients and loans related documents storing into single folder - RBI related changes
+        final String commonEntityType = DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString();
+        final DocumentCommand documentCommand = new DocumentCommand(null, documentId, commonEntityType, entityId, null, null, null, null, null,
                 null);
 
         final CommandProcessingResult documentIdentifier = this.documentWritePlatformService.deleteDocument(documentCommand);

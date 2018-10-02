@@ -89,4 +89,15 @@ public class CodeValueReadPlatformServiceImpl implements CodeValueReadPlatformSe
         }
 
     }
+
+    // Nextu Specific - Retrieving clients document types
+	@Override
+	public Collection<CodeValueData> retriveClientDocumentTypes() {
+		this.context.authenticatedUser();
+		final CodeValueDataMapper rm = new CodeValueDataMapper();
+		final String sql = "select" + rm.schema() 
+		                            + " join m_client_document_types mcdt on mcdt.documentTypeId = c.id "
+                                    + "order by cv.id ";
+	    return this.jdbcTemplate.query(sql, rm, new Object[] {});
+	}
 }

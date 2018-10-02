@@ -35,4 +35,7 @@ public interface CodeValueReadPlatformService {
     Collection<CodeValueData> retrieveAllCodeValues(final Long codeId);
 
     CodeValueData retrieveCodeValue(final Long codeValueId);
+    
+    //Nextru Specific change - to retrieve client document types
+    Collection<CodeValueData> retriveClientDocumentTypes();
 }
