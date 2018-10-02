@@ -19,4 +19,6 @@ public interface CodeReadPlatformService {
     CodeData retriveCode(String codeName);
     
     Collection<CodeValueData> retrieveAllCodeValuesForCode(final String codeName);
+    
+    Collection<CodeValueData> retriveClientDocumentTypesCodeValue();
 }

@@ -26,4 +26,8 @@ public interface ScheduledJobRunnerService {
     void generateCenterMeetingSchedule(); 
     
     void equifaxIntregation(final String clientId);
+    
+  //download documents from rbl server cron expression
+    void downloadDocumentFromRemoteServer();
+
 }

@@ -175,4 +175,20 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
         }
     }
 
+	@Override
+	public boolean validateDuplicateDoducmentName(String entityType, Long entityId, String fileName) {
+		    boolean isDuplicateDocumentFileNameFound = false;
+		    try {
+		    	final DocumentMapper mapper = new DocumentMapper(true, true);
+				final String sql = "select " + mapper.schema() + " and d.file_name=? ";
+				DocumentData document = this.jdbcTemplate.queryForObject(sql, mapper, new Object[] { entityType, entityId, fileName });
+				if(document != null){
+					isDuplicateDocumentFileNameFound = true; // duplicate document found with current file name
+				}
+		    }catch(EmptyResultDataAccessException exception){
+		    	isDuplicateDocumentFileNameFound = false; // duplicate document is not found with current file name
+		    }
+		    return isDuplicateDocumentFileNameFound;
+	}
+
 }
