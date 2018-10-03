@@ -70,7 +70,8 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
     private final String imageSourcePath;
     private final String losFileSourcePath;
     private final String losFileDestinationPath;
-    
+    private final String hostPassphrase;
+    private final String hostKeyName;
     //download documents
     private final String downloadFromDirPath;
     private final String downloadToDirPath;
@@ -84,7 +85,8 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
             @Value("${hostPortNumber}") final String hostPortNumber, @Value("${imageDestinationPath}") final String imageDestinationPath,
             @Value("${imageSourcePath}") final String imageSourcePath, @Value("${losFileSourcePath}") final String losFileSourcePath,
             @Value("${losFileDestinationPath}") final String losFileDestinationPath, @Value("${downloadFromDirPath}") final String downloadFromDirPath,
-            @Value("${downloadToDirPath}") final String downloadToDirPath) {
+            @Value("${downloadToDirPath}") final String downloadToDirPath, @Value("${hostPassphrase}") final String hostPassphrase,
+            @Value("${hostKeyName}") final String hostKeyName) {
         this.context = context;
         this.documentRepository = documentRepository;
         this.contentRepositoryFactory = documentStoreFactory;
@@ -103,6 +105,8 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
         this.losFileDestinationPath = losFileDestinationPath;
         this.downloadFromDirPath = downloadFromDirPath;
         this.downloadToDirPath = downloadToDirPath;
+        this.hostPassphrase = hostPassphrase;
+        this.hostKeyName = hostKeyName;
     }
 
     @Transactional
@@ -240,9 +244,12 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 		JSch jsch = new JSch();
         Session session = null;
         String losFileSourcePath = System.getProperty("user.home") + File.separator + ".mifosx"+File.separator+"RBLLosFile";
+        String remoteHostKey = System.getProperty("user.home") + File.separator + ".mifosx" +File.separator+ hostKeyName;
+        File keyFile = new File(remoteHostKey);
         
         try {
-            session = jsch.getSession(hostName,hostUserName,Integer.getInteger(hostPortNumber));
+        	jsch.addIdentity(keyFile.getAbsolutePath(),hostPassphrase);
+	    	session = jsch.getSession(hostName,hostUserName,Integer.getInteger(hostPortNumber));
             session.setConfig("StrictHostKeyChecking", "no");
             session.setPassword(hostPassword);
             session.connect();
@@ -315,15 +322,16 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 	@Override
 	public void downloadDocumentFromRemoteHost() {
 		
-		// String remoteDir = "remote_directory_path";
-		// String localDir = "localDirecoty_Path";
-		String downloadToDirPath = System.getProperty("user.home") + File.separator + ".mifosx" +File.separator+ "RBLReceivedFiles";
+		 String downloadToDirPath = System.getProperty("user.home") + File.separator + ".mifosx" +File.separator+ "RBLReceivedFiles";
+		 String remoteHostKey = System.getProperty("user.home") + File.separator + ".mifosx" +File.separator+ hostKeyName;
 	     Session session = null;
 	     List<String> listOfFileNames = new ArrayList<>();
 	     byte[] buffer = new byte[1024];
 		 BufferedInputStream bis;
 		 JSch jsch = new JSch();
+		 File keyFile = new File(remoteHostKey);
 	     try{
+	    	 jsch.addIdentity(keyFile.getAbsolutePath(),hostPassphrase);
 	    	 session = jsch.getSession(hostName,hostUserName,Integer.getInteger(hostPortNumber));
 	         session.setConfig("StrictHostKeyChecking", "no");
 	         session.setPassword(hostPassword);
@@ -339,7 +347,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 	             if (!oListItem.getAttrs().isDir()) {
 	            	 listOfFileNames.add(oListItem.getFilename());
 	            	 File file = new File(oListItem.getFilename());
-	     			 bis = new BufferedInputStream(sftpChannel.get(file.getName()));
+	     			 bis = new BufferedInputStream(sftpChannel.get(downloadFromDirPath + "/" + file.getName()));
 	     			 File newFile = new File(downloadToDirPath + "/" + file.getName());
 	     			
 	     			// Download file
