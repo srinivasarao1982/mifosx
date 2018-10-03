@@ -319,9 +319,9 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	            final AppUser currentUser = this.context.authenticatedUser();
 	            
 	            final RblClientsDataDataMapper rm = new RblClientsDataDataMapper();
-	            String Sql ="select "+rm.schema();
+	            String Sql ="select "+rm.schema() +"  where mc.id= "+clientId+ " and mp.is_active=1 and mp.is_disburse=0";
 	            List<RblClientsData>rblCreditBureauData=new ArrayList<RblClientsData>();
-	            rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] { clientId,clientId,clientId,clientId});
+	            rblCreditBureauData = this.jdbcTemplate.query(Sql, rm, new Object[] {});
 	            return rblCreditBureauData.get(0);
 	        } catch (final EmptyResultDataAccessException e) {
 	            throw new PartialLoanNotFoundException(clientId);
@@ -337,21 +337,20 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	        public String schema() {
 	            return "  mc.external_id as externalId,nct.external_Id2 as barccodeNo,mp.loan_amount as partialLoanAmount,mc.display_name as customerName, "
 	                    +"mp.loan_amount as loanAmount,if(mrbl.renewal_fl=0,'Y','N') as renewalFl,title.code_score as title,nct.pan_no as pan,mc.mobile_no as mobileNo, "
-	                    +"mc.date_of_birth as dateofBirth, if(gender.code_value like 'Mal%',01,02) gender,rbl.`Branch Code` as branchCode,rblbranchName.code_value as branchName ,"
-	                    +"rbl.`operating region` as operatingRegion,rbl.`bc branch code` as OperatingRegionName, "
-		                +"(select document_key from m_client_identifier where client_id=? and document_type_id=40)  adhar, "
-		                +"(select document_key from m_client_identifier where client_id=?  and document_type_id=41) voterId, "
-		                +"(select document_key from m_client_identifier where client_id=?  and document_type_id=43)   ration  " 
+	                    +"mc.date_of_birth as dateofBirth, if(gender.code_value like 'Mal%',01,02) gender,rbl.`Branch Code` as branchCode,rbl.`Branch Name` as branchName ,"
+	                    +"rbl.`operating region` as operatingRegion,rbl. `operating region Name` as OperatingRegionName,'' as  adhar,'' as voterId,'' as ration "
+		               // +"(select document_key from m_client_identifier where client_id= ? and document_type_id=40)  adhar, "
+		               // +"(select document_key from m_client_identifier where client_id= ?  and document_type_id=41) voterId, "
+		               // +"(select document_key from m_client_identifier where client_id= ?  and document_type_id=43)   ration  " 
 	                    +"from m_client mc "
-	                    +"left join m_partial_loan1 mp on mc.id=mp.client_id "
+	                    +"inner join m_partial_loan mp on mc.id=mp.client_id "
 	                    +"left join n_client_ext nct on mc.id=nct.client_id "
 	                    +"left join m_rblcustomer mrbl  on mc.id=mrbl.client_id "
 	                    +"left join m_client_identifier mci on mci.client_id=mc.id "
 	                    +"left join m_code_value gender on mc.gender_cv_id=gender.id "
 	                    +"left join m_code_value title on nct.salutation_cv_id=title.id "
 	                    +"left join `RBL Branch Name` rbl on  rbl.office_id=mc.id "
-	                    +"left join m_code_value rblbranchName on rblbranchName.id=rbl.`RBL_Branch_cd_RBL Branch` "
-	                    +"where mc.id=? ";
+	                    +"left join m_code_value rblbranchName on rblbranchName.id=rbl.`RBL_Branch_cd_RBL Branch` ";
 	        }
 	        @Override
 	        public RblClientsData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
@@ -362,7 +361,7 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	        	final   Long loanAmount=JdbcSupport.getLong(rs, "partialLoanAmount");
 	        	final   String isRenewalLoan=rs.getString("renewalFl");
 	        	final   String customerName=rs.getString("customerName");
-	        	final   Long title=JdbcSupport.getLong(rs, "title");	        	
+	        	final   String title=rs.getString( "title");	        	
 	            final  String pan=rs.getString("pan");
 	            final String mobileNo=rs.getString("mobileNo");
 	            final Date  dateOfBirth=rs.getDate("dateofBirth");
@@ -371,7 +370,7 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	            final String rationCardNo=rs.getString("ration");
 	            final String voterId=rs.getString("voterId");   
 	            final String aadharNo=rs.getString("adhar");
-	            final Long gender=JdbcSupport.getLong(rs, "gender");
+	            final String gender=rs.getString( "gender");
 	            final String operatingRegion=rs.getString("operatingRegion");
 	            final String operatingRegionName=rs.getString("OperatingRegionName");	         
 	            RblOperatingRegion RblOperatingRegion =new RblOperatingRegion(operatingRegion,operatingRegionName);
@@ -410,12 +409,12 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 
 		        public String schema() {
 		            return "  CONCAT(ifnull(na.house_no,''),ifnull(na.street_no,'')) as line1,concat(ifnull(na.area_locality,''),ifnull(na.taluka,'')) as line2,na.village_town as line3,  "
-	                      +" mcv.code_score as cityCode,mcv.code_value as cityName,state.code_score as stateCode, "
+	                      +" mrbl.`city code` as cityCode,mrbl.`city name` as cityName,state.code_score as stateCode, "
 	                      +"state.code_value as stateName,na.pin_code as pincode "
 	                      +"from m_client mc "
 	                      +"left join n_address na on na.client_id=mc.id  "
-	                      +"left join m_code_value mcv on mcv.id=na.district_cv_id "
-	                      +"left join m_code_value state on state.id=na.state_cv_id ";
+	                      +"left join m_code_value state on state.id=na.state_cv_id "
+	                      +"left join `rbl branch name` mrbl on mrbl.office_id=mc.office_id ";
 		        }
 		        @Override
 		        public RblAddressData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
@@ -444,11 +443,13 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	            
 
 	            List<RblNomineeData>rblNomineeDatas=new ArrayList<RblNomineeData>();
-	            RblAddressData rblAddressData =getAddressData( clientId,true);
+	            //RblAddressData rblAddressData =getAddressData( clientId,true);
+	            RblAddressData rblAddressData = new RblAddressData("","","","","","","");
+	            RblAddressData gurdianAddressData = new RblAddressData("","","","","","","","");
 	            rblNomineeDatas = this.jdbcTemplate.query(Sql, rm, new Object[] {});
 	            RblNomineeData rblNomineeData =rblNomineeDatas.get(0);
 	            RblGurdianData rblGurdianData =rblNomineeData.getGuardian();
-	            rblGurdianData.setAddress(rblAddressData);
+	            rblGurdianData.setAddress(gurdianAddressData);
 	            rblNomineeData.setAddress(rblAddressData);	            
 	            return rblNomineeData;
 	        } catch (final EmptyResultDataAccessException e) {
@@ -462,9 +463,9 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 
 	        public String schema() {
 	            return "  mcv.code_score as title, concat(nc.first_name,ifnull(nc.middle_name,''),ifnull(nc.last_name,'')) as nomineeName, "
-	                   +"relation.code_score as relation,nc.date_of_birth as dateofBirth,gender.code_score as gender,null as pan, "
-	                   +"null as minor,null as nomineeId,null as nomineeAddressID ,gurdianTitle.code_value as  gurdiantitle, "
-	                   +"gurdainrelation.code_value as gurdianrelation,gurdianGender.code_value as gurdiangender,mrbl.gurdian_name as gurdianName, "
+	                   +"relation.code_score as relation,nc.date_of_birth as dateofBirth,gender.code_score as gender,'' as pan, "
+	                   +"'' as minor,'' as nomineeId,'' as nomineeAddressID ,gurdianTitle.code_score as  gurdiantitle, "
+	                   +"gurdainrelation.code_score as gurdianrelation,gurdianGender.code_score as gurdiangender,mrbl.gurdian_name as gurdianName, "
 	                   + "mrbl.gurdian_DatofBirth as gurdianDob "
 	                   +"from m_client mc  "
 	                   +"left join n_coapplicant nc on mc.id=nc.client_id "
@@ -480,11 +481,11 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	        @Override
 	        public RblNomineeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
 
-	        	final Long Nomineetitle =JdbcSupport.getLong(rs, "title");
+	        	final String Nomineetitle =rs.getString( "title");
 	        	final  String name=rs.getString("nomineeName");
 	            final  String relation=rs.getString("relation");
 	            final  Date dateOfBirth=rs.getDate("dateofBirth");
-	            final  Long gender=JdbcSupport.getLong(rs, "gender");
+	            final  String gender=rs.getString( "gender");
 	            final  String pan=rs.getString("pan");
 	            final  String minor=rs.getString("minor");
 	            final  String nomineeID=rs.getString("nomineeId");

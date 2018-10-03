@@ -191,7 +191,7 @@ public class RblValidationApiResource {
 	
     	  if(command.equalsIgnoreCase("validate")){
     		  this.rblDataValidatorService.validateDatafortransfer(centerId, groupId, clintId);
-     		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId,centerDatatobesent,groupDatatobesend,isreprocess); 
+     		// this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId,centerDatatobesent,groupDatatobesend,isreprocess); 
 
     	  }
     	  else{

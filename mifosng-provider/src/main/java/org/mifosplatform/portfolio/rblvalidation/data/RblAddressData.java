@@ -24,6 +24,21 @@ public class RblAddressData {
 		this.stateName = stateName;
 		this.pin = pin;
 	}
+	
+	
+	public RblAddressData(String line1, String line2, String line3, String cityCode, String cityName, String stateCode,
+			String pin) {
+		super();
+		this.line1 = line1;
+		this.line2 = line2;
+		this.line3 = line3;
+		this.cityCode = cityCode;
+		this.cityName = cityName;
+		this.stateCode = stateCode;
+		this.pin = pin;
+	}
+
+
 	public String getLine1() {
 		return line1;
 	}

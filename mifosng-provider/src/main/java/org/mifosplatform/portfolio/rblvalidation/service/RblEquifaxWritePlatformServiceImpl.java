@@ -5,6 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.json.XML;
@@ -206,25 +209,88 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		else{
 		 if(isError){
 			 CreditBureauValidationError creditBureauValidationError =CreditBureauValidationError.create(centerId, rblClientsData.getBarcodeNo(), rblClientsData.getExternalId()
-					 , rblClientsData.getIsRenewalLoan(), rblClientsData.getCustomerName(), rblClientsData.getLoanAmount(), rblNomineeData.getTitle(), 
+					 , rblClientsData.getIsRenewalLoan(), rblClientsData.getCustomerName(), rblClientsData.getLoanAmount(),null, 
 					 rblNomineeData.getName(), rblNomineeData.getRelation(), rblAddressData.getLine1(), rblAddressData.getLine2(), rblAddressData.getLine3(),
 					 rblAddressData.getCityCode(), rblAddressData.getCityName(), rblAddressData.getStateCode(), rblAddressData.getPin(), rblOperatingRegion.getOperatingRegionCode(), rblOperatingRegion.getOperatingRegionName(), 
 					 rblClientsData.getDateOfBirth(), rblClientsData.getBranchCode(), rblClientsData.getBranchName(), Error, clientId);
 					this.creditBureauValidationErrorRepositoryWrapper.save(creditBureauValidationError);    		    
-					return false;    
+					//return false;    
 		      }
 		 else{
-			 
-			
-			 
+			 String url = "http://www.google.com/search?q=developer";
+					HttpClient httpclient = new DefaultHttpClient();
+					HttpGet request = new HttpGet(url);
 					JSONObject json = new JSONObject(rblEquifaxData);
 					String xml = XML.toString(json,"getConsumerCreditReport");
 					 System.out.println("xml formate is"+xml);
+				/*	// add request header
+				//	request.addHeader("User-Agent", USER_AGENT);
+					//request.setParams(xml);	
+					//HttpResponse response = httpclient.execute(request);
+
+					System.out.println("\nSending 'GET' request to URL : " + url);
+					System.out.println("Response Code : " + 
+			                       response.getStatusLine().getStatusCode());
+
+					//BufferedReader rd = new BufferedReader(
+			         //              new InputStreamReader(response.getEntity().getContent()));
+
+					StringBuffer result = new StringBuffer();
+					String line = "";
+					while ((line = rd.readLine()) != null) {
+						result.append(line);
+					}
+*/
+				//	System.out.println(result.toString());
+
+				
+
+				/*// HTTP POST request
+
+					String url = "https://selfsolve.apple.com/wcResults.do";
+
+					HttpClient client = new DefaultHttpClient();
+					HttpPost post = new HttpPost(url);
+
+					// add header
+					post.setHeader("User-Agent", USER_AGENT);
+
+					List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+					urlParameters.add(new BasicNameValuePair("sn", "C02G8416DRJM"));
+					urlParameters.add(new BasicNameValuePair("cn", ""));
+					urlParameters.add(new BasicNameValuePair("locale", ""));
+					urlParameters.add(new BasicNameValuePair("caller", ""));
+					urlParameters.add(new BasicNameValuePair("num", "12345"));
+
+					post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+					HttpResponse response = client.execute(post);
+					System.out.println("\nSending 'POST' request to URL : " + url);
+					System.out.println("Post parameters : " + post.getEntity());
+					System.out.println("Response Code : " + 
+			                                    response.getStatusLine().getStatusCode());
+
+					BufferedReader rd = new BufferedReader(
+			                        new InputStreamReader(response.getEntity().getContent()));
+
+					StringBuffer result = new StringBuffer();
+					String line = "";
+					while ((line = rd.readLine()) != null) {
+						result.append(line);
+					}
+
+					System.out.println(result.toString());
+
+				}
+
+*/
+			 
+					
 			 
 			 // url to be called
 			 
 			 CreditBureaRequest creditBureaRequest =CreditBureaRequest.create(centerId, rblClientsData.getBarcodeNo(), rblClientsData.getExternalId()
-					 , rblClientsData.getIsRenewalLoan(), rblClientsData.getCustomerName(), rblClientsData.getLoanAmount(), rblNomineeData.getTitle(), 
+					 , rblClientsData.getIsRenewalLoan(), rblClientsData.getCustomerName(), rblClientsData.getLoanAmount(), null, 
 					 rblNomineeData.getName(), rblNomineeData.getRelation(), rblAddressData.getLine1(), rblAddressData.getLine2(), rblAddressData.getLine3(),
 					 rblAddressData.getCityCode(), rblAddressData.getCityName(), rblAddressData.getStateCode(), rblAddressData.getPin(), rblOperatingRegion.getOperatingRegionCode(), rblOperatingRegion.getOperatingRegionName(), 
 					 rblClientsData.getDateOfBirth(), rblClientsData.getBranchCode(), rblClientsData.getBranchName(), Error, clientId);

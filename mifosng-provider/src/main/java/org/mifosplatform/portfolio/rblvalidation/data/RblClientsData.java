@@ -18,7 +18,7 @@ public class RblClientsData {
     private String rationCardNo;
     private String voterId;   
     private String aadharNo;
-    private Long gender;
+    private String gender;
     private RblNomineeData nominee;
     private RblAddressData address;
     private RblOperatingRegion operatingRegion;
@@ -27,7 +27,7 @@ public class RblClientsData {
     
 	public RblClientsData(String barcodeNo, String externalId, Long loanAmount, String isRenewalLoan,
 			String customerName, String pan, String mobileNo, Date dateOfBirth, String branchCode,
-			String branchName, String rationCardNo, String voterId, String aadharNo, Long gender,
+			String branchName, String rationCardNo, String voterId, String aadharNo, String gender,
 			RblNomineeData nominee, RblAddressData address, RblOperatingRegion operatingRegion) {
 		super();
 		this.barcodeNo = barcodeNo;
@@ -126,10 +126,10 @@ public class RblClientsData {
 	public void setAadharNo(String aadharNo) {
 		this.aadharNo = aadharNo;
 	}
-	public Long getGender() {
+	public String getGender() {
 		return gender;
 	}
-	public void setGender(Long gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 	public RblNomineeData getNominee() {

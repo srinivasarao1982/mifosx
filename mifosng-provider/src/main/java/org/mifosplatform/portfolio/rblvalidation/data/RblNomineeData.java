@@ -5,11 +5,11 @@ import java.util.Date;
 import org.joda.time.DateTime;
 
 public class RblNomineeData {
-	private Long title;
+	private String title;
     private String name;
     private String relation;
     private Date dateOfBirth;
-    private Long gender;
+    private String gender;
     private String pan;
     private String minor;
     private String nomineeID;
@@ -18,7 +18,7 @@ public class RblNomineeData {
     private RblGurdianData guardian;
     
     
-	public RblNomineeData(Long title, String name, String relation, Date dateOfBirth, Long gender, String pan,
+	public RblNomineeData(String title, String name, String relation, Date dateOfBirth, String gender, String pan,
 			String minor, String nomineeID, String nomineeAddressID, RblAddressData address, RblGurdianData guardian) {
 		super();
 		this.title = title;
@@ -33,10 +33,10 @@ public class RblNomineeData {
 		this.address = address;
 		this.guardian = guardian;
 	}
-	public Long getTitle() {
+	public String getTitle() {
 		return title;
 	}
-	public void setTitle(Long title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 	public String getName() {
@@ -57,10 +57,10 @@ public class RblNomineeData {
 	public void setDateOfBirth(Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	public Long getGender() {
+	public String getGender() {
 		return gender;
 	}
-	public void setGender(Long gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 	public String getPan() {
