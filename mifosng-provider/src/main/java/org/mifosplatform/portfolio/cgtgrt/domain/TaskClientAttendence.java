@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 @Entity
-@Table(name = "m_taskAttendence")
+@Table(name = "m_taskattendence")
 public class TaskClientAttendence extends AbstractPersistable<Long> {
 	
 	/**
