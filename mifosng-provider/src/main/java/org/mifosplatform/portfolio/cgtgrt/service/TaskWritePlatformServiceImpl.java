@@ -108,10 +108,30 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 			if (taskTypeId != null) {
 				taskType = this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskTypeId);
 			}
+			CodeValue startTimeParamName=null;
+			final Long taskStartTimeParamName=command.longValueOfParameterNamed(TaskApiConstant.taskStartTimeParamName);
+			 if(taskStartTimeParamName!=null)
+			{
+				 startTimeParamName=this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskStartTimeParamName);
+			}
+			 else{
+					throw new FieldCannotbeBlankException("task Start Time");
+			 }
+			 CodeValue taskCompletedName=null;
+			 final Long taskCompletedParamName=command.longValueOfParameterNamed(TaskApiConstant.tasklEndTimeParamName);
+			 if(taskCompletedParamName!=null)
+			{
+				 taskCompletedName=this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskCompletedParamName);
+			}
+			 else{
+					throw new FieldCannotbeBlankException("task End Time");
+			 }
+			 
+			 
 			final Long officeId = command.longValueOfParameterNamed(TaskApiConstant.officeidparamname);
 			final Office office = this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId);
 			// LocalDate taskDate = command.localDateValueOfParameterNamed(TaskApiConstant.expectedcompliteddate);
-			 LocalDate taskDate=LocalDate.now();
+			 LocalDate taskDate=command.localDateValueOfParameterNamed("plannedDate");
 			 long i=group.getIsnewCenter();
 				int j= (int)i;
 				Integer centerType= Integer.valueOf(j);
@@ -125,10 +145,10 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 				throw new MaximumNumberofTaskExceedException(taskConfiguration.getNoOfTask());
 			}
 			}
-			if(taskConfiguration!=null){
+			/*if(taskConfiguration!=null){
 				
 				taskDate=taskDate.plusDays(taskConfiguration.getNoofdays());
-			}
+			}*/
 			Integer status = TaskStatus.ACTIVE.getValue();
 			final String note = command.stringValueOfParameterNamed(TaskApiConstant.noteparamname);
 			Date taskCompletedDate = null;
@@ -137,8 +157,13 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
              if(taskvalue!=null){
             	 throw new TaskIsInActiveStateException(taskType.label());
              }
+            Tasks taskvalueforOpenTask=null;
+            taskvalueforOpenTask=this.taskRepository.findOpenTask(centerId, status);
+            if(taskvalueforOpenTask!=null){
+           	 throw new TaskIsInActiveStateException(taskType.label());
+            }            
 			Tasks task = Tasks.createtask(group, office, staff, taskType, note, taskDate.toDate(), taskCompletedDate,
-					status);
+					status,startTimeParamName,taskCompletedName);
 			this.taskRepositoryWrapper.save(task);
 			Set<TaskDetails> taskDetailsData = this.taskDataValidator.assembletaskDetails(task, command);
 			task.updatetaskdeatisl(taskDetailsData);
@@ -154,6 +179,7 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 			return CommandProcessingResult.empty();
 		}
 	}
+
 
 	@Transactional
 	@Override
@@ -192,15 +218,43 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 				if (changes.containsKey(TaskApiConstant.taskstatusparamname)) {
 
 					final Integer newValue = command.integerValueOfParameterNamed(TaskApiConstant.taskstatusparamname);
-					if(newValue!=100){
+					/*if(newValue!=100){
 						taskforUpdate.updateCompleteDate(new Date());
-					}
+					}*/
 					Integer status = null;
 					if (newValue != null) {
 						status = TaskStatus.fromInt(newValue).getValue();
 					}
 					taskforUpdate.updateStatus(status);
 				}
+				if(changes.containsKey(TaskApiConstant.taskStartTimeParamName)){
+					CodeValue startTimeParamName=null;
+					final Long taskStartTimeParamName=command.longValueOfParameterNamed(TaskApiConstant.taskStartTimeParamName);
+					 if(taskStartTimeParamName!=null)
+					{
+						 startTimeParamName=this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskStartTimeParamName);
+						 taskforUpdate.updatetaskStartTime(startTimeParamName);
+					}
+					 else{
+							throw new FieldCannotbeBlankException("task Start Time");
+					 }
+					
+				}
+				if(changes.containsKey(TaskApiConstant.tasklEndTimeParamName)){
+					 CodeValue taskCompletedName=null;
+					 final Long taskCompletedParamName=command.longValueOfParameterNamed(TaskApiConstant.tasklEndTimeParamName);
+					 if(taskCompletedParamName!=null)
+					{
+						 taskCompletedName=this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskCompletedParamName);
+						 taskforUpdate.updatetaskEndTime(taskCompletedName);
+					}
+					 else{
+							throw new FieldCannotbeBlankException("task End Time");
+					 }
+				}
+				
+				
+				
 				Set<TaskClientAttendence> taskClientAttendenceDetails = this.taskDataValidator
 						.assembletaskAttendence(taskforUpdate, command);
 				Set<TaskDetails> taskDetailsData = this.taskDataValidator.assembletaskDetails(taskforUpdate, command);
@@ -232,5 +286,7 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
     private void logAsErrorUnexpectedDataIntegrityException(final DataIntegrityViolationException dve) {
         logger.error(dve.getMessage(), dve);
     }
+    
+    
 
 }

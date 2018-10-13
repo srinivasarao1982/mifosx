@@ -176,6 +176,12 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
         Collection<CodeValueData> presentLoanPurposeTypes = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PRESETLOANPURPOSETYPES));
+        
+        Collection<CodeValueData> gurdianTitles = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.GURDIANTITLE));
+
+        Collection<CodeValueData> gurdianRelations = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.GURDIANRELATION));
 
         ClientDataExt clientDataExt = null;
         List<AddressExtData> addressExtData = new ArrayList<>();
@@ -226,7 +232,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
                 kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, houseType, state,
                 district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, externalLoanstatus,
                 addressTypes, presentLoanSourceTypes, presentLoanPurposeTypes, clientDataExt, addressExtData, familyDetailsExtData,
-                clientIdentifierData, occupationDetailsDatas, nomineeDetailsData, coapplicantDetailsData, spouseRelationShip);
+                clientIdentifierData, occupationDetailsDatas, nomineeDetailsData, coapplicantDetailsData, spouseRelationShip,gurdianRelations,gurdianTitles);
 
     }
 

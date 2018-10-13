@@ -135,7 +135,12 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
            else{
           	 throw new MandatoryParameterException("pinCode");
            }
-           RblCenter rblCenter =RblCenter.createrblcenter(centerId, maximumIndividual, meetingTime, houseNo, streetNo, arelocality, landmark, village, taluk, district, state,pin);
+           final String description =command.stringValueOfParameterNamed(RblCenterDeatilsApiConstant.descriptionparamname);
+           if(description==null){
+             	 throw new MandatoryParameterException("Description");
+  	
+              }
+           RblCenter rblCenter =RblCenter.createrblcenter(centerId, maximumIndividual, meetingTime, houseNo, streetNo, arelocality, landmark, village, taluk, district, state,pin,description);
            this.rblCenterRepositoryWrapper.save(rblCenter);
            return new CommandProcessingResultBuilder() //
                    .withCommandId(rblCenter.getId()) //

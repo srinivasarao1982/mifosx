@@ -73,7 +73,10 @@ public class TaskApiResource {
 
         this.context.authenticatedUser().validateHasReadPermission(TaskApiConstant.TASK_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        final Long roleId=Long.parseLong(this.codeValueReadPlatformService.retrieveCodeValue(taskType).getCodescore());
+        Long roleId=null; 
+        if(taskType!=null){
+          roleId=Long.parseLong(this.codeValueReadPlatformService.retrieveCodeValue(taskType).getCodescore());
+          }
         Taskdata taskData = this.taskReadPlatformService.retrieveTemplate(officeId,roleId);
                   return this.toApiJsonSerializer.serialize(settings, taskData,
                 		  TaskApiConstant.TASK_RESPONSE_DATA_PARAMETERS);

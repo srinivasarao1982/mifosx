@@ -63,7 +63,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         public String schema() {
             return   "  mg.external_id as externalId,mg.display_name as centerName,mg.activation_date,s.display_name as serviceAgent, "
                      +"mrblc.max_individual as maxIndividual,mrblc.meting_time as meetingTime,concat(ifnull(mrblc.house_no,''),ifnull(mrblc.street_no ,'')) as addressline1 ,"
-                     +" concat (ifnull(mrblc.area_loc,''),ifnull(mrblc.landmark,'')) as addressline2,ifnull(mrblc.village,'') as addressLine3,district.code_score as cityCode, "
+                     +" concat (ifnull(mrblc.area_loc,''),ifnull(mrblc.landmark,'')) as addressline2,ifnull(mrblc.village,'') as addressLine3,rblb.`city code` as cityCode, "
                      +"state.code_score as state,mrblc.pin as pincode,rblb.`operating region` as OperatingRegion,rblb.`Branch Code` as branchCode, "
                      +"mrblc.description as description,mg.activation_date as formationDate, "
                      +"(select clients.display_name  from m_client clients where  clients.id in (select  mgr.client_id from  m_group_roles mgr where mgr.group_id = ? and mgr.role_cv_id= 97)) as primaryContact, "
@@ -132,15 +132,15 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                 public String schema() {
             return   "   mc.external_id as externalId,center.external_id as externalCenterId, title.code_score as title,mc.display_name as customerName, "
                    + " concat(ifnull(na.house_no,''),ifnull(na.street_no,'')) as addressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,'')) as addressline2, "
-                    +"concat(ifnull(na.village_town,''),ifnull(na.taluka,'')) as addressline3,district.code_score as cityCode,state.code_score as stateCode,na.pin_code as pincode, "
+                    +"concat(ifnull(na.village_town,''),ifnull(na.taluka,'')) as addressline3,rblbranch.`city code` as cityCode,state.code_score as stateCode,na.pin_code as pincode, "
                    +"mc.date_of_birth as dateofBirth ,mc.mobile_no as mobileNumber,caste.code_score as caste,gender.code_score as gender, "
                    +"maritals.code_score as maritalStatus,relegion.code_score as relegion,'IN' as nataonality,profession.code_score as occupation, "
-                   +"profession.code_score as category,edu.code_score as educationqualification,mrbl.pension_card as pensionCard, "
+                   +"'PS2' as category,edu.code_score as educationqualification,mrbl.pension_card as pensionCard, "
                   +"mrbl.mother_tounge as motherTounge,rblbranch.`Branch Code` as branchCode,rblbranch.`operating region` as operatingRegionCode, "
                   +"nct.aadhaar_no as aadharNo ,mrbl.health as health ,mrbl.`language` as language,mrbl.card_issue_fl as cardIssueFl, "
                   +"rblbranch.`bc branch code` as bcBranchCode,rblbranch.collector as collector,rblbranch.approver as Approver, "
                  +"nco.first_name as nomineeName,nomineeRelation.code_score as nomineeRelation,mrbl.cb_check as cbCheck, "
-                 +"bankdtails.bank_name as bankName,bankdtails.account_no as AccountNumber,bankdtails.branch_name as bankbranchName,mrbl.spouse_name as spouseName , mrbl.spouse_DatofBirth as spouseDateOfBirth, "
+                 +"bankdtails.bank_name as bankName,bankdtails.account_no as AccountNumber,bankdtails.branch_name as bankbranchName,mrbl.spouse_name as spouseName , mrbl.spouse_DatofBirth as spouseDateOfBirth, Round(datediff(curdate(),mc.date_of_birth)/365) as ClientAge , "
                  +"mrbl.renewal_fl as renewalFl,nct.pan_no  as panNo,nct.external_Id2 as barcodeNumber,mrbl.adharSeeding_constant as adharSeedingConstant, "
                  +"(select mci.document_key from m_client_identifier mci where  mci.client_id =3 and mci.document_type_id =43) as rationcard, "
                  +"(select mci.document_key from m_client_identifier mci where  mci.client_id =4 and mci.document_type_id =41) as voterId "
@@ -215,12 +215,13 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             final  String panno =rs.getString("panNo");
         	final String barcodeNumber =rs.getString("barcodeNumber");
         	final String adharSeedingConstant =rs.getString( "adharSeedingConstant");
+        	final Integer clientAge =JdbcSupport.getInteger(rs, "ClientAge");
            
             return new RblclientDatValidation(externalId,externalCenterId,title,customerName,addressLine1,addressLine2,addressLine3,
             		cityCode,stateCode,pincode,dateofBirt,mobileNumber,caste,gender,maritalStatus,nationality,relegion,motherTounge,
             		branchCode,operatingRegionCode,aadharNo,pensionCard,rationcard,voterId,health,occpation,educationqualification,category,
             		language,cardIssueFl,bcBranchCode,collector,approver,spouseName,spouseDateOfBirth,nomineeName,nomineeRelation,
-            		cbCheck,bankName,AccountNumber,bankbranchName,renewalFl,panno,barcodeNumber,adharSeedingConstant);
+            		cbCheck,bankName,AccountNumber,bankbranchName,renewalFl,panno,barcodeNumber,adharSeedingConstant,clientAge);
         }
 
     }
@@ -314,15 +315,16 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                     +"nc.first_name as nomineeName, concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as nomineeAddressline1,"
                     +"concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as gurdianAddressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as nomineeAddressline2,"
                     +"concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as gurdianAddressline2,ifnull(na.taluka,'') as nomineeAddressline3,"
-                    +"ifnull(na.taluka,'') as gurdianAddressline3,nomineecity.code_score as nomineecity,nomineecity.code_score as gurdianCity,"
+                    +"ifnull(na.taluka,'') as gurdianAddressline3,rbb.`city code` as nomineecity,rbb.`city code` as gurdianCity,"
                     +"gurdianTitle.code_score as gurdianTitle,mrbl.gurdian_name as gurdianName,mrbl.gurdian_DatofBirth as gurdianDateofBirth,"
-                    +"gurdiangender.code_score as gurdianGender,gurdianrelation.code_score as gurdianRelation,Round(datediff(curdate(),nc.date_of_birth)/365) as nomineeAge,"
+                    +"gurdiangender.code_score as gurdianGender,gurdianrelation.code_score as gurdianRelation,Round(datediff(curdate(),nc.date_of_birth)/365) as nomineeAge,maritalStaus.code_Value as MaritalSta,Round(datediff(curdate(),mrbl.spouse_DatofBirth)/365) as SpouseAge, "
                     +"nomineestate.code_score as nomineestate,nomineestate.code_score as gurdianState,'02' as nomineeMinor,relation.code_score as nomineeRlation,nc.date_of_birth as nomineeDateOfBirth,gender.code_score as nomineeGender, "
                     +"if(mp.repayment_period_frequency_enum=1,'02',if(mp.repayment_period_frequency_enum=0,'01',if(mp.repayment_period_frequency_enum=2,'04',if(mp.repayment_period_frequency_enum=3,'07',0)))) as repaymentfrequency "
                     +" from m_client mc "
                     + "left join n_coapplicant nc on nc.client_id =mc.id "
+                    + "left join n_client_ext nct on mc.id=nct.client_id "
                     + "left join n_address na on na.client_id =mc.id and na.address_type_cv_id= 26 "
-                    +"left join m_rblcustomer mrbl on mrbl.client_id =mc.id "                    
+                    +"left join m_rblcustomer mrbl on mrbl.client_id =mc.id " 
                     +"left join m_group_client mgc on mgc.client_id =mc.id "
                     +"left join m_group mg on mgc.group_id =mg.id "
                     +"left join m_group center on center.id =mg.parent_id and center.level_id =1 "
@@ -339,6 +341,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                     +"left join m_code_value gurdianTitle on gurdianTitle.id =mrbl.title "
                     +"left join m_code_value gurdiangender on gurdiangender.id =mrbl.gurdian_gender "
                     +"left join m_code_value gurdianrelation on gurdianrelation.id =mrbl.relation_cv_id "
+                    +"left join m_code_value maritalStaus on maritalStaus.id=nct.marital_status_cv_id "
                     +"left join `rbl branch name` rbb on rbb.office_id =mc.office_id ";
         }        
       	
@@ -392,6 +395,8 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
           //  final String gurdianState =rs.getString("gurdianState");
           //  final String gurdianCity =rs.getString("gurdianCity");
             final String gurdianRelation =rs.getString("gurdianRelation");
+            final String maritalStaus =rs.getString("MaritalSta");
+            final Integer SpouseAge=JdbcSupport.getInteger(rs, "SpouseAge") ;//,Round(datediff(curdate(),mrbl.spouse_DatofBirth)/365) as SpouseAge
 
             
             return new RblLoanValidationData(externalId,customerExternalId,centerExtrenalId,groupExternalId,loanProductCode,loanPurpose,
@@ -399,7 +404,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             		repaymentStartDate,bcBranchCode,colector,approver,ExceptedDisbursementDate,TopUpLoanFlag,hosiptalCash,prepaidCharge,
             		nomineeName,nomineeAddressline1,nomineeAddressline2,nomineeAddressline3,nomineeRlation,nomineeDateOfBirth,nomineeAge
             		,nomineeGender,nomineestate,nomineecity,nomineeMinor,gurdianTitle,gurdianName,gurdianDateofBirth,gurdianGender,gurdianAddressline1,
-            		gurdianRelation);
+            		gurdianRelation,maritalStaus,SpouseAge);
         }
 
     }
@@ -431,7 +436,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                      +"gender.code_score as nomineeGender, concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as nomineeAddressline1,"
                      +"concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as gurdianAddressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as nomineeAddressline2,"
                      +"concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as gurdianAddressline2,ifnull(na.taluka,'') as nomineeAddressline3,"
-                     +"ifnull(na.taluka,'') as gurdianAddressline3,nomineecity.code_score as nomineecity,nomineecity.code_score as gurdianCity,"
+                     +"ifnull(na.taluka,'') as gurdianAddressline3,rblbranch.`city code` as nomineecity,rblbranch.`city code` as gurdianCity,"
                      +"nomineestate.code_score as nomineestate,nomineestate.code_score as gurdianState,'02' as nomineeMinor,"
                      +"gurdianTitle.code_score as gurdianTitle,mrbl.gurdian_name as gurdianName,mrbl.gurdian_DatofBirth as gurdianDateofBirth,"
                      +"gurdiangender.code_score as gurdianGender,gurdianrelation.code_score as gurdianRelation,mrbl.gurdian_mobileNo as gurdianPhoneNo,"

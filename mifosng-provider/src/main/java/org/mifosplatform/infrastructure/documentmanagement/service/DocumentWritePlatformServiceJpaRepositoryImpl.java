@@ -33,6 +33,9 @@ import org.mifosplatform.infrastructure.documentmanagement.exception.InvalidEnti
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepository;
+import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRecord;
+import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRepository;
+import org.mifosplatform.portfolio.rblvalidation.domain.ReceiveFileRepositoryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,9 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
     private final ContentRepositoryFactory contentRepositoryFactory;
     private final ClientRepository clientRepository;
     private final DocumentReadPlatformService documentReadPlatformService;
+    private final ReceiveFileRepository receiveFileRepository;
+    private final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper;
+
     
     //nextru-specific
     //upload documents
@@ -80,6 +86,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
     public DocumentWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
             final DocumentRepository documentRepository, final ContentRepositoryFactory documentStoreFactory,
             final ClientRepository clientRepository, final DocumentReadPlatformService documentReadPlatformService,
+    	    final ReceiveFileRepository receiveFileRepository,final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper,
             @Value("${hostName}") final String hostName, @Value("${hostUserName}") final String hostUserName, 
             @Value("${hostPassword}") final String hostPassword,
             @Value("${hostPortNumber}") final String hostPortNumber, @Value("${imageDestinationPath}") final String imageDestinationPath,
@@ -92,6 +99,8 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
         this.contentRepositoryFactory = documentStoreFactory;
         this.clientRepository = clientRepository;
         this.documentReadPlatformService = documentReadPlatformService;
+        this.receiveFileRepository=receiveFileRepository;
+        this.receiveFileRepositoryWrapper=receiveFileRepositoryWrapper;
         
         //netru specific 
         
@@ -359,6 +368,14 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 	     			 }
 	     			 bis.close();
 	     			 bos.close();
+	     	    
+	     			 //Storing file In DataBase
+	     			//Receive File Logic	     			
+	     			List<ReceiveFileRecord>receiveFileRecords =this.receiveFileRepository.getExistingFile(file.getName());
+	     			if(receiveFileRecords.size()==0){
+	     				ReceiveFileRecord receiveFileRecord =new ReceiveFileRecord("received",file.getName(),downloadToDirPath);
+	                     this.receiveFileRepositoryWrapper.save(receiveFileRecord);
+	     			}
 	             }
 	         }
 	        

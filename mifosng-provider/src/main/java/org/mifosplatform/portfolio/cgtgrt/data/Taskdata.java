@@ -24,15 +24,21 @@ public class Taskdata {
 	private final String note;
 	private final List<TaskDetailData> taskdetailsData;
 	private final List<ClientAttendenceData> clientAttendenceData;
+	private final Long taskStartTimeId;
+	private final Long taskEndTimeId;
+	private final String taskStartTime;
+	private final String taskEndTime;
 
 	// template
 	private final Collection<StaffData> staffOptions;
 	private final Collection<CodeValueData> tasktypeOptions;
 	private final Collection<EnumOptionData> taskstatus;
 	private final Collection<EnumOptionData> attendenceTypeOptions;
+	private final Collection<CodeValueData> tasktimeOptions;
 
 	public static Taskdata template(final Collection<StaffData> staffData, Collection<CodeValueData> tasktypeOptions,
-			final Collection<EnumOptionData> taskstatus, final Collection<EnumOptionData> attendenceTypeOptions) {
+			final Collection<EnumOptionData> taskstatus, final Collection<EnumOptionData> attendenceTypeOptions,
+			final Collection<CodeValueData> tasktimeOptions) {
 		final Long taskId = null;		
 		final String taskType = null;
 		final String staffName = null;
@@ -43,23 +49,30 @@ public class Taskdata {
 		final String note = null;
 		final Long taskTypeId=null;
 		final Long staffId=null;
+		final Long taskStartTimeId=null;
+		final Long taskEndTimeId=null;
+		final String taskStartTime=null;
+		final String taskEndTime=null;
+
 		final List<TaskDetailData> taskdetailsData = null;
 		final List<ClientAttendenceData> clientAttendenceData = null;
 		return new Taskdata(taskId, taskType, staffName, taskcreatedDate,expectedCompletedDate,completedDate, status, note,
-				taskdetailsData, clientAttendenceData, staffData, tasktypeOptions, taskstatus, attendenceTypeOptions,taskTypeId,staffId);
+				taskdetailsData, clientAttendenceData, staffData, tasktypeOptions, taskstatus, attendenceTypeOptions,taskTypeId,staffId,tasktimeOptions,taskStartTimeId
+				,taskEndTimeId,taskStartTime,taskEndTime);
 	}
 	
 	public static Taskdata taskDetailseprate( final Long taskId,final String taskType,final String staff,final LocalDate taskcreatedDate,
-			 final LocalDate expectedtaskcompletedDate,final LocalDate completedDate, final EnumOptionData status,final String note,final Long taskTypeId,final Long staffId){
+			 final LocalDate expectedtaskcompletedDate,final LocalDate completedDate, final EnumOptionData status,final String note,final Long taskTypeId,final Long staffId
+			 ,Long taskStartTimeId, Long taskEndTimeId,String taskStartTime,String taskEndTime){
 		final Collection<StaffData> staffOptions = null;
 		final Collection<CodeValueData> tasktypeOptions = null;
 		final Collection<EnumOptionData> taskstatus = null;
 		final Collection<EnumOptionData> attendenceTypeOptions = null;
 		final List<TaskDetailData> taskdetailsData = null;
 		final List<ClientAttendenceData> clientAttendenceData = null;
-		
+		final Collection<CodeValueData> tasktimeOptions=null;
 		return new Taskdata(taskId,taskType,staff,taskcreatedDate,expectedtaskcompletedDate,completedDate,status,note,taskdetailsData, clientAttendenceData, staffOptions, tasktypeOptions, taskstatus,
-				attendenceTypeOptions,taskTypeId,staffId);
+				attendenceTypeOptions,taskTypeId,staffId,tasktimeOptions,taskStartTimeId,taskEndTimeId,taskStartTime,taskEndTime);
 
 		   
 	       }
@@ -71,16 +84,21 @@ public class Taskdata {
 		final Collection<CodeValueData> tasktypeOptions = null;
 		final Collection<EnumOptionData> taskstatus = null;
 		final Collection<EnumOptionData> attendenceTypeOptions = null;
+		final Collection<CodeValueData> tasktimeOptions=null;
 		return new Taskdata(taskData.taskId, taskData.taskType, taskData.staffName,taskData.taskcreatedDate, taskData.expectedCompletedDate,taskData.completedDate, taskData.status, taskData.note,
 				taskdetailsData, clientAttendenceData, staffOptions, tasktypeOptions, taskstatus,
-				attendenceTypeOptions,taskData.taskTypeId,taskData.staffId);
+				attendenceTypeOptions,taskData.taskTypeId,taskData.staffId,tasktimeOptions,taskData.taskStartTimeId,
+				taskData.taskEndTimeId,taskData.taskStartTime,taskData.taskEndTime);
 	}
 
 	public Taskdata(Long taskId, String taskType, String staff, LocalDate taskcreatedDate,
 			LocalDate expectedCompletedDate,LocalDate taskCompletedDate, EnumOptionData status, String note, List<TaskDetailData> taskdetailsData,
 			List<ClientAttendenceData> clientAttendenceData, Collection<StaffData> staffOptions,
 			Collection<CodeValueData> tasktypeOptions, Collection<EnumOptionData> taskstatus,
-			Collection<EnumOptionData> attendenceTypeOptions,Long taskTypeId,Long staffId) {
+			Collection<EnumOptionData> attendenceTypeOptions,Long taskTypeId,Long staffId,
+			Collection<CodeValueData> tasktimeOptions,Long taskStartTimeId,Long taskEndTimeId,
+			String taskStartTime,String taskEndTime)
+        {
 		super();
 		this.taskId = taskId;
 		this.taskType = taskType;
@@ -98,6 +116,11 @@ public class Taskdata {
 		this.attendenceTypeOptions = attendenceTypeOptions;
 		this.taskTypeId=taskTypeId;
 		this.staffId=staffId;
+		this.tasktimeOptions=tasktimeOptions;
+		this.taskStartTimeId=taskStartTimeId;
+		this.taskEndTimeId=taskEndTimeId;
+		this.taskStartTime=taskStartTime;
+		this.taskEndTime=taskEndTime;
 	}
 
 	public Long getTaskId() {
@@ -168,6 +191,27 @@ public class Taskdata {
 		return staffId;
 	}
 
+	public Collection<CodeValueData> getTasktimeOptions() {
+		return tasktimeOptions;
+	}
+
+	public Long getTaskStartTimeId() {
+		return taskStartTimeId;
+	}
+
+	public Long getTaskEndTimeId() {
+		return taskEndTimeId;
+	}
+
+	public String getTaskStartTime() {
+		return taskStartTime;
+	}
+
+	public String getTaskEndTime() {
+		return taskEndTime;
+	}
+
+	
 	
 
 }

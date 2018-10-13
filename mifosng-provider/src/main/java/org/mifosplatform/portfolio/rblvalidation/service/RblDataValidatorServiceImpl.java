@@ -112,12 +112,17 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 				if(!((rblcenterData.getAddressline2().length()>0) && (rblcenterData.getAddressline2().length()<500))){
 					fr.write("Address Line 2 must be greater than 0 and less equal to 500"+"\n");
 				}
+			}else{
+				fr.write("Address Line 2 Can Not Be Null"+"\n");
 			}
 			
 			if(rblcenterData.getAddressLine3()!=null){
 				if(!((rblcenterData.getAddressLine3().length()>0) && (rblcenterData.getAddressLine3().length()<500))){
 					fr.write("Address Line 3 must be greater than 0 and less equal to 500"+"\n");
 				}
+			}
+			else{
+				fr.write("Address Line 3 Can Not Be Null"+"\n");
 			}
 			
 			if(rblcenterData.getCityCode()!=null){
@@ -157,13 +162,15 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 					fr.write(" Branch Code Must be Must be greater than 0 and less equal to 6"+"\n");
 				}
 			}else{
-				fr.write(" Operating Region Code  Cannot be Null"+"\n");
+				fr.write(" Branch  Code  Cannot be Null"+"\n");
 			}
 			
 			if(rblcenterData.getDescription()!=null){
 				if(!((rblcenterData.getDescription().length()>0) && (rblcenterData.getDescription().length()<=30))){
 					fr.write(" Description be Must be greater than 0 and less equal to 30"+"\n");
 				}
+			}else{
+				fr.write(" Center Description Cannot be Null "+"\n");
 			}
 			
 			if(rblcenterData.getPrimaryContact()!=null){
@@ -197,6 +204,11 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			}else{
 				fr.write(" Secondary Phone   Number Cannot be Null"+"\n");
 			}
+			if(rblcenterData.getDescription()==null){
+				fr.write(" Description Cannot be Null"+"\n");
+	
+			}
+
 		}
 //======================================== Start Validating Group Data================================================//
 		
@@ -231,6 +243,10 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 				fr.write(rblgroupData.getCenterName() +"   group Center  Cannot be Null length must be between 0 to 40" +"\n");
 			}
 			
+			if(rblgroupData.getCenterExternalId()==null){
+				fr.write(rblgroupData.getCenterExternalId() +"   group center Id  Cannot be Null length must be between 0 to 20" +"\n");
+
+			}
 			if(rblgroupData.getMaximuncenter()!=null){
 				if(!((rblgroupData.getMaximuncenter().length()>0) && (rblgroupData.getMaximuncenter().length()<=9999))){
 					fr.write(rblgroupData.getCenterName() +"  Maximum Center length must be between 0 to 4" +"\n");
@@ -307,11 +323,11 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			
 			if (rblsavingsData.getCenterExternalId()!=null){
 				if(!((rblsavingsData.getCenterExternalId().length()>0) && (rblsavingsData.getCenterExternalId().length()<=40))){
-					fr.write(rblsavingsData.getCenterExternalId() +"  Savings External  Customer Id length must be between 0 to 40" +"\n");
+					fr.write(rblsavingsData.getCenterExternalId() +"  Savings External  Center Id length must be between 0 to 20" +"\n");
 				}
 			}
 			else{
-				fr.write(rblsavingsData.getCenterExternalId() +"   Savings External Customer Id Cannot be Null  and length must be greater than 0 and lest equal to 40"+"\n");
+				fr.write(rblsavingsData.getCenterExternalId() +"   Savings External Customer Id Cannot be Null  and length must be greater than 0 and lest equal to 20"+"\n");
 			}
 			
 			if (rblsavingsData.getAccountType()!=null){
@@ -339,6 +355,10 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			if (rblsavingsData.getNomineeRlation()==null){
 				fr.write(rblsavingsData.getNomineeRlation() +"  Nominee Relation   cannot be Null"+"\n");
 		      }
+			if(rblsavingsData.getNomineeTitle()==null){
+				fr.write(rblsavingsData.getNomineeTitle() +"  Nominee Title   cannot be Null"+"\n");
+
+			}
 			if (rblsavingsData.getNomineeDateOfBirth()==null){
 				fr.write(rblsavingsData.getNomineeDateOfBirth() +"  Nominee Date Of Birth   cannot be Null"+"\n");
 		      }
@@ -360,7 +380,30 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			if (rblsavingsData.getApprover()==null){
 				fr.write(rblsavingsData.getApprover() +"  Approver  cannot be Null"+"\n");
 		      }
-			
+			if (rblsavingsData.getGurdianTitle()==null){
+				fr.write(rblsavingsData.getGurdianTitle() +"  Gurdian Title  cannot be Null"+"\n");
+		      }
+			if (rblsavingsData.getGurdianName()==null){
+				fr.write(rblsavingsData.getGurdianName() +"  Gurdian Name  cannot be Null"+"\n");
+		      }
+			if (rblsavingsData.getGurdianDateofBirth()==null){
+				fr.write(rblsavingsData.getGurdianDateofBirth() +"  Gurdian Date of Birth  cannot be Null"+"\n");
+		      }
+			if (rblsavingsData.getGurdianGender()==null){
+				fr.write(rblsavingsData.getGurdianGender() +"  Gurdian Gender  cannot be Null"+"\n");
+		      }
+			if (rblsavingsData.getGurdianAddressline1()==null){
+				fr.write(rblsavingsData.getGurdianAddressline1() +"  Gurdian Address Line1  cannot be Null"+"\n");
+		      }
+			if (rblsavingsData.getGurdianCity()==null){
+				fr.write(rblsavingsData.getGurdianCity() +"  Gurdian City  cannot be Null"+"\n");
+		      }
+			if (rblsavingsData.getGurdianState()==null){
+				fr.write(rblsavingsData.getGurdianState() +"  Gurdian State  cannot be Null"+"\n");
+		      }
+			if (rblsavingsData.getGurdianRelation()==null){
+				fr.write(rblsavingsData.getGurdianRelation() +"  Gurdian Relation  cannot be Null"+"\n");
+		      }
            }	
            
 //===================== Rbl Loan Data Validator=================================================================//      
@@ -374,8 +417,20 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			if (rblloanData.getLoanProductCode()==null){				
 				fr.write(rblloanData.getLoanProductCode() +"  Loan Product Code Cannot be Null  and length must be greater than 0 and lest equal to 20"+"\n");
 			}
-			if (rblloanData.getLoanAmount()==null){				
-				fr.write(rblloanData.getLoanAmount() +"  Loan Amount  Cannot be Null " +"\n");
+			if (rblloanData.getExternalId()==null){				
+				fr.write(rblloanData.getExternalId() +"  Loan External Id Cannot Be Null"+"\n");
+			}
+			if (rblloanData.getCustomerExternalId()==null){				
+				fr.write(rblloanData.getCustomerExternalId() +"Customer External Id Cannot Be Null"+"\n");
+			}
+			if (rblloanData.getCenterExtrenalId()==null){				
+				fr.write(rblloanData.getCenterExtrenalId() +"Center External Id Cannot Be Null"+"\n");
+			}
+			if (rblloanData.getCenterExtrenalId()==null){				
+				fr.write(rblloanData.getCenterExtrenalId() +"Center External Id Cannot Be Null"+"\n");
+			}
+			if (rblloanData.getGroupExternalId()==null){				
+				fr.write(rblloanData.getGroupExternalId() +" Group External Id  Cannot be Null " +"\n");
 			}
 			if (rblloanData.getDisbursementMode()==null){				
 				fr.write(rblloanData.getDisbursementMode() +"  Loan Disbusement Mode  Cannot be Null " +"\n");
@@ -420,6 +475,50 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 
 				}
 			}
+			if(rblloanData.getSpouseAge()==null){
+				fr.write(rblloanData.getSpouseAge() +" Spuse Date of Birth Cannot be Null" +"\n");
+			}
+			else{
+				if(rblloanData.getSpouseAge()<18 && rblloanData.getSpouseAge()>58)
+				fr.write("Spouse Age Must Be Between 18 to 58");
+			}
+			if(rblloanData.getNomineeName()==null){
+				fr.write("Nominee Name Cannot Be Null");
+			}
+			if(rblloanData.getNomineeAddressline1()==null){
+				fr.write("Nominee Address Line1 Cannot Be Null");
+
+			}
+			if(rblloanData.getNomineeRlation()==null){
+				fr.write("Nominee Relation  Cannot Be Null");
+			}
+			if(rblloanData.getNomineeDateOfBirth()==null){
+				fr.write("Nominee Date of Birth  Cannot Be Null");
+			}
+			if(rblloanData.getNomineeAge()==null){
+				fr.write("Nominee Age Cannot Be Null");
+			}
+			if(rblloanData.getNomineeGender()==null){
+				fr.write("Nominee Gender Cannot Be Null");
+			}
+			if(rblloanData.getGurdianTitle()==null){
+				fr.write("Gurdian Title Cannot Be Null");
+			}
+			if(rblloanData.getGurdianName()==null){
+				fr.write("Gurdian Name Cannot Be Null");
+			}
+			if(rblloanData.getGurdianDateofBirth()==null){
+				fr.write("Gurdian Date of Birth Cannot Be Null");
+			}
+			if(rblloanData.getGurdianGender()==null){
+				fr.write("Gurdian Gender Cannot Be Null");
+			}
+			if(rblloanData.getGurdianAddressline1()==null){
+				fr.write("Gurdian Address 1 Cannot   Be Null");
+			}
+			if(rblloanData.getGurdianRelation()==null){
+				fr.write("GurdianRelation Cannot   Be Null");
+			}
 			}
 //======================================================Rbl Client Data Validation================================================//	
 			fr.write("==========================Start Writing clientData=======================" +"\n");
@@ -434,6 +533,9 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 				if(!(rblclientsData.getExternalId().length()>0)&&(rblclientsData.getExternalId().length()<=20)){
 					fr.write(rblclientsData.getExternalId() +"  External Id  length must be greater than 0 and lest equal to 20"+"\n");
 				}
+			}
+			if(rblclientsData.getExternalCenterId()==null){
+				fr.write(rblclientsData.getExternalCenterId() +"  External  Center Id  length must be greater than 0 and lest equal to 20"+"\n");
 			}
 			
 			if (rblclientsData.getCustomerName()==null){				
@@ -452,6 +554,14 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 				if(!(rblclientsData.getAddressline1().length()>0) && (rblclientsData.getAddressline1().length()<=500)){
 					fr.write(rblclientsData.getCustomerName() +"  Customer Address  length must be greater than 0 and lest equal to 500"+"\n");
 				}
+			}
+			if(rblclientsData.getAddressline2()==null){
+				fr.write(rblclientsData.getAddressline2() +"  Address Line2 Cannot Be Null"+"\n");
+
+			}
+			if(rblclientsData.getAddressline3()==null){
+				fr.write(rblclientsData.getAddressline3() +"  Address Line3 Cannot Be Null"+"\n");
+
 			}
 			if(rblclientsData.getCityCode()==null){
 				fr.write(rblclientsData.getCityCode() +"  City Code Cannot Be Null"+"\n");
@@ -485,6 +595,30 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 						fr.write(rblclientsData.getBranchCode() +"  Branch Code Cannot  Be 6 digit"+"\n");  
 			      }
 			}
+			if(rblclientsData.getCaste()==null){
+				fr.write(rblclientsData.getCaste() +"  Cast Cannot Be Null"+"\n");  
+
+			}
+			if(rblclientsData.getGender()==null){
+				fr.write(rblclientsData.getGender() +" Gender Cannot Be Null"+"\n");  
+
+			}
+			
+			if(rblclientsData.getMaritalStatus()==null){
+				fr.write(rblclientsData.getMaritalStatus() +"Marital Status Cannot Be Null"+"\n");  
+
+			}
+			if(rblclientsData.getRelegion()==null){
+				fr.write(rblclientsData.getRelegion() +"Relegion Cannot Be Null"+"\n");  
+
+			}
+			
+			if(rblclientsData.getMotherTounge()==null){
+				fr.write(rblclientsData.getMotherTounge() +"Mother Tounge Cannot Be Null"+"\n");  
+
+			}
+			
+			
 			if(rblclientsData.getOperatingregionCode()==null){
 				fr.write(rblclientsData.getOperatingregionCode() +"  Operating Region Code Cannot  Be Null"+"\n");
 			}
@@ -507,14 +641,32 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			}
 			
 			if(rblclientsData.getBcBranchCode()==null){
-				fr.write(rblclientsData.getBcBranchCode() +"  Branch Name  Cannot  Be Null"+"\n");
+				fr.write(rblclientsData.getBcBranchCode() +"  Bc Branch Code  Cannot  Be Null"+"\n");
 			}
+			
+			if(rblclientsData.getOccupation()==null){
+				fr.write(rblclientsData.getOccupation() +"  Occupation r  Cannot  Be Null"+"\n");
+			}
+			if(rblclientsData.getEducationQualification()==null){
+				fr.write(rblclientsData.getEducationQualification() +"  Educational Qualification r  Cannot  Be Null"+"\n");
+			}
+			if(rblclientsData.getCategory()==null){
+				fr.write(rblclientsData.getCategory() +"  Category Cannot be Be Null"+"\n");
+			}
+			
+			
 			if(rblclientsData.getCollector()==null){
 				fr.write(rblclientsData.getCollector() +"  Collectorr  Cannot  Be Null"+"\n");
 			}
 			
 			if(rblclientsData.getApprover()==null){
 				fr.write(rblclientsData.getApprover() +"  Approver  Cannot  Be Null"+"\n");
+			}
+			if(rblclientsData.getSpouseName()==null){
+				fr.write(rblclientsData.getSpouseName() +"  Spouse Name  Cannot  Be Null"+"\n");
+			}
+			if(rblclientsData.getSpouseDateOfBirth()==null){
+				fr.write(rblclientsData.getSpouseDateOfBirth() +"  Spouse Date Of birth  Cannot  Be Null"+"\n");
 			}
 			
 			if(rblclientsData.getNomineeName()==null){
@@ -527,6 +679,16 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			
 			if(rblclientsData.getNomineeRelation()==null){
 				fr.write(rblclientsData.getNomineeRelation() +"  Nominee Relation   Cannot  Be Null"+"\n");
+			}
+			
+			if(rblclientsData.getDateofBirt()==null){
+				fr.write(rblclientsData.getDateofBirt() +"  Customer Date of Birth   Cannot  Be Null"+"\n");
+			}
+			else{
+				if(rblclientsData.getClientAge() <18 && rblclientsData.getClientAge()>58){
+					fr.write(rblclientsData.getClientAge() +"  Customer Age Must be Between 18 and 58 "+"\n");
+	
+				}
 			}
 	    }
            fr.close();

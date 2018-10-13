@@ -96,7 +96,7 @@ public class TaskDataValidator {
 
 	        final Long staffId = this.fromApiJsonHelper.extractLongNamed(TaskApiConstant.staffIdparamname, element);
 	        if(staffId==null){
-				throw new FieldCannotbeBlankException("taskTypeId");
+				throw new FieldCannotbeBlankException("Task Completed By");
 			}
 	        baseDataValidator.reset().parameter(TaskApiConstant.staffIdparamname).value(staffId).notNull()
 	                .longGreaterThanZero();

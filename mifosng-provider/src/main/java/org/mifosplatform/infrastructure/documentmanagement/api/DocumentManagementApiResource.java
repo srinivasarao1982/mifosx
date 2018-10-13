@@ -42,6 +42,7 @@ import org.mifosplatform.infrastructure.documentmanagement.service.DocumentWrite
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.client.domain.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -65,18 +66,27 @@ public class DocumentManagementApiResource {
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final ToApiJsonSerializer<DocumentData> toApiJsonSerializer;
     private final ClientRepository clientRepository;
+    
+    private final String validationFilePath;
+    private final String rblLosSendFilePath;
+    private final String rblLosReceiveFilePath;
 
     @Autowired
     public DocumentManagementApiResource(final PlatformSecurityContext context,
             final DocumentReadPlatformService documentReadPlatformService, final DocumentWritePlatformService documentWritePlatformService,
             final ApiRequestParameterHelper apiRequestParameterHelper, final ToApiJsonSerializer<DocumentData> toApiJsonSerializer,
-            final ClientRepository clientRepository) {
+            final ClientRepository clientRepository,
+            @Value("${validationFilePath}") final String validationFilePath, @Value("${rblLosSendFilePath}") final String rblLosSendFilePath, 
+            @Value("${rblLosReceiveFilePath}") final String rblLosReceiveFilePath) {
         this.context = context;
         this.documentReadPlatformService = documentReadPlatformService;
         this.documentWritePlatformService = documentWritePlatformService;
         this.apiRequestParameterHelper = apiRequestParameterHelper;
         this.toApiJsonSerializer = toApiJsonSerializer;
         this.clientRepository = clientRepository;
+        this.validationFilePath=validationFilePath;
+        this.rblLosSendFilePath=rblLosSendFilePath;
+        this.rblLosReceiveFilePath=rblLosReceiveFilePath;
     }
 
     @GET
@@ -213,10 +223,10 @@ public class DocumentManagementApiResource {
 
         this.context.authenticatedUser().validateHasReadPermission(this.SystemEntityType);
         File my_file =null;
-        File my_file1=null;
+        File my_file1=null;//"C:/Users/Keshav/.mifosx/RblValidationFile/"
         if (entityId==1){
-        	my_file = new File("C:/Users/Keshav/.mifosx/RblValidationFile/"+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
-            my_file1 = new File("C:/Users/Keshav/.mifosx/RblValidationFile/"+fileName+"test");
+        	my_file = new File(validationFilePath+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
+            my_file1 = new File(validationFilePath+fileName+"test");
           
            FileOutputStream out = new  FileOutputStream(my_file1);
             FileInputStream in = new FileInputStream(my_file);
@@ -231,12 +241,12 @@ public class DocumentManagementApiResource {
         }
        	else{
        	if(entityType.equalsIgnoreCase("send")){
-        my_file = new File("C:/Users/Keshav/.mifosx/RBLLosFile/"+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
-        my_file1 = new File("C:/Users/Keshav/.mifosx/RBLLosFile/"+fileName+"test");
+        my_file = new File(rblLosSendFilePath+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
+        my_file1 = new File(rblLosSendFilePath+fileName+"test");
        	}
        	if (entityType.equalsIgnoreCase("receive")){
-       		my_file = new File("C:/Users/Keshav/.mifosx/RBLLosFileReceive/"+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
-            my_file1 = new File("C:/Users/Keshav/.mifosx/RBLLosFileReceive/"+fileName+"test");
+       		my_file = new File(rblLosReceiveFilePath+fileName); // We are downloading .txt file, in the format of doc with name check - check.doc
+            my_file1 = new File(rblLosReceiveFilePath+fileName+"test");
      	
        	}
         

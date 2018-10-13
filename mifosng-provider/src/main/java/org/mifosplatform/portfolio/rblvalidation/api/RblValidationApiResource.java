@@ -31,6 +31,8 @@ import org.mifosplatform.portfolio.group.domain.GroupRepository;
 import org.mifosplatform.portfolio.loanaccount.api.PartialLoanApiConstant;
 import org.mifosplatform.portfolio.loanaccount.data.PartialLoanData;
 import org.mifosplatform.portfolio.loanaccount.data.SequenceNumberData;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoan;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepository;
 import org.mifosplatform.portfolio.loanaccount.service.PartialLoanReadPlatformService;
 import org.mifosplatform.portfolio.rblvalidation.data.RblCrdeitResponseData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblCreditBureauData;
@@ -38,6 +40,7 @@ import org.mifosplatform.portfolio.rblvalidation.data.RblLosFileData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblValidatefileData;
 import org.mifosplatform.portfolio.rblvalidation.exception.CbCheckStatus;
 import org.mifosplatform.portfolio.rblvalidation.exception.GrtNotCompletedException;
+import org.mifosplatform.portfolio.rblvalidation.exception.PartialLoanNotCreatedException;
 import org.mifosplatform.portfolio.rblvalidation.service.LosFileReadPlatformService;
 import org.mifosplatform.portfolio.rblvalidation.service.RblCreditBurequReadPlatfoemServie;
 import org.mifosplatform.portfolio.rblvalidation.service.RblDataReadplatformService;
@@ -66,6 +69,8 @@ public class RblValidationApiResource {
     private final RblLosFileGenerationService rblLosFileGenerationService;
     private final GroupRepository groupRepository;
     private final ConfigurationReadPlatformService configurationReadPlatformService;
+    private final PartialLoanRepository partialLoanRepository;
+
 
 
     
@@ -83,7 +88,8 @@ public class RblValidationApiResource {
     		final RblLosFileGenerationService rblLosFileGenerationService,
     		final GroupRepository groupRepository,
     		final ConfigurationReadPlatformService configurationReadPlatformService,
-    		final ToApiJsonSerializer<RblValidatefileData> toApiJsonValidateSerializer
+    		final ToApiJsonSerializer<RblValidatefileData> toApiJsonValidateSerializer,
+    		final PartialLoanRepository partialLoanRepository
             ) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -99,6 +105,7 @@ public class RblValidationApiResource {
         this.groupRepository=groupRepository;
         this.configurationReadPlatformService=configurationReadPlatformService;
         this.toApiJsonValidateSerializer=toApiJsonValidateSerializer;
+        this.partialLoanRepository=partialLoanRepository;
 ;
 
         
@@ -156,12 +163,34 @@ public class RblValidationApiResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public Response create(final String apiRequestBodyAsJson,@QueryParam("clintId") String clintId,@QueryParam("isValidate") boolean isValidate) {
-    	
+    	String errorMsg="";
+    	Boolean isError =false;
+    	if(clintId.length()>1){
+    	String [] stringclientsId =clintId.split(",");    	
+    	for(int i=1 ;i<stringclientsId.length;i++){
+    	 Long clientId =Long.parseLong(stringclientsId[i]);    	 
+        PartialLoan partialLoan= this.partialLoanRepository.findByClientIdAndLoanStatus(clientId,1, 0);
+    	if(partialLoan==null){
+    		errorMsg=errorMsg+"Partial Loan is Not Create for Client"+ clientId+"\n";
+    		isError=true;
+    	}
+    	}
+    	}
+    	else{
+       	 Long clientId =Long.parseLong(clintId);    	 
+         PartialLoan partialLoan= this.partialLoanRepository.findByClientIdAndLoanStatus(clientId,1, 0);
+     	if(partialLoan==null){
+     		errorMsg=errorMsg+"Partial Loan is Not Create for Client"+ clientId+"\n";
+     		isError=true;
+     	}
+    	}    	
+    	if(isError){
+    		throw new PartialLoanNotCreatedException(errorMsg);
+    	}
         Response response = Response.status(200).build();    	
-    	   this.rblEquifaxWritePlatformService.rblequifaxIntregation(clintId,isValidate);     
-       return response;
-		}
-
+    	this.rblEquifaxWritePlatformService.rblequifaxIntregation(clintId,isValidate);     
+        return response;			
+	}
        // Los File Send And Receive Logic
     
     @GET
@@ -205,7 +234,7 @@ public class RblValidationApiResource {
     			  throw new CbCheckStatus(groupData.getName()+"-"+groupData.getId());
     		  }
     		  }
-    		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId,centerDatatobesent,groupDatatobesend,isreprocess); 
+    		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId,centerDatatobesent,groupDatatobesend,isreprocess,isImagetobesent); 
     	  }
          Response response = Response.status(200).build();       
          return response;

@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import org.joda.time.DateTime;
 import org.mifosplatform.infrastructure.codes.domain.CodeValueRepositoryWrapper;
+import org.mifosplatform.infrastructure.documentmanagement.service.DocumentWritePlatformService;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.domain.OfficeRepositoryWrapper;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
@@ -46,6 +47,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 	    private final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper;
 	    private final SendFileRepositoryWrapper sendFileRepositoryWrapper;
 	    private final ReceiveFileRepository receiveFileRepository;
+	    private final DocumentWritePlatformService documentWritePlatformService;
 	    
 	    	    
 	    @Autowired
@@ -53,7 +55,8 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 	    		final RblDataReadplatformService rblDataReadplatformService,final SendFileRepository sendFileRepository,
 	    		final ReceiveFileRepository receiveFileRepository,
 	    		final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper,
-	    		final SendFileRepositoryWrapper sendFileRepositoryWrapper
+	    		final SendFileRepositoryWrapper sendFileRepositoryWrapper,
+	    		final DocumentWritePlatformService documentWritePlatformService 
 	    		)
 	            {
 	        this.context = context;
@@ -61,10 +64,11 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 	        this.receiveFileRepositoryWrapper=receiveFileRepositoryWrapper;
 	        this.sendFileRepositoryWrapper=sendFileRepositoryWrapper;
 	        this.receiveFileRepository=receiveFileRepository;
+	        this.documentWritePlatformService=documentWritePlatformService;
 	         }
 
 		@Override
-		public void generateLosFile(String clientId, String centerId, String groupId,boolean centerDataTobeSent,boolean groupDataTobesend,boolean isreprocess) {
+		public void generateLosFile(String clientId, String centerId, String groupId,boolean centerDataTobeSent,boolean groupDataTobesend,boolean isreprocess,boolean isImagetobesent) {
 			List<RblCenterValidateData> rblCenterValidateDatas =new ArrayList<RblCenterValidateData>();
 			List<RblGroupValidationData>readRblGroupDatas=new ArrayList<RblGroupValidationData>();
 			 if(isreprocess){
@@ -132,7 +136,13 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 				
 				for(RblLoanValidationData rblLoanValidationData:readRblLoanDatas){	
 					StringBuilder customerData =new StringBuilder();
+					    String inflag="";
 						customerData.append("LOAN~") ;
+						 if(rblLoanValidationData.getMaritalStatus().equalsIgnoreCase("Married")){
+							 inflag="IF2"; 
+						 }else{
+							 inflag="IF1";
+						 }
 						
 						customerData.append(rblLoanValidationData.getExternalId()).append("|").append(rblLoanValidationData.getCustomerExternalId()).append("|");
 						customerData.append(rblLoanValidationData.getCenterExtrenalId()).append("|").append(rblLoanValidationData.getGroupExternalId()).append("|");
@@ -145,13 +155,13 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 						customerData.append(rblLoanValidationData.getColector()).append("|").append(rblLoanValidationData.getApprover()).append("|");
 						customerData.append(rblLoanValidationData.getExceptedDisbursementDate()).append("|").append(rblLoanValidationData.getTopUpLoanFlag()).append("|");
 						customerData.append(rblLoanValidationData.getHosiptalCash()).append("|").append(rblLoanValidationData.getPrepaidCharge());
-						String extrafield=" |"+"|"+"POL3"+"|"+"|"+"|"+"|"+"|"+rblLoanValidationData.getNomineeName()+"|"+rblLoanValidationData.getGurdianAddressline1()+"|"+rblLoanValidationData.getNomineeAddressline2()+"|"+rblLoanValidationData.getNomineeAddressline3()+"|"+rblLoanValidationData.getNomineeRlation()+"|"+rblLoanValidationData.getNomineeDateOfBirth()+"|"+
+						String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+inflag+"|"+rblLoanValidationData.getNomineeName()+"|"+rblLoanValidationData.getGurdianAddressline1()+"|"+rblLoanValidationData.getNomineeAddressline2()+"|"+rblLoanValidationData.getNomineeAddressline3()+"|"+rblLoanValidationData.getNomineeRlation()+"|"+rblLoanValidationData.getNomineeDateOfBirth()+"|"+
 						rblLoanValidationData.getNomineeAge()+"|"+rblLoanValidationData.getNomineeGender()+"|"+"|"+"|"+"|"+"|"+rblLoanValidationData.getGurdianTitle()+"|"+rblLoanValidationData.getGurdianName()+"|"+rblLoanValidationData.getGurdianDateofBirth()+"|"+rblLoanValidationData.getGurdianGender()+"|"+rblLoanValidationData.getGurdianAddressline1()+"|"+rblLoanValidationData.getGurdianRelation()+"|"+"|"+"|"+"|"+"|"+"|" ; 
 						String actualfield=customerData.toString().replace("null", "" );
 						fr.write(actualfield + extrafield);
 						fr.write("\n");
 						fr.write("\n");
-
+						inflag="";
 		        }
 				
 				
@@ -224,19 +234,13 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 	        }
 				
 			fr.close();	
-			//SendFileRecord(String fileType, String fileName, String filePath) {
 			SendFileRecord sendFileRecord =new SendFileRecord("Send",rblLosFile.getName(),rblLosFile.getPath());
 			this.sendFileRepositoryWrapper.save(sendFileRecord);
-			
-			//Receive File Logic
-			List<String>fileName =new ArrayList<String>();
-			fileName.add("test");
-			List<ReceiveFileRecord>receiveFileRecords =this.receiveFileRepository.getExistingFile(fileName.get(0));
-			if(receiveFileRecords.size()==0){
-				ReceiveFileRecord receiveFileRecord =new ReceiveFileRecord("received",rblLosFile.getName(),rblLosFile.getPath());
-                this.receiveFileRepositoryWrapper.save(receiveFileRecord);
-				
+			List<Long>clientIdList=new ArrayList<Long>();
+			for(String id:clientId.split(",")){
+				clientIdList.add(Long.parseLong(id));
 			}
+			this.documentWritePlatformService.uploadDocumentToRemoteHost(rblLosFile.getName(), isreprocess,  isImagetobesent,clientIdList);		
 			
 		  }
 		    catch(Exception e){

@@ -56,12 +56,15 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 	 
 	 @Column(name = "pin", length = 6)
 	 private Long pin;
+	 
+	 @Column(name = "description", length = 30)
+	 private String  description;
 
 	 
 	 public static RblCenter createrblcenter(Long centerId, Long maximumIndividual, String meetingTime, String houseNo, String streetNo,
-				String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin) {
+				String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin,final String description) {
            
-		 return new RblCenter(centerId,maximumIndividual,meetingTime,houseNo,streetNo,arelocality,landmark,village,taluk,district,state,pin);
+		 return new RblCenter(centerId,maximumIndividual,meetingTime,houseNo,streetNo,arelocality,landmark,village,taluk,district,state,pin,description);
    	 
     }
 	 
@@ -143,6 +146,12 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 	            this.village = StringUtils.defaultIfEmpty(newValue, null);
 	        }
 	        
+	        if (command.isChangeInStringParameterNamed(RblCenterDeatilsApiConstant.descriptionparamname, this.description)) {
+	            final String newValue = command.stringValueOfParameterNamed(RblCenterDeatilsApiConstant.descriptionparamname);
+	            actualChanges.put(RblCenterDeatilsApiConstant.descriptionparamname, newValue);
+	            this.description = StringUtils.defaultIfEmpty(newValue, null);
+	        }
+	        
 	      
 	       return actualChanges;
 	    }
@@ -151,7 +160,7 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 			super();
 		}
 	public RblCenter(Long centerId, Long maximumIndividual, String meetingTime, String houseNo, String streetNo,
-			String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin) {
+			String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin,String description) {
 		super();
 		this.centerId = centerId;
 		this.maximumIndividual = maximumIndividual;
@@ -165,6 +174,7 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 		this.district = district;
 		this.state = state;
 		this.pin=pin;
+		this.description=description;
 	}
 
 	public Long getCenterId() {
