@@ -136,12 +136,15 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
 
     }
 	@Override
-    public List<SequenceNumberData> retriveSequenceNumber(final Long parentId) {
+    public List<SequenceNumberData> retriveSequenceNumber(final Long parentId,final boolean isUpdate) {
         try {
             final AppUser currentUser = this.context.authenticatedUser();
             
             final SequenceNumberMapper rm = new SequenceNumberMapper();
             String Sql ="select"+rm.schema();
+            if(!isUpdate){
+            	Sql=Sql+ " and mpl.status  in (select id from m_code_value where code_id=61 and code_value='Accepted') ";
+            }
             List<SequenceNumberData>sequenceNumberDetails=new ArrayList<SequenceNumberData>();
             sequenceNumberDetails = this.jdbcTemplate.query(Sql, rm, new Object[] { parentId});
             return sequenceNumberDetails;
@@ -158,7 +161,7 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
         public String schema() {
             return   "  mpl.client_id as clientId, mpl.rpdo_no as rpdoNumber "
                     + " from m_partial_loan mpl "
-                    + " where mpl.group_id in (select  id from m_group mg  where mg.parent_id= ?) and mpl.is_Disburse=0";
+                    + " where mpl.group_id in (select  id from m_group mg  where mg.parent_id= ?) and mpl.is_Disburse=0 ";
         }
 
         @Override

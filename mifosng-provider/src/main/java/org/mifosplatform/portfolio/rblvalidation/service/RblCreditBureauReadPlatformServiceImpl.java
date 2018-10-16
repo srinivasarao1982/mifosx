@@ -289,10 +289,10 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
     public RblValidateDataMapper() {}
 
     public String schema() {
-        return "  mg.display_name as centerName,mce.file_type as fileType,mce.file_name as fileName,mce.file_location as fileLocation, "
+        return " null as centerName,mce.file_type as fileType,mce.file_name as fileName,mce.file_location as fileLocation, "
                +"mce.created_date as createdDate   "
-               +"from m_rblvalidatefile mce "
-               +" join m_group mg on mg.id=mce.center_id ";
+               +"from m_rblvalidatefile mce ";
+              // +" join m_group mg on mg.id=mce.center_id ";
 
 
     }

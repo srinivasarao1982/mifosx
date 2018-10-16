@@ -646,6 +646,8 @@ public final class Group extends AbstractPersistable<Long> {
             return false;
         }
     }
+    
+    
 
     public Set<Client> getActiveClientMembers() {
         Set<Client> activeClientMembers = new HashSet<>();
@@ -655,6 +657,26 @@ public final class Group extends AbstractPersistable<Long> {
             }
         }
         return activeClientMembers;
+    }
+    
+    public Boolean isGroupsClientCountWithinMaxRangeForAllMember(Integer maxClients) {
+        Set<Client> allClientMembers = getAllClientMembers();
+        if (maxClients == null) {
+            return true;
+        } else if (allClientMembers.size() <= maxClients) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public Set<Client> getAllClientMembers() {
+        Set<Client> allClientMembers = new HashSet<>();
+        for (Client client : this.clientMembers) {
+        	allClientMembers.add(client);
+            }
+       
+        return allClientMembers;
     }
 
     private void validateActivationDate(final List<ApiParameterError> dataValidationErrors) {

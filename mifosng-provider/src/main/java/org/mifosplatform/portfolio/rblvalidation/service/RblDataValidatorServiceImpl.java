@@ -3,12 +3,16 @@ package org.mifosplatform.portfolio.rblvalidation.service;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.portfolio.group.domain.Group;
+import org.mifosplatform.portfolio.group.domain.GroupRepository;
 import org.mifosplatform.portfolio.rblvalidation.data.RblCenterValidateData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblGroupValidationData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,32 +35,63 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 	private final CodeValueReadPlatformService codeValueReadPlatformService;
 	private final RblDataReadplatformService rblDataReadplatformService;
 	private final ValidateRblFileRepository validateRblFileRepository;
+	private final GroupRepository groupRepository;
 
 	@Autowired
 	public RblDataValidatorServiceImpl(final PlatformSecurityContext context,
 			final CodeValueReadPlatformService codeValueReadPlatformService, final RoutingDataSource dataSource,
 			final RblDataReadplatformService rblDataReadplatformService,
-			final ValidateRblFileRepository validateRblFileRepository) {
+			final ValidateRblFileRepository validateRblFileRepository,
+			final GroupRepository groupRepository) {
 		this.context = context;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.codeValueReadPlatformService = codeValueReadPlatformService;
 		this.rblDataReadplatformService=rblDataReadplatformService;
 		this.validateRblFileRepository= validateRblFileRepository;
+		this.groupRepository=groupRepository;
 	}
 
 	@Override
 	public void validateDatafortransfer(String rblcenterId, String groupId, String clientId) {
 	    String RBL_BASE_DIR = System.getProperty("user.home") + File.separator + ".mifosx"+File.separator+"RblValidationFile";
-	    try {
-		List<RblCenterValidateData> rblcenterDatas=this.rblDataReadplatformService.readRblCenterData(rblcenterId,groupId);		
-		File rblcentervalidatefile =new File (RBL_BASE_DIR,rblcenterDatas.get(0).getExternalId()+"validatefile"+new DateTime().toString("ddmmyyyhhmmss")+".txt");
+	    try {	
+			List<RblCenterValidateData> rblcenterDatas= new ArrayList<RblCenterValidateData>();		
+            String[]centerList=rblcenterId.split(",");
+            String[]groupIdArrayList=groupId.split(",");
+            List<Long>groupIdList=new ArrayList<Long>();
+            String groupIdParameter=""; 
+            String OfficeName="";
+			for(int i=0;i<centerList.length;i++){
+			   	List<Group>groupList =(List<Group>) this.groupRepository.findByParentId(Long.parseLong(centerList[i]));
+		        if(i==0){
+		        	OfficeName=groupList.get(0).getOffice().getName();
+		        }
+			   	for(Group grouplistforIdea:groupList){
+		        	groupIdList.add(grouplistforIdea.getId());
+		        }
+		       
+			   	for(Long groupIdforComparasion:groupIdList ){
+			   		for(int j=0;j<groupIdArrayList.length;j++){
+			   			if(Long.parseLong(groupIdArrayList[j])==groupIdforComparasion){
+			   				groupIdParameter=groupIdParameter+","+groupIdforComparasion;
+			   			}
+			   		}
+			   		
+			   	}
+				List<RblCenterValidateData> rblcenterIntermediateDatas=this.rblDataReadplatformService.readRblCenterData(rblcenterId,groupIdParameter);
+				rblcenterDatas.add(rblcenterIntermediateDatas.get(0));
+				rblcenterIntermediateDatas.clear();
+				groupIdParameter="";
+			}
+		File rblcentervalidatefile =new File (RBL_BASE_DIR,OfficeName+"validatefile"+new DateTime().toString("ddmmyyyhhmmss")+".txt");
 		FileWriter fr =null;		 
 		fr =new FileWriter(rblcentervalidatefile);
 		
-		fr.write("===========Start Writing for Center Data============"+"\n");
+		fr.write("***************Start Writing for Center Data***************"+"\n");
 
 		for(RblCenterValidateData rblcenterData: rblcenterDatas){
-			
+		fr.write("***************Start Writing for Center With External Id"+ rblcenterData.getExternalId()+"***************"+"\n");
+
 			if (rblcenterData.getCenterName()!=null){
 				if(!((rblcenterData.getCenterName().length()>0) && (rblcenterData.getCenterName().length()<=40))){
 					fr.write("center Name length must be between 0 to 40" +"\n");
@@ -212,12 +247,14 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 		}
 //======================================== Start Validating Group Data================================================//
 		
-		fr.write("=====================Start Writing group Data====================================="+"\n");
+		fr.write("***************Start Writing group Data***************"+"\n");
 
 		
 		List<RblGroupValidationData> rblgroupDatas=this.rblDataReadplatformService.readRblGroupData(groupId);
-		
-           for(RblGroupValidationData rblgroupData: rblgroupDatas){			
+
+           for(RblGroupValidationData rblgroupData: rblgroupDatas){	
+       	fr.write("***************Start Writing Data For Group ith External Id"+rblgroupData.getExternalId()+"***************"+"\n");
+
 			if (rblgroupData.getGroupName()!=null){
 				if(!((rblgroupData.getGroupName().length()>0) && (rblgroupData.getGroupName().length()<=40))){
 					fr.write(rblgroupData.getGroupName() +"   group Name length must be between 0 to 40" +"\n");
@@ -297,12 +334,12 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
            }	
     //=========================================	Savings Data Validation===================================//
            
-			fr.write("==========================================Start Writing savings Data==================================== " +"\n");
-
-           
+		fr.write("***************Start Writing savings Data*************** " +"\n");
            List<RblSavingValidationData> rblsavingsDatas=this.rblDataReadplatformService.readRblSavingData(clientId);
    		
-           for(RblSavingValidationData rblsavingsData: rblsavingsDatas){			
+           for(RblSavingValidationData rblsavingsData: rblsavingsDatas){
+       	 fr.write("***************Start Writing Data For Savings with External Id"+rblsavingsData.getExternalId()+"*************** " +"\n");
+
 			if (rblsavingsData.getExternalId()!=null){
 				if(!((rblsavingsData.getExternalId().length()>0) && (rblsavingsData.getExternalId().length()<=20))){
 					fr.write(rblsavingsData.getExternalId() +"  Savings External Id length must be between 0 to 20" +"\n");
@@ -408,12 +445,14 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
            
 //===================== Rbl Loan Data Validator=================================================================//      
            
-			fr.write("================================ Start  Writing Loan Data======================================" +"\n");
+		fr.write("*************** Start  Writing Loan Data***************" +"\n");
 
 			
            List<RblLoanValidationData> rblloanDatas=this.rblDataReadplatformService.readRblLoanData(clientId);
       		
-           for(RblLoanValidationData rblloanData: rblloanDatas){			
+           for(RblLoanValidationData rblloanData: rblloanDatas){
+       		fr.write("*************** Start  Writing Data for Loan with External Id"+rblloanData.getExternalId()+"***************" +"\n");
+
 			if (rblloanData.getLoanProductCode()==null){				
 				fr.write(rblloanData.getLoanProductCode() +"  Loan Product Code Cannot be Null  and length must be greater than 0 and lest equal to 20"+"\n");
 			}
@@ -521,12 +560,14 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			}
 			}
 //======================================================Rbl Client Data Validation================================================//	
-			fr.write("==========================Start Writing clientData=======================" +"\n");
+			fr.write("***************Start Writing clientData***************" +"\n");
 
 			
            List<RblclientDatValidation> rblclientDatas=this.rblDataReadplatformService.readRblClientData(clientId);
      		
-           for(RblclientDatValidation rblclientsData: rblclientDatas){			
+           for(RblclientDatValidation rblclientsData: rblclientDatas){	
+   			fr.write("***************Start Writing clientData for External Id"+rblclientsData.getExternalId()+"***************" +"\n");
+
 			if (rblclientsData.getExternalId()==null){				
 				fr.write(rblclientsData.getExternalId() +"  External Id Cannot be Null  and length must be greater than 0 and lest equal to 20"+"\n");
 			}else{
@@ -693,8 +734,8 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 	    }
            fr.close();
       // 	public ValidatefileRecord(Long centerId, String fileType, String fileName, String fileLocation) {
-
-           ValidatefileRecord validatefileRecord = new ValidatefileRecord(Long.parseLong(rblcenterId),"RBL",rblcentervalidatefile.getName(),rblcentervalidatefile.getPath());
+          Long  LoandbcenterId=null;
+           ValidatefileRecord validatefileRecord = new ValidatefileRecord(LoandbcenterId,"RBL",rblcentervalidatefile.getName(),rblcentervalidatefile.getPath());
            this.validateRblFileRepository.save(validatefileRecord);
 	    }
 	 catch (IOException e) {

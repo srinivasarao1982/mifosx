@@ -226,12 +226,14 @@ public class RblValidationApiResource {
     	  else{
     		  GlobalConfigurationPropertyData  globalConfigurationPropertyData =this.configurationReadPlatformService.retrieveGlobalConfiguration((long)21);
     		  if(globalConfigurationPropertyData.isEnabled()){
-    		  Group groupData=this.groupRepository.findCenterById(Long.parseLong(centerId));
+    		   for(String centerIdforValidate:centerId.split(",")){
+    		  Group groupData=this.groupRepository.findCenterById(Long.parseLong(centerIdforValidate));
     		  if(groupData.getIsgrtCompleted()==0){
     			  throw new GrtNotCompletedException(groupData.getName()+"-"+groupData.getId());
     		  }
     		  if(groupData.getIscbChecked()==0){
     			  throw new CbCheckStatus(groupData.getName()+"-"+groupData.getId());
+    		  }
     		  }
     		  }
     		 this.rblLosFileGenerationService.generateLosFile(clintId, centerId, groupId,centerDatatobesent,groupDatatobesend,isreprocess,isImagetobesent); 

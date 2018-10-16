@@ -17,6 +17,8 @@ import org.mifosplatform.organisation.office.domain.OfficeRepositoryWrapper;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.service.ClientbankDetailsWritePlatformServiceImpl;
+import org.mifosplatform.portfolio.group.domain.Group;
+import org.mifosplatform.portfolio.group.domain.GroupRepository;
 import org.mifosplatform.portfolio.group.domain.GroupRepositoryWrapper;
 import org.mifosplatform.portfolio.loanaccount.data.PartialLoanDataValidator;
 import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepositoryWrapper;
@@ -48,7 +50,8 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 	    private final SendFileRepositoryWrapper sendFileRepositoryWrapper;
 	    private final ReceiveFileRepository receiveFileRepository;
 	    private final DocumentWritePlatformService documentWritePlatformService;
-	    
+		private final GroupRepository groupRepository;
+
 	    	    
 	    @Autowired
 	    public RblLosFileGenerationServiceImpl(final PlatformSecurityContext context,
@@ -56,7 +59,8 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 	    		final ReceiveFileRepository receiveFileRepository,
 	    		final ReceiveFileRepositoryWrapper receiveFileRepositoryWrapper,
 	    		final SendFileRepositoryWrapper sendFileRepositoryWrapper,
-	    		final DocumentWritePlatformService documentWritePlatformService 
+	    		final DocumentWritePlatformService documentWritePlatformService,
+	    		final GroupRepository groupRepository
 	    		)
 	            {
 	        this.context = context;
@@ -65,6 +69,8 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 	        this.sendFileRepositoryWrapper=sendFileRepositoryWrapper;
 	        this.receiveFileRepository=receiveFileRepository;
 	        this.documentWritePlatformService=documentWritePlatformService;
+	    	this.groupRepository=groupRepository;
+
 	         }
 
 		@Override
@@ -73,7 +79,32 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 			List<RblGroupValidationData>readRblGroupDatas=new ArrayList<RblGroupValidationData>();
 			 if(isreprocess){
 			if(centerDataTobeSent){
-			 rblCenterValidateDatas =this.rblDataReadplatformService.readRblCenterData(centerId,groupId);
+			// rblCenterValidateDatas =this.rblDataReadplatformService.readRblCenterData(centerId,groupId);
+			 
+			 String[]centerList=centerId.split(",");
+	            String[]groupIdArrayList=groupId.split(",");
+	            List<Long>groupIdList=new ArrayList<Long>();
+	            String groupIdParameter=""; 
+				for(int i=0;i<centerList.length;i++){
+				   	List<Group>groupList =(List<Group>) this.groupRepository.findByParentId(Long.parseLong(centerList[i]));
+				   	for(Group grouplistforIdea:groupList){
+			        	groupIdList.add(grouplistforIdea.getId());
+			        }
+			       
+				   	for(Long groupIdforComparasion:groupIdList ){
+				   		for(int j=0;j<groupIdArrayList.length;j++){
+				   			if(Long.parseLong(groupIdArrayList[j])==groupIdforComparasion){
+				   				groupIdParameter=groupIdParameter+","+groupIdforComparasion;
+				   			}
+				   		}
+				   		
+				   	}
+					List<RblCenterValidateData> rblcenterIntermediateDatas=this.rblDataReadplatformService.readRblCenterData(centerId,groupIdParameter);
+					rblCenterValidateDatas.add(rblcenterIntermediateDatas.get(0));
+					rblcenterIntermediateDatas.clear();
+					groupIdParameter="";
+				}
+			 
 			}
 			
 		     if(groupDataTobesend){
@@ -81,9 +112,33 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 		     }
 			 }
 			 else{
-				 rblCenterValidateDatas =this.rblDataReadplatformService.readRblCenterData(centerId,groupId);
+				 //rblCenterValidateDatas =this.rblDataReadplatformService.readRblCenterData(centerId,groupId);
+				 String[]centerList=centerId.split(",");
+		            String[]groupIdArrayList=groupId.split(",");
+		            List<Long>groupIdList=new ArrayList<Long>();
+		            String groupIdParameter=""; 
+					for(int i=0;i<centerList.length;i++){
+					   	List<Group>groupList =(List<Group>) this.groupRepository.findByParentId(Long.parseLong(centerList[i]));
+					   	for(Group grouplistforIdea:groupList){
+				        	groupIdList.add(grouplistforIdea.getId());
+				        }
+				       
+					   	for(Long groupIdforComparasion:groupIdList ){
+					   		for(int j=0;j<groupIdArrayList.length;j++){
+					   			if(Long.parseLong(groupIdArrayList[j])==groupIdforComparasion){
+					   				groupIdParameter=groupIdParameter+","+groupIdforComparasion;
+					   			}
+					   		}
+					   		
+					   	}
+						List<RblCenterValidateData> rblcenterIntermediateDatas=this.rblDataReadplatformService.readRblCenterData(centerId,groupIdParameter);
+						rblCenterValidateDatas.add(rblcenterIntermediateDatas.get(0));
+						rblcenterIntermediateDatas.clear();
+						groupIdParameter="";
+				 
 				 readRblGroupDatas=this.rblDataReadplatformService.readRblGroupData(groupId);
 
+			 }
 			 }
 			List<RblclientDatValidation>readRblClientDatas=this.rblDataReadplatformService.readRblClientData(clientId);
 			List<RblLoanValidationData>readRblLoanDatas=this.rblDataReadplatformService.readRblLoanData(clientId);
@@ -136,13 +191,15 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 				
 				for(RblLoanValidationData rblLoanValidationData:readRblLoanDatas){	
 					StringBuilder customerData =new StringBuilder();
-					    String inflag="";
+					    String inflag="IF1";
 						customerData.append("LOAN~") ;
+						if(rblLoanValidationData.getMaritalStatus()!=null){
 						 if(rblLoanValidationData.getMaritalStatus().equalsIgnoreCase("Married")){
 							 inflag="IF2"; 
 						 }else{
 							 inflag="IF1";
 						 }
+						}
 						
 						customerData.append(rblLoanValidationData.getExternalId()).append("|").append(rblLoanValidationData.getCustomerExternalId()).append("|");
 						customerData.append(rblLoanValidationData.getCenterExtrenalId()).append("|").append(rblLoanValidationData.getGroupExternalId()).append("|");

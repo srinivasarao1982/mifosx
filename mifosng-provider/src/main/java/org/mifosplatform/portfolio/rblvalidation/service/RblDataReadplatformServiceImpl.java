@@ -469,8 +469,10 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             final String centerExtrenalId=rs.getString("externalCenterId");
             final String accountType =rs.getString("accountType");
              String savingproductCode =rs.getString("savingproductCode");
+             if(savingproductCode!=null){
              String [] productCodeArray =savingproductCode.split("-");
              savingproductCode=productCodeArray[1];
+             }
             final String productName =rs.getString("productName");
             final Date accountOpeningDate=rs.getDate("accountOpeningDate");
             final String nomineeTitle =rs.getString("nomineeTitle");

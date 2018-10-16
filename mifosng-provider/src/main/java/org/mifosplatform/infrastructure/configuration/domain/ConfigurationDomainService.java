@@ -44,6 +44,10 @@ public interface ConfigurationDomainService {
     public Integer retrieveMinAllowedClientsInGroup();
 
     public Integer retrieveMaxAllowedClientsInGroup();
+    
+    public Integer retrieveMinAllowedClientsInGroupAtTaskTime();
+
+    public Integer retrieveMaxAllowedClientsInGroupAtTaskTime();
 
     boolean isMeetingMandatoryForJLGLoans();
 

@@ -3,20 +3,26 @@ package org.mifosplatform.portfolio.rblvalidation.service;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+//import javax.net.ssl.HttpsURLConnection;
+//import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
+
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.json.XML;
-import org.mifosplatform.infrastructure.codes.data.CodeValueData;
 import org.mifosplatform.infrastructure.codes.domain.CodeValue;
 import org.mifosplatform.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
@@ -38,17 +44,16 @@ import org.mifosplatform.portfolio.rblvalidation.domain.CreditBureauValidationEr
 import org.mifosplatform.portfolio.rblvalidation.domain.ValidateRblFileRepository;
 import org.mifosplatform.portfolio.rblvalidation.domain.ValidatefileRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonObject;
 
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.loanaccount.domain.PartialLoan;
 import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepository;
 import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepositoryWrapper;
-import org.mifosplatform.portfolio.loanaccount.service.PartialLoanWriteplatformService;
 
 @Service
 public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatformService {
@@ -64,6 +69,10 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
     private final PartialLoanRepositoryWrapper partialLoanRepositoryWrapper;
     private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
     private final PartialLoanRepository partialLoanRepository;
+    private final String keyStoreUrl1;
+    private final String trustStoreUrl1;
+    private final String password;
+    private final String rblUrl;
 
 	@Autowired
 	public RblEquifaxWritePlatformServiceImpl(final PlatformSecurityContext context,
@@ -75,7 +84,8 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 			final ValidateRblFileRepository validateRblFileRepository,
 			final PartialLoanRepositoryWrapper partialLoanRepositoryWrapper,
 			final CodeValueRepositoryWrapper codeValueRepositoryWrapper,
-			final PartialLoanRepository partialLoanRepository) {
+			final PartialLoanRepository partialLoanRepository,@Value("${keyStoreUrl1}") final String keyStoreUrl1, @Value("${trustStoreUrl1}") final String trustStoreUrl1, 
+            @Value("${password}") final String password,@Value("${rblUrl}") final String rblUrl) {
 		this.context = context;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.codeValueReadPlatformService = codeValueReadPlatformService;
@@ -88,6 +98,10 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		this.partialLoanRepositoryWrapper=partialLoanRepositoryWrapper;
 		this.codeValueRepositoryWrapper=codeValueRepositoryWrapper;
 		this.partialLoanRepository=partialLoanRepository;
+		this.keyStoreUrl1=keyStoreUrl1;
+		this.trustStoreUrl1=trustStoreUrl1;
+		this.password=password;
+		this.rblUrl=rblUrl;
 	}
 
 	@Override
@@ -105,60 +119,7 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		
 		RblEquifaxData rblEquifaxData =this.rblCreditBurequReadPlatfoemServie.generateDataforCreditBureau(clientId);
 		
-		/*	JSONObject json = new JSONObject(rblEquifaxData);
-		String xml = XML.toString(json);
-		 System.out.println("xml formate is"+xml);
-		 RblClientsData rblClientsData =rblEquifaxData.getGetConsumerCreditReportBody();
-			RblNomineeData rblNomineeData =rblClientsData.getNominee();
-			RblAddressData rblAddressData =rblClientsData.getAddress();
-			RblAddressData RblNomineeAddressData = rblClientsData.getAddress();
-			RblOperatingRegion rblOperatingRegion = rblClientsData.getOperatingRegion();
-			final Client client =this.clientRepository.findOneWithNotFoundDetection(clientId);
-			Long centerId=null;
-			for(Group groups :client.getGroups()){
-				centerId=groups.getParent().getId();
-			}
-			boolean isError =false;
-			String Error =clientId +"-";
-			if(rblClientsData.getBarcodeNo()==null){
-				Error=Error+"BarCode Number Cannto Bel Null";
-				isError=true;
-			}
-		 CreditBureaRequest creditBureaRequest =CreditBureaRequest.create(centerId, rblClientsData.getBarcodeNo(), rblClientsData.getExternalId()
-				 , rblClientsData.getIsRenewalLoan(), rblClientsData.getCustomerName(), rblClientsData.getLoanAmount(), rblNomineeData.getTitle(), 
-				 rblNomineeData.getName(), rblNomineeData.getRelation(), rblAddressData.getLine1(), rblAddressData.getLine2(), rblAddressData.getLine3(),
-				 rblAddressData.getCityCode(), rblAddressData.getCityName(), rblAddressData.getStateCode(), rblAddressData.getPin(), rblOperatingRegion.getOperatingRegionCode(), rblOperatingRegion.getOperatingRegionName(), 
-				 rblClientsData.getDateOfBirth(), rblClientsData.getBranchCode(), rblClientsData.getBranchName(), Error, clientId);
-				this.creditBureauRequestRepositoryWrapper.save(creditBureaRequest);  
-
-		 
-		 String responsexml ="<getConsumerCreditReport><Header><RequestUUID>Req_LodgeColl_00uii891</RequestUUID"
-				 +"><ServiceName>Equifax</ServiceName><MessageDateTime>2018-03-"
-				 +"20T15:10:57.18</MessageDateTime><ChannelId>LOS</ChannelId><CorpId>Los_1234</CorpId"
-				 +"></Header><getConsumerCreditReportBody><getConsumerCreditReportReply><creditApproved"
-				 +">false</creditApproved><creditDecisionReasons><reason>resonnasdasdasdasda</reason></cr"
-				 +"editDecisionReasons><eligibleLoanAmount>40130</eligibleLoanAmount></getConsumerCreditR"
-				 +"eportReply></getConsumerCreditReportBody> </getConsumerCreditReport>";
-		//Conver Response to Json
-		 JSONObject RblCreditBureauResponseData =XML.toJSONObject(responsexml);
-		 JSONObject rblCreditReportBody = RblCreditBureauResponseData.getJSONObject("getConsumerCreditReport").getJSONObject("getConsumerCreditReportBody");
-		 JSONObject rblCreditReportReply =rblCreditReportBody.getJSONObject("getConsumerCreditReportReply");
-		 JSONObject rblcreditReason =rblCreditReportReply.getJSONObject("creditDecisionReasons");
-		 if(rblCreditReportReply.getString("creditApproved").equalsIgnoreCase("false")){			 
-			 final Client clientforUpdate =this.clientRepository.findOneWithNotFoundDetection(clientId);
-			 ClientStatus status = ClientStatus.REJECTED;
-			 clientforUpdate.setStatus(status.getValue());
-			 this.clientRepository.saveAndFlush(clientforUpdate);
-		 }
-		 JSONObject rsponse =(JSONObject) RblCreditBureauResponseData.getJSONObject("getConsumerCreditReport").getJSONObject("Header");
-		 CreditBureaoResponse creditBureaoResponse=
-				 CreditBureaoResponse.create(centerId, rsponse.getString("RequestUUID"), rsponse.getString("ServiceName"), rsponse.getString("ChannelId"), rsponse.getString("CorpId"),
-						 rblCreditReportReply.getString("creditApproved"), rblcreditReason.getString("reason"), rblCreditReportReply.getString("eligibleLoanAmount"), null, clientId);
-		 
-		 this.credeitBureauResponseRepositoryWrapper.save(creditBureaoResponse);
-
-*/
-		 try{
+			 try{
 
 		RblClientsData rblClientsData =rblEquifaxData.getGetConsumerCreditReportBody();
 		RblNomineeData rblNomineeData =rblClientsData.getNominee();
@@ -228,31 +189,56 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 					//return false;    
 		      }
 		 else{
-			 String url = "http://www.google.com/search?q=developer";
-					//HttpClient httpclient = new DefaultHttpClient();
-					//HttpGet request = new HttpGet(url);
+			 String pwd = password;
+				
+					InputStream keyStoreUrl = new FileInputStream(keyStoreUrl1);
+					InputStream trustStoreUrl = new FileInputStream(trustStoreUrl1);
+
+					KeyStore keyStore = KeyStore.getInstance("PKCS12");
+					keyStore.load(keyStoreUrl, pwd.toCharArray());
+					KeyManagerFactory keyManagerFactory = 
+					    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+					keyManagerFactory.init(keyStore, pwd.toCharArray());
+
+					KeyStore trustStore = KeyStore.getInstance("JKS");
+					trustStore.load(trustStoreUrl, pwd.toCharArray());
+					TrustManagerFactory trustManagerFactory = 
+					    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+					trustManagerFactory.init(trustStore);
+
+					final SSLContext sslContext = SSLContext.getInstance("SSL");
+					sslContext.init(keyManagerFactory.getKeyManagers(), 
+					                trustManagerFactory.getTrustManagers(), 
+					                new SecureRandom());
+					SSLContext.setDefault(sslContext);
+					
+					URL url = new URL(rblUrl);
+
+					HttpsURLConnection connection = (HttpsURLConnection) url.openConnection(); 
+					
+				    System.out.println("Response code : " + connection.getResponseCode());
+					connection.setRequestMethod("POST");
+					connection.setRequestProperty("Content-Type", 
+					                              "application/x-www-form-urlencoded;charset=utf-8");
+					
 					JSONObject json = new JSONObject(rblEquifaxData);
 					String xml = XML.toString(json,"getConsumerCreditReport");
-					 System.out.println("xml formate is"+xml);
-					 URL obj = new URL(url);
-					 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-					 con.setRequestMethod("POST");
-					 con.setRequestProperty("Content-Type",  "application/xml;charset=utf-8");
-					 String urlParameters =  XML.toString(json,"getConsumerCreditReport");
-					 con.setDoOutput(true);
-					 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		
+					String urlParameters =  XML.toString(json,"getConsumerCreditReport");
+					 connection.setDoOutput(true);
+					 DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 					 wr.writeBytes(urlParameters);
 					 wr.flush();
 					 wr.close();
-					 String responseStatus = con.getResponseMessage();
+					 String responseStatus = connection.getResponseMessage();
 					            BufferedReader in = new BufferedReader(new InputStreamReader(
-					                    con.getInputStream()));
+					            		connection.getInputStream()));
 					            String inputLine;
 					            StringBuffer responsexml = new StringBuffer();
 					            while ((inputLine = in.readLine()) != null) {
 					            	responsexml.append(inputLine);
 					            }
-					            in.close();
+					            in.close();		 
 			 
 			 CreditBureaRequest creditBureaRequest =CreditBureaRequest.create(centerId, rblClientsData.getBarcodeNo(), rblClientsData.getExternalId()
 					 , rblClientsData.getIsRenewalLoan(), rblClientsData.getCustomerName(), rblClientsData.getLoanAmount(), null, 
@@ -262,17 +248,8 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 					this.creditBureauRequestRepositoryWrapper.save(creditBureaRequest);  
 					
 					//Response Code
-
-		/*	//Conver Response to Json
-			 String responsexml ="<getConsumerCreditReport><Header><RequestUUID>Req_LodgeColl_00uii891</RequestUUID"
-					 +"><ServiceName>Equifax</ServiceName><MessageDateTime>2018-03-"
-					 +"20T15:10:57.18</MessageDateTime><ChannelId>LOS</ChannelId><CorpId>Los_1234</CorpId"
-					 +"></Header><getConsumerCreditReportBody><getConsumerCreditReportReply><creditApproved"
-					 +">false</creditApproved><creditDecisionReasons><reason>resonnasdasdasdasda</reason></cr"
-					 +"editDecisionReasons><eligibleLoanAmount>40130</eligibleLoanAmount></getConsumerCreditR"
-					 +"eportReply></getConsumerCreditReportBody> </getConsumerCreditReport>";
-			//Conver Response to Json
-*/			 JSONObject RblCreditBureauResponseData =XML.toJSONObject(responsexml.toString());
+					//Conver Response to Json
+			 JSONObject RblCreditBureauResponseData =XML.toJSONObject(responsexml.toString());
 			 JSONObject rblCreditReportBody = RblCreditBureauResponseData.getJSONObject("getConsumerCreditReport").getJSONObject("getConsumerCreditReportBody");
 			 JSONObject rblCreditReportReply =rblCreditReportBody.getJSONObject("getConsumerCreditReportReply");
 			 JSONObject rblcreditReason =rblCreditReportReply.getJSONObject("creditDecisionReasons");

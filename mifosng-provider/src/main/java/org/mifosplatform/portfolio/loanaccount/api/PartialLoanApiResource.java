@@ -79,14 +79,14 @@ public class PartialLoanApiResource {
     @Path("{parentId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getParatialLoan(@PathParam("parentId") final Long parentId,@QueryParam("isSequenceNumber") final boolean isSequenceNumber, @Context final UriInfo uriInfo) {
+    public String getParatialLoan(@PathParam("parentId") final Long parentId,@QueryParam("isSequenceNumber") final boolean isSequenceNumber,@QueryParam("isUpdateStatus") final boolean isUpdateStatus, @Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         List<PartialLoanData>partialLoanDatas=new ArrayList<PartialLoanData>();
         List<SequenceNumberData>sequenceNoDatas=new ArrayList<SequenceNumberData>();
         if(isSequenceNumber){
-        	sequenceNoDatas=this.partialLoanReadPlatformService.retriveSequenceNumber(parentId);
+        	sequenceNoDatas=this.partialLoanReadPlatformService.retriveSequenceNumber(parentId,isUpdateStatus);
         	 return this.seqnumbertoApiJsonSerializer.serialize(settings, sequenceNoDatas,
              		  PartialLoanApiConstant.PARTIALLOAN_RESPONSE_DATA_PARAMETERS);
         

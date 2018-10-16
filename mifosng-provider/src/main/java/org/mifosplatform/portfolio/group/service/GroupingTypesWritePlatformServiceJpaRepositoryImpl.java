@@ -274,7 +274,12 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final Group group = this.groupRepository.findOneWithNotFoundDetection(groupId);
 
             if (group.isGroup()) {
+                  boolean isTaskTime=command.booleanPrimitiveValueOfParameterNamed("isTaskTime") ;
+                  if(isTaskTime){
+                	  validateGroupRulesBeforeActivationAtTaskTime(group);
+                  }else{
                 validateGroupRulesBeforeActivation(group);
+                  }
             }
 
             final LocalDate activationDate = command.localDateValueOfParameterNamed("activationDate");
@@ -299,6 +304,13 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
     private void validateGroupRulesBeforeActivation(final Group group) {
         Integer minClients = configurationDomainService.retrieveMinAllowedClientsInGroup();
         Integer maxClients = configurationDomainService.retrieveMaxAllowedClientsInGroup();
+        boolean isGroupClientCountValid = group.isGroupsClientCountWithinMinMaxRange(minClients, maxClients);
+        if (!isGroupClientCountValid) { throw new GroupMemberCountNotInPermissibleRangeException(group.getId(), minClients, maxClients); }
+    }
+    
+    private void validateGroupRulesBeforeActivationAtTaskTime(final Group group) {
+        Integer minClients = configurationDomainService.retrieveMinAllowedClientsInGroupAtTaskTime();
+        Integer maxClients = configurationDomainService.retrieveMaxAllowedClientsInGroupAtTaskTime();
         boolean isGroupClientCountValid = group.isGroupsClientCountWithinMinMaxRange(minClients, maxClients);
         if (!isGroupClientCountValid) { throw new GroupMemberCountNotInPermissibleRangeException(group.getId(), minClients, maxClients); }
     }

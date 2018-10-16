@@ -114,6 +114,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
     private final SequenceNumberRepository sequenceNumberRepository;
 
+
     @Autowired
     public ClientWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
             final ClientRepositoryWrapper clientRepository, final OfficeRepository officeRepository, final NoteRepository noteRepository,
@@ -222,6 +223,11 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             if (groupId != null) {
                 clientParentGroup = this.groupRepository.findOne(groupId);
                 if (clientParentGroup == null) { throw new GroupNotFoundException(groupId); }
+                Integer minClients = configurationDomainService.retrieveMinAllowedClientsInGroup();
+                Integer maxClients = configurationDomainService.retrieveMaxAllowedClientsInGroup();
+                boolean isGroupClientCountValid = clientParentGroup.isGroupsClientCountWithinMaxRangeForAllMember(maxClients);
+                if (!isGroupClientCountValid) { throw new GroupMemberCountNotInPermissibleRangeException(clientParentGroup.getId(), minClients, maxClients); }
+
             }
 
             Staff staff = null;

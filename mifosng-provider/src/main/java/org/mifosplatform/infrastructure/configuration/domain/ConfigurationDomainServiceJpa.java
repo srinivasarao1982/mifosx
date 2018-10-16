@@ -158,6 +158,22 @@ public class ConfigurationDomainServiceJpa implements ConfigurationDomainService
     }
 
     @Override
+    public Integer retrieveMinAllowedClientsInGroupAtTaskTime() {
+        final String propertyName = "min-clients-in-group-task-time";
+        final GlobalConfigurationProperty property = this.globalConfigurationRepository.findOneByNameWithNotFoundDetection(propertyName);
+        if (property.isEnabled()) { return property.getValue().intValue(); }
+        return null;
+    }
+    
+    @Override
+    public Integer retrieveMaxAllowedClientsInGroupAtTaskTime() {
+        final String propertyName = "max-clients-in-group-task-time";
+        final GlobalConfigurationProperty property = this.globalConfigurationRepository.findOneByNameWithNotFoundDetection(propertyName);
+        if (property.isEnabled()) { return property.getValue().intValue(); }
+        return null;
+    }
+    
+    @Override
     public Integer retrieveMinAllowedClientsInGroup() {
         final String propertyName = "min-clients-in-group";
         final GlobalConfigurationProperty property = this.globalConfigurationRepository.findOneByNameWithNotFoundDetection(propertyName);

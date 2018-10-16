@@ -64,6 +64,7 @@ public class GroupingTypesApiConstants {
     public static final String collectionMeetingCalendar = "collectionMeetingCalendar";
     public static final String timeLine = "timeline";
     public static final String closureReasons = "closureReasons";
+    public static final String isTaskTimeParamName="isTaskTime";
 
     // group close parameters
     public static final String closureDateParamName = "closureDate";
@@ -107,7 +108,7 @@ public class GroupingTypesApiConstants {
             isgrtCompletedparamname));
 
     public static final Set<String> ACTIVATION_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
-            dateFormatParamName, activationDateParamName,iscbcheckedparamName));
+            dateFormatParamName, activationDateParamName,iscbcheckedparamName,isTaskTimeParamName));
 
     public static final Set<String> COLLECTIONSHEET_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList("dueDate", "loanProducts", "groups"));

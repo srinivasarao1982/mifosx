@@ -195,6 +195,14 @@ ALTER TABLE `m_group`
 	ADD COLUMN `is_cbchecked` INT(11) NULL DEFAULT NULL AFTER `is_cbcheck_required`,
 	ADD COLUMN `is_grt_completed` INT(11) NULL DEFAULT NULL AFTER `is_cbchecked`;
 
+ALTER TABLE `m_task`
+	ADD COLUMN `task_start_time_id` INT NULL DEFAULT NULL AFTER `created_date`,
+	ADD COLUMN `task_end_time_id` INT NULL DEFAULT NULL AFTER `task_start_time_id`;
+	
+ALTER TABLE `m_code_value`
+	CHANGE COLUMN `code_score` `code_score` VARCHAR(50) NULL DEFAULT NULL AFTER `order_position`;
+	
+
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'UPDATE_RBLCUSTOMER', 'RBLCUSTOMER', 'UPDATE', 0);
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'UPDATE_RBLGROUP', 'RBLGROUP', 'UPDATE', 0);
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'CREATE_RBLGROUP', 'RBLGROUP', 'CREATE', 0);
@@ -203,3 +211,11 @@ INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'CREATE_RBLLOAN', 'RBLLOAN', 'CREATE', 0);
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'UPDATE_SEQNUMBER', 'SEQNUMBER', 'UPDATE', 1);
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'UPDATE_RBLLOAN', 'RBLLOAN', 'UPDATE', 0);
+
+INSERT INTO `c_configuration` ( `name`, `value`, `enabled`, `description`) VALUES ( 'rbl file check', 0, 1, NULL);
+INSERT INTO `c_configuration` ( `name`, `value`, `enabled`, `description`) VALUES ( 'min-clients-in-group-task-time', 1, 2, NULL);
+INSERT INTO `c_configuration` ( `name`, `value`, `enabled`, `description`) VALUES ( 'max-clients-in-group-task-time', 1, 2, NULL);
+
+INSERT INTO `m_code` ( `code_name`, `is_system_defined`) VALUES ( 'gurdianRelations', 0);
+INSERT INTO `m_code` ( `code_name`, `is_system_defined`) VALUES ('gurdianTitles', 0);
+INSERT INTO `m_code` ( `code_name`, `is_system_defined`) VALUES ( 'Task Time Options', 0);
