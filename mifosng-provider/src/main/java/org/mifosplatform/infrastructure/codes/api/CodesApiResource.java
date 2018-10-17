@@ -144,4 +144,15 @@ public class CodesApiResource {
 
         return this.toApiJsonSerializer.serialize(result);
     }
+    
+    @GET
+    @Path("/clientDocumentTypes")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String retriveClientDocumentTypesCodeValue(@Context final UriInfo uriInfo) {
+		
+    	final Collection<CodeValueData> codeValues = this.readPlatformService.retriveClientDocumentTypesCodeValue();
+    	final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return this.toApiCodeValueJsonSerializer.serialize(settings, codeValues, this.RESPONSE_DATA_PARAMETERS);
+    }
 }

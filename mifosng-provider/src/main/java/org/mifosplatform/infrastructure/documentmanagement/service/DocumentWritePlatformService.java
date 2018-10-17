@@ -6,6 +6,7 @@
 package org.mifosplatform.infrastructure.documentmanagement.service;
 
 import java.io.InputStream;
+import java.util.List;
 
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.documentmanagement.command.DocumentCommand;
@@ -21,5 +22,11 @@ public interface DocumentWritePlatformService {
 
     @PreAuthorize(value = "hasAnyRole('ALL_FUNCTIONS', 'DELETE_DOCUMENT')")
     CommandProcessingResult deleteDocument(DocumentCommand documentCommand);
+    //Nextru Specific - RBL changes
+    String documentNameGenerator(long clientId, String documentType);
+    
+    void uploadDocumentToRemoteHost(String rblTextFileName,boolean isReprocess, boolean isImageToBeSend, List<Long> clientIds);
+    
+    void downloadDocumentFromRemoteHost();
 
 }

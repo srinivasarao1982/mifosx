@@ -17,6 +17,7 @@ import javax.ws.rs.core.UriInfo;
 import org.mifosplatform.commands.domain.CommandWrapper;
 import org.mifosplatform.commands.service.CommandWrapperBuilder;
 import org.mifosplatform.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.mifosplatform.infrastructure.core.api.ApiRequestParameterHelper;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
@@ -41,6 +42,7 @@ public class TaskApiResource {
     private final ToApiJsonSerializer<TaskConfigurationData> taskconfigurationApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final CodeValueReadPlatformService codeValueReadPlatformService;
     
     @Autowired
     public TaskApiResource(final PlatformSecurityContext context, 
@@ -49,7 +51,8 @@ public class TaskApiResource {
     		final TaskReadPlatformService taskReadPlatformService,
     		final ApiRequestParameterHelper apiRequestParameterHelper,
             final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
-            final ToApiJsonSerializer<TaskConfigurationData> taskconfigurationApiJsonSerializer
+            final ToApiJsonSerializer<TaskConfigurationData> taskconfigurationApiJsonSerializer,
+            final CodeValueReadPlatformService codeValueReadPlatformService
             ) {
         this.context = context;
         this.toApiJsonSerializer = toApiJsonSerializer;
@@ -58,6 +61,7 @@ public class TaskApiResource {
         this.taskConfigurationReadplatformService =taskConfigurationReadplatformService;
         this.taskReadPlatformService=taskReadPlatformService;
         this.taskconfigurationApiJsonSerializer=taskconfigurationApiJsonSerializer;
+        this.codeValueReadPlatformService=codeValueReadPlatformService;
         }
     
     
@@ -65,12 +69,15 @@ public class TaskApiResource {
     @Path("/template")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String retrieveTemplate(@Context final UriInfo uriInfo,@QueryParam("officeId") final Long officeId) {
+    public String retrieveTemplate(@Context final UriInfo uriInfo,@QueryParam("officeId") final Long officeId,@QueryParam("taskType") final Long taskType) {
 
         this.context.authenticatedUser().validateHasReadPermission(TaskApiConstant.TASK_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
-        
-        Taskdata taskData = this.taskReadPlatformService.retrieveTemplate(officeId);
+        Long roleId=null; 
+        if(taskType!=null){
+          roleId=Long.parseLong(this.codeValueReadPlatformService.retrieveCodeValue(taskType).getCodescore());
+          }
+        Taskdata taskData = this.taskReadPlatformService.retrieveTemplate(officeId,roleId);
                   return this.toApiJsonSerializer.serialize(settings, taskData,
                 		  TaskApiConstant.TASK_RESPONSE_DATA_PARAMETERS);
     }

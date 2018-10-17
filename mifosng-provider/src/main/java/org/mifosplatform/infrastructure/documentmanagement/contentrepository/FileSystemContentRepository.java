@@ -125,7 +125,9 @@ public class FileSystemContentRepository implements ContentRepository {
     private String generateFileParentDirectory(final String entityType, final Long entityId) {
         return FileSystemContentRepository.MIFOSX_BASE_DIR + File.separator
                 + ThreadLocalContextUtil.getTenant().getName().replaceAll(" ", "").trim() + File.separator + "documents" + File.separator
-                + entityType + File.separator + entityId + File.separator + ContentRepositoryUtils.generateRandomString();
+                // + entityType + File.separator + entityId + File.separator + ContentRepositoryUtils.generateRandomString();
+                //Nextru Specific change : Clients and Loans documents will be store in to single location RBL related changes.
+                + entityType + File.separator + entityId + File.separator;
     }
 
     /**

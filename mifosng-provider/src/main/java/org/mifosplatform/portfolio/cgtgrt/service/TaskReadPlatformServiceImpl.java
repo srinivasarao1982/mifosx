@@ -52,15 +52,20 @@ public class TaskReadPlatformServiceImpl implements TaskReadPlatformService {
 	}
 	
 	@Override
-	public Taskdata retrieveTemplate(final Long officeId) {
+	public Taskdata retrieveTemplate(final Long officeId,final Long roleId) {
 		this.context.authenticatedUser();
 		
 		Collection<CodeValueData> tasktypeOptions = new ArrayList<>(this.codeValueReadPlatformService
 				.retrieveCodeValuesByCode(TaskApiConstant.TASKTYPE));
+		Collection<CodeValueData> taskTimeOptions = new ArrayList<>(this.codeValueReadPlatformService
+				.retrieveCodeValuesByCode(TaskApiConstant.TASKTIMEOPTIONS));
 		Collection<EnumOptionData> taskstatus = retrieveTaskStatusTypeOptions();
 		Collection<EnumOptionData> attendenceTypeOptions=this.attendanceDropdownReadPlatformService.retrieveAttendanceTypeOptions();
-		Collection<StaffData> staffOptions=this.staffReadPlatformService.retrieveAllStaffForDropdown(officeId);
-		Taskdata taskdata=Taskdata.template(staffOptions, tasktypeOptions, taskstatus, attendenceTypeOptions);
+		Collection<StaffData> staffOptions=null; 
+		if(roleId!=null){
+		 staffOptions=this.staffReadPlatformService.retrieveAllStaffForDropdownBasedOnRole(officeId,roleId);
+		}
+		Taskdata taskdata=Taskdata.template(staffOptions, tasktypeOptions, taskstatus, attendenceTypeOptions,taskTimeOptions);
 		return taskdata;
 
 	}
@@ -113,10 +118,13 @@ public class TaskReadPlatformServiceImpl implements TaskReadPlatformService {
 
         public String schema() {
             return   "  mt.id as taskId,mcv.code_value as taskType,mt.task_type as taskTypeId,s.id as staffId,mt.task_date as expectedcompletedDate,s.display_name as staffName, "
-                    + " mt.task_completed_date as taskCompletedDate,mt.note as note,mt.task_status as taskStatus,mt.created_date as createdDate "
+                    + " mt.task_completed_date as taskCompletedDate,mt.note as note,mt.task_status as taskStatus,mt.created_date as createdDate,mt.task_start_time_id as tskStartTimeId,mt.task_end_time_id as taskEndTimeId, "
+            		+ " tskStartDate.code_value as taskStartTime,taskEndDate.code_value as taskEndTime "
                     + " from m_task mt "
                     + " join m_code_value mcv on mt.task_type=mcv.id "
-                    + " join m_staff s on s.id =mt.staff_id  ";
+                    + " join m_staff s on s.id =mt.staff_id  "
+                    + " join m_code_value tskStartDate on tskStartDate.id=mt.task_start_time_id "
+                    +"  join m_code_value taskEndDate on taskEndDate.id=mt.task_end_time_id ";
                   }
 
         @Override
@@ -133,7 +141,12 @@ public class TaskReadPlatformServiceImpl implements TaskReadPlatformService {
             final String staffName=rs.getString("staffName");
             final Long taskTypeId =JdbcSupport.getLong(rs, "taskTypeId");
             final Long stffId=JdbcSupport.getLong(rs, "staffId");
-            return Taskdata.taskDetailseprate( taskId, taskType, staffName, createdDate,expectedCompletedDate,taskCompletedDate, status, note,taskTypeId,stffId);
+            final Long taskStartTimeId=JdbcSupport.getLong(rs, "tskStartTimeId");
+            final Long taskEndTimeId=JdbcSupport.getLong(rs, "taskEndTimeId");
+            final String taskStartTime=rs.getString("taskStartTime");
+            final String taskEndTime=rs.getString("taskEndTime");
+            return Taskdata.taskDetailseprate( taskId, taskType, staffName, createdDate,expectedCompletedDate,taskCompletedDate, status, note,taskTypeId,stffId
+            		,taskStartTimeId,taskEndTimeId,taskStartTime,taskEndTime);
             		
         }
 

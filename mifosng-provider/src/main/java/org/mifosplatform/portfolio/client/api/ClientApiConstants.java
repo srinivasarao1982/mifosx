@@ -93,6 +93,8 @@ public class ClientApiConstants {
     public static final String nomineeDetailsParamName = "nomineeDetails";
     public static final String coClientDataParamName = "coClientData";
     public static final String isReprocessedParamName = "isReprocessed";
+    public static final String gurdianTitlesParamName="gurdianTitles";
+    public static final String gurdianRelationParamName="gurdianRelations";
 
     public static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,officeIdParamName,dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName, middlenameParamName,lastnameParamName, fullnameParamName, activeParamName, activationDateParamName, staffIdParamName, savingsProductIdParamName,
             dateOfBirthParamName, genderIdParamName, clientTypeIdParamName, clientClassificationIdParamName,submittedOnDateParamName,clientExtParamName,familyDetailsParamName,naddressParamName,clientIdentifierDataParamName, occupationDetailsParamName,nomineeDetailsParamName,coClientDataParamName,isReprocessedParamName));
@@ -108,7 +110,7 @@ public class ClientApiConstants {
             lastnameParamName, fullnameParamName, displayNameParamName, mobileNoParamName, officeIdParamName, officeNameParamName,
             transferToOfficeIdParamName, transferToOfficeNameParamName, hierarchyParamName, imageIdParamName, imagePresentParamName,
             staffIdParamName, staffNameParamName, timelineParamName, groupsParamName, officeOptionsParamName, staffOptionsParamName,
-            dateOfBirthParamName, genderParamName,clientTypeParamName,clientClassificationParamName,isReprocessedParamName));
+            dateOfBirthParamName, genderParamName,clientTypeParamName,clientClassificationParamName,isReprocessedParamName,gurdianTitlesParamName,gurdianRelationParamName));
 
     public static final Set<String> ACTIVATION_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, activationDateParamName));
@@ -144,6 +146,10 @@ public class ClientApiConstants {
     public static final String CLIENT_ADDRESS_TYPE = "addressType";
     public static final String PRESETLOANSOURCETYPES = "presentLoanSourceTypes";
     public static final String PRESETLOANPURPOSETYPES = "presentLoanPurposeTypes";
+    public static final String GURDIANTITLE = "gurdianTitles";
+    public static final String GURDIANRELATION = "gurdianRelations";
+
+
     
     public static final Set<String> CLIENT_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, groupIdParamName, accountNoParamName, externalIdParamName, mobileNoParamName, firstnameParamName,

@@ -12,9 +12,14 @@ import org.mifosplatform.batch.domain.BatchRequest;
 import org.mifosplatform.batch.domain.BatchResponse;
 import org.mifosplatform.batch.exception.ErrorHandler;
 import org.mifosplatform.batch.exception.ErrorInfo;
+import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.portfolio.loanaccount.api.LoansApiResource;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoan;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonElement;
 
 /**
  * Implements {@link org.mifosplatform.batch.command.CommandStrategy} and
@@ -35,10 +40,17 @@ import org.springframework.stereotype.Component;
 public class ApplyLoanCommandStrategy implements CommandStrategy {
 
     private final LoansApiResource loansApiResource;
+    private final FromJsonHelper fromJsonHelper;
+    private final PartialLoanRepository partialLoanRepository;
+
 
     @Autowired
-    public ApplyLoanCommandStrategy(final LoansApiResource loansApiResource) {
+    public ApplyLoanCommandStrategy(final LoansApiResource loansApiResource,
+    	     final FromJsonHelper fromJsonHelper,final PartialLoanRepository partialLoanRepository)
+ {
         this.loansApiResource = loansApiResource;
+        this.fromJsonHelper=fromJsonHelper;
+        this.partialLoanRepository=partialLoanRepository;
     }
 
     @Override
@@ -56,11 +68,19 @@ public class ApplyLoanCommandStrategy implements CommandStrategy {
             // Calls 'SubmitLoanFunction' function from 'LoansApiResource' to
             // Apply Loan to an existing client
             responseBody = loansApiResource.calculateLoanScheduleOrSubmitLoanApplication(null, null, request.getBody());
-
             response.setStatusCode(200);
             // Sets the body of the response after loan is successfully applied
             response.setBody(responseBody);
+            final JsonElement parsedQuery = this.fromJsonHelper.parse(request.getBody());
+            Long groupId = parsedQuery.getAsJsonObject().get("groupId").getAsLong();
+            Long clientId = parsedQuery.getAsJsonObject().get("clientId").getAsLong();
 
+            PartialLoan partialLoan =this.partialLoanRepository.findByClientIdAndGroupIdAndLoanStatus(clientId, groupId, 1, 0);
+            if(partialLoan!=null){
+            	partialLoan.updateisDisburse(1);
+            	this.partialLoanRepository.saveAndFlush(partialLoan);
+            }
+       
         } catch (RuntimeException e) {
 
             // Gets an object of type ErrorInfo, containing information about

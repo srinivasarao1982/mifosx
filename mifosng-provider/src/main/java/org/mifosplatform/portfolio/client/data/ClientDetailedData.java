@@ -50,6 +50,8 @@ public class ClientDetailedData {
     private final Collection<CodeValueData> presentLoanSourceTypes;
     private final Collection<CodeValueData> presentLoanPurposeTypes;
     private final Collection<CodeValueData> spouseRelationShip;
+    private final Collection<CodeValueData> gurdianRelation;
+    private final Collection<CodeValueData> gurdianTitle;
 
     // Nirantara
     private final ClientDataExt clientDataExt;
@@ -59,6 +61,7 @@ public class ClientDetailedData {
     private final List<OccupationDetailsData> occupationDetailsData;
     private final List<NomineeDetailsData> nomineeDetailsData;
     private final CoapplicantDetailsData coapplicantDetailsData;
+    
 
     public ClientDetailedData(ClientData clientBasicDetails, ClientAdditionalDetails additionalDetails, ClientAddress address,
             ClientFamilyDetails familyDetails, ClientCFADetails cfaDetails, AgriOccupationDetails agriOccupation,
@@ -73,7 +76,8 @@ public class ClientDetailedData {
             final ClientDataExt clientDataExt, final List<AddressExtData> addressExtData,
             final List<FamilyDetailsExtData> familyDetailsExtData, final List<ClientIdentifierData> clientIdentifierData,
             final List<OccupationDetailsData> occupationDetailsData, final List<NomineeDetailsData> nomineeDetailsData,
-            final CoapplicantDetailsData coapplicantDetailsData, Collection<CodeValueData> spouseRelationShip) {
+            final CoapplicantDetailsData coapplicantDetailsData, Collection<CodeValueData> spouseRelationShip,
+            final Collection<CodeValueData> gurdianRelation,final Collection<CodeValueData> gurdianTitle) {
         super();
         this.clientBasicDetails = clientBasicDetails;
         this.additionalDetails = additionalDetails;
@@ -110,6 +114,8 @@ public class ClientDetailedData {
         this.occupationDetailsData = occupationDetailsData;
         this.nomineeDetailsData = nomineeDetailsData;
         this.coapplicantDetailsData = coapplicantDetailsData;
+        this.gurdianRelation=gurdianRelation;
+        this.gurdianTitle=gurdianTitle;
     }
 
     public ClientData getClientBasicDetails() {
@@ -252,4 +258,11 @@ public class ClientDetailedData {
         return spouseRelationShip;
     }
 
+	public Collection<CodeValueData> getGurdianRelation() {
+		return gurdianRelation;
+	}
+
+	public Collection<CodeValueData> getGurdianTitle() {
+		return gurdianTitle;
+	}    
 }

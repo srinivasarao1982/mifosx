@@ -15,4 +15,8 @@ public interface TaskRepository extends JpaRepository<Tasks, Long>, JpaSpecifica
     List<Tasks> findNoOfTask(@Param("centerId") Long centerId,@Param("tasktype") Long tasktype);
 
 	
+	@Query("from Tasks tasks where tasks.group.id = :centerId  and tasks.taskstatus=:taskstatus")
+    Tasks findOpenTask(@Param("centerId") Long centerId,@Param("taskstatus") Integer taskstatus);
+ 
+	
 }

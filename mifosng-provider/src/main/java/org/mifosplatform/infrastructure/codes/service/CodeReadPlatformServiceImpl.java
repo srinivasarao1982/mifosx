@@ -108,5 +108,11 @@ public class CodeReadPlatformServiceImpl implements CodeReadPlatformService {
 			throw new CodeNotFoundException(codeName);
 		}
 	}
+
+	@Override
+	public Collection<CodeValueData> retriveClientDocumentTypesCodeValue() {
+		this.context.authenticatedUser();
+		return this.readPlatformService.retriveClientDocumentTypes();
+	}
 	
 }

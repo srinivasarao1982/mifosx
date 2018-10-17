@@ -85,6 +85,9 @@ public class PartialLoanData {
 	public Collection<CodeValueData> getStatus() {
 		return status;
 	}
+	public List<Long> getAcceptedclientsId() {
+		return acceptedclientsId;
+	}
 
 	
 

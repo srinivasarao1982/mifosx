@@ -5,6 +5,8 @@
  */
 package org.mifosplatform.infrastructure.documentmanagement.data;
 
+import java.io.File;
+
 import org.mifosplatform.infrastructure.documentmanagement.domain.StorageType;
 
 /**
@@ -40,6 +42,20 @@ public class DocumentData {
         this.storageType = storageType;
     }
 
+    //nextru specific custom constructor 
+    public DocumentData(final String fileLocation, final String contentType, final String fileName){
+    	this.location = fileLocation;
+    	this.type = contentType;
+    	this.fileName = fileName;
+    	 this.id = null;
+         this.parentEntityType = null;
+         this.parentEntityId = null;
+         this.name = null;
+         this.size = null;
+         this.description = null;
+         this.storageType = null;
+    }
+    
     public String contentType() {
         return this.type;
     }

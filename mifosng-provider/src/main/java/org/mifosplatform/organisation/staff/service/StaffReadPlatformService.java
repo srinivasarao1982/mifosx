@@ -14,6 +14,9 @@ public interface StaffReadPlatformService {
     StaffData retrieveStaff(Long staffId);
 
     Collection<StaffData> retrieveAllStaffForDropdown(Long officeId);
+    
+    Collection<StaffData> retrieveAllStaffForDropdownBasedOnRole(Long officeId,Long roleId);
+
 
     Collection<StaffData> retrieveAllLoanOfficersInOfficeById(final Long officeId);
 

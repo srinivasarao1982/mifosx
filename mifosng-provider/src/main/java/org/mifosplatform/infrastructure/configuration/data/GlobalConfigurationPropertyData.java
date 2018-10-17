@@ -38,4 +38,25 @@ public class GlobalConfigurationPropertyData {
         this.id = id;
         this.description = description;
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public Long getValue() {
+		return value;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+    
 }

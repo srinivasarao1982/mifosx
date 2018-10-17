@@ -81,16 +81,19 @@ public class PartialLoan  extends AbstractAuditableCustom<AppUser, Long>{
     @Column(name = "remark", length = 256)
     private String remark;
     
-    @Column(name = "is_active", length = 256)
+    @Column(name = "is_active", length = 11)
     private int isActive;
+    
+    @Column(name = "is_disburse", length = 11)
+    private int isDisubrse;
     
       public static PartialLoan createpartialloan(final Client client, final Group group, final LoanProduct product,
             final Office office,final Staff staff,final CodeValue loanpurpose, final String rpdonumber,
             final  BigDecimal loanAmount, final long loantenure,final BigDecimal fixedemi,final  Date submittedDate,
-            final CodeValue status,final String remark,final int isActive) {
+            final CodeValue status,final String remark,final int isActive,final int isDisubrse) {
     	  Date cbReportReceivedate=null;
 	   return new PartialLoan(client,group,product,office,staff,loanpurpose,rpdonumber,loanAmount,
-			   loantenure,fixedemi,submittedDate,status,remark,isActive,cbReportReceivedate);
+			   loantenure,fixedemi,submittedDate,status,remark,isActive,cbReportReceivedate,isDisubrse);
    }
   
    public PartialLoan() {
@@ -136,6 +139,11 @@ public Map<String, Object> update(final JsonCommand command) {
             actualChanges.put(PartialLoanApiConstant.statusparamname, newValue);
         }
         
+        if (command.isChangeInIntegerParameterNamed(PartialLoanApiConstant.isdisburseparamname,this.isDisubrse )) {
+            final Integer newValue = command.integerValueOfParameterNamed(PartialLoanApiConstant.isdisburseparamname);
+            this.isDisubrse=newValue;
+        }
+        
         if (command.isChangeInStringParameterNamed(PartialLoanApiConstant.remarkparamname, this.remark)) {
             final String newValue = command.stringValueOfParameterNamed(PartialLoanApiConstant.remarkparamname);
             actualChanges.put(PartialLoanApiConstant.remarkparamname, newValue);
@@ -174,7 +182,7 @@ public Map<String, Object> update(final JsonCommand command) {
 
 	public PartialLoan(Client client, Group group, LoanProduct product, Office office, Staff staff,
 			CodeValue loanpurpose, String rpdonumber, BigDecimal loanAmount, long loantenure, BigDecimal fixedemi,
-			Date submittedDate, CodeValue status, String remark, int isActive,Date cbReportReceivedate) {
+			Date submittedDate, CodeValue status, String remark, int isActive,Date cbReportReceivedate,int isDisubrse) {
 		super();
 		this.client = client;
 		this.group = group;
@@ -191,6 +199,7 @@ public Map<String, Object> update(final JsonCommand command) {
 		this.remark = remark;
 		this.isActive = isActive;
 		this.cbReportReceivedate=cbReportReceivedate;
+		this.isDisubrse=isDisubrse;
 	}
 
 	public Client getClient() {
@@ -317,4 +326,32 @@ public Map<String, Object> update(final JsonCommand command) {
    public void updateisActive(int isActive){
 	   this.isActive=isActive;
    }
+
+   public void updateisDisburse(int isDisburse){
+	   this.isDisubrse=isDisburse;
+   }
+    public Date getCbReportReceivedate() {
+	return cbReportReceivedate;
+   }
+
+   public void setCbReportReceivedate(Date cbReportReceivedate) {
+	this.cbReportReceivedate = cbReportReceivedate;
+   }
+
+   public int getIsActive() {
+	return isActive;
+   }
+
+   public void setIsActive(int isActive) {
+	this.isActive = isActive;
+   }
+
+   public int getIsDisubrse() {
+ 	return isDisubrse;
+   }
+
+   public void setIsDisubrse(int isDisubrse) {
+	this.isDisubrse = isDisubrse;
+   }
+   
 }

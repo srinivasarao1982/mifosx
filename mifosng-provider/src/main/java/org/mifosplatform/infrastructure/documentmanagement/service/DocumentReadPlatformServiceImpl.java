@@ -5,6 +5,14 @@
  */
 package org.mifosplatform.infrastructure.documentmanagement.service;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -61,6 +69,46 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
         } catch (final EmptyResultDataAccessException e) {
             throw new DocumentNotFoundException(entityType, entityId, documentId);
         }
+    }
+    
+    @Override
+    public FileData retrieveRblFileData(final String fileName, final String fileLocation) {
+    	 File downloadFile=null;
+    	try {
+        	final Long fileSize=(long) 20000000;
+        	String location ="C:/Users/Keshav/"+fileName;
+        	final DocumentData documentData =new DocumentData(null,null,null,null,fileName,fileSize,"application.txt",null,location,1);
+            final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(documentData.storageType());
+           
+            String filePath = "E:/Test/Download/MYPIC.JPG";
+             downloadFile = new File("C:/Users/Keshav/test/"+fileName);
+            FileInputStream inStream = new FileInputStream(downloadFile);            
+            
+            FileOutputStream outStream =new FileOutputStream(downloadFile);
+             
+            byte[] buffer = new byte[4096];
+            int bytesRead = -1;
+             
+            while ((bytesRead = inStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+             
+            inStream.close();
+            outStream.close();     
+       
+            return new FileData(downloadFile, fileName, documentData.contentType());
+
+               
+        } catch (final EmptyResultDataAccessException e) {
+            throw new DocumentNotFoundException(null,null,null);
+        } catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return null;
     }
 
     @Override
@@ -126,5 +174,21 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
                     storageType);
         }
     }
+
+	@Override
+	public boolean validateDuplicateDoducmentName(String entityType, Long entityId, String fileName) {
+		    boolean isDuplicateDocumentFileNameFound = false;
+		    try {
+		    	final DocumentMapper mapper = new DocumentMapper(true, true);
+				final String sql = "select " + mapper.schema() + " and d.file_name=? ";
+				DocumentData document = this.jdbcTemplate.queryForObject(sql, mapper, new Object[] { entityType, entityId, fileName });
+				if(document != null){
+					isDuplicateDocumentFileNameFound = true; // duplicate document found with current file name
+				}
+		    }catch(EmptyResultDataAccessException exception){
+		    	isDuplicateDocumentFileNameFound = false; // duplicate document is not found with current file name
+		    }
+		    return isDuplicateDocumentFileNameFound;
+	}
 
 }

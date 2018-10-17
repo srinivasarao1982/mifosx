@@ -27,6 +27,7 @@ import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.portfolio.cgtgrt.api.TaskApiConstant;
 import org.mifosplatform.portfolio.cgtgrt.exception.FieldCannotbeBlankException;
+import org.mifosplatform.portfolio.client.api.ClientApiConstants;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.loanaccount.api.PartialLoanApiConstant;
@@ -77,9 +78,19 @@ public class Tasks  extends AbstractAuditableCustom<AppUser, Long>{
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tasks", orphanRemoval = true)
     private Set<TaskClientAttendence> taskClientAttendence = new HashSet<>();
     
+
+    @ManyToOne
+	@JoinColumn(name = "task_start_time_id")
+    private CodeValue taskStartTime;    
+
+    @ManyToOne
+   	@JoinColumn(name = "task_end_time_id")
+    private CodeValue taskEndDateTime; 
+    
     public static Tasks createtask( final Group group,final Office office,final Staff staff, final CodeValue tasktype,
-    		 final String note ,final Date taskDate,final Date taskCompletedDate,final Integer taskstatus){
-    	return new Tasks (group,office,staff,tasktype,note,taskDate,taskCompletedDate,taskstatus,null,null);
+    		 final String note ,final Date taskDate,final Date taskCompletedDate,final Integer taskstatus,
+    		 final CodeValue taskStartTime,final CodeValue taskEndDateTime ){
+    	return new Tasks (group,office,staff,tasktype,note,taskDate,taskCompletedDate,taskstatus,null,null,taskStartTime,taskEndDateTime);
     }
     
     public Tasks() {
@@ -116,14 +127,61 @@ public class Tasks  extends AbstractAuditableCustom<AppUser, Long>{
             actualChanges.put(TaskApiConstant.tasktypeparamname, newValue);
         }
         
+        if (command.isChangeInLongParameterNamed(TaskApiConstant.taskStartTimeParamName, this.taskStartTime.getId())) {
+            final Long newValue = command.longValueOfParameterNamed(TaskApiConstant.taskStartTimeParamName);
+            actualChanges.put(TaskApiConstant.taskStartTimeParamName, newValue);
+        }
+        
+        if (command.isChangeInLongParameterNamed(TaskApiConstant.tasklEndTimeParamName, this.taskEndDateTime.getId())) {
+            final Long newValue = command.longValueOfParameterNamed(TaskApiConstant.tasklEndTimeParamName);
+            actualChanges.put(TaskApiConstant.tasklEndTimeParamName, newValue);
+        }
+        
         if(command.integerValueOfParameterNamed(TaskApiConstant.tasktypeparamname)==null){
         	throw new FieldCannotbeBlankException(" Task Type");
         }
        
         final String dateFormatAsInput = command.dateFormat();
         final String localeAsInput = command.locale();
+        
+
+        if (command.isChangeInLocalDateParameterNamed(TaskApiConstant.taskcompleteddateparamname, getActivationLocalDate())) {
+            final String valueAsInput = command.stringValueOfParameterNamed(TaskApiConstant.taskcompleteddateparamname);
+            actualChanges.put(TaskApiConstant.taskcompleteddateparamname, valueAsInput);
+            actualChanges.put(TaskApiConstant.dateFormatParamName, dateFormatAsInput);
+            actualChanges.put(TaskApiConstant.localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(TaskApiConstant.taskcompleteddateparamname);
+            this.taskCompletedDate = newValue.toDate();
+        }
+
+        if (command.isChangeInLocalDateParameterNamed("plannedDate", getTaskDate1())) {
+            final String valueAsInput = command.stringValueOfParameterNamed("plannedDate");
+            actualChanges.put("plannedDate", valueAsInput);
+            actualChanges.put(TaskApiConstant.dateFormatParamName, dateFormatAsInput);
+            actualChanges.put(TaskApiConstant.localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed("plannedDate");
+            this.taskDate = newValue.toDate();
+        }
+
     
        return actualChanges;
+    }
+	public LocalDate getActivationLocalDate() {
+        LocalDate taskcompletetionDate = null;
+        if (this.taskCompletedDate != null) {
+        	taskcompletetionDate = LocalDate.fromDateFields(this.taskCompletedDate);
+        }
+        return taskcompletetionDate;
+    }
+	
+	public LocalDate getTaskDate1() {
+        LocalDate taskdate1 = null;
+        if (this.taskDate != null) {
+        	taskdate1 = LocalDate.fromDateFields(this.taskDate);
+        }
+        return taskdate1;
     }
    public LocalDate getLastTransactionOnDate() {
         return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.taskCompletedDate), null);
@@ -152,12 +210,21 @@ public class Tasks  extends AbstractAuditableCustom<AppUser, Long>{
    public void updateStatus(final Integer status){
 	   this.taskstatus=status;
    }
+   
+   public void updatetaskStartTime(final CodeValue taskStartTime){
+	   this.taskStartTime=taskStartTime;
+   }
+   
+   public void updatetaskEndTime(final CodeValue taskEndTime){
+	   this.taskEndDateTime=taskEndTime;
+   }
 
    public void updateCompleteDate( final Date completedDate){
 	   this.taskCompletedDate=completedDate;
    }
 	public Tasks(Group group, Office office, Staff staff, CodeValue tasktype, String note, Date taskDate,Date taskCompletedDate,
-			Integer taskstatus, Set<TaskDetails> taskdetails, Set<TaskClientAttendence> taskClientAttendence) {
+			Integer taskstatus, Set<TaskDetails> taskdetails, Set<TaskClientAttendence> taskClientAttendence,
+			CodeValue taskStartTime, CodeValue taskEndDateTime) {
 		super();
 		this.group = group;
 		this.office = office;
@@ -169,6 +236,8 @@ public class Tasks  extends AbstractAuditableCustom<AppUser, Long>{
 		this.taskstatus = taskstatus;
 		this.taskdetails = taskdetails;
 		this.taskClientAttendence = taskClientAttendence;
+		this.taskStartTime=taskStartTime;
+		this.taskEndDateTime=taskEndDateTime;
 	}
 
 	public Group getGroup() {
