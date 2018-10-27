@@ -10,7 +10,7 @@ import org.mifosplatform.infrastructure.core.domain.AbstractAuditableCustom;
 import org.mifosplatform.useradministration.domain.AppUser;
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "m_creditBureau_error") 
+@Table(name = "m_creditbureau_error") 
 public class CreditBureauValidationError extends AbstractAuditableCustom<AppUser, Long> {
 	
 	@Column(name = "center_id", nullable =false)

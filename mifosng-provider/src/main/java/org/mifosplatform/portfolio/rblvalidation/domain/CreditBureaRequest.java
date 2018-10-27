@@ -11,7 +11,7 @@ import org.mifosplatform.useradministration.domain.AppUser;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "m_creditBureau_request") 
+@Table(name = "m_creditbureau_request") 
 public class CreditBureaRequest extends AbstractAuditableCustom<AppUser, Long>{
 	
 	@Column(name = "center_id", nullable =false)
