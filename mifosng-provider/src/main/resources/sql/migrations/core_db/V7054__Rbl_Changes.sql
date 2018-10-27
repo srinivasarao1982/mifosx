@@ -44,7 +44,7 @@ CREATE TABLE `m_rblcustomer` (
 	`gurdian_mobileNo` VARCHAR(10) NULL DEFAULT NULL,
 	`title` INT(11) NULL DEFAULT NULL,
 	PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE `m_rblgroup` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -54,7 +54,7 @@ CREATE TABLE `m_rblgroup` (
 	`min_number` INT(11) NULL DEFAULT NULL,
 	`max_numbeer` INT(11) NULL DEFAULT NULL,
 	`distance_from_center` INT(11) NULL DEFAULT NULL,
-	`meeting_time` INT(11) NULL DEFAULT NULL,
+	`meeting_time` VARCHAR(50) NULL DEFAULT NULL,
 	`createdby_id` BIGINT(20) NULL DEFAULT NULL,
 	`created_date` DATE NULL DEFAULT NULL,
 	`lastmodifiedby_id` BIGINT(20) NULL DEFAULT NULL,
@@ -201,6 +201,8 @@ ALTER TABLE `m_task`
 	
 ALTER TABLE `m_code_value`
 	CHANGE COLUMN `code_score` `code_score` VARCHAR(50) NULL DEFAULT NULL AFTER `order_position`;
+ALTER TABLE `m_partial_loan`
+	ADD COLUMN `is_disburse` INT(11) NULL DEFAULT NULL AFTER `remark`;	
 	
 
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'UPDATE_RBLCUSTOMER', 'RBLCUSTOMER', 'UPDATE', 0);
@@ -211,6 +213,7 @@ INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'CREATE_RBLLOAN', 'RBLLOAN', 'CREATE', 0);
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'UPDATE_SEQNUMBER', 'SEQNUMBER', 'UPDATE', 1);
 INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'UPDATE_RBLLOAN', 'RBLLOAN', 'UPDATE', 0);
+INSERT INTO `m_permission` ( `grouping`, `code`, `entity_name`, `action_name`, `can_maker_checker`) VALUES ( 'portfolio', 'CREATE_RBLCUSTOMER', 'RBLCUSTOMER', 'CREATE', 0);
 
 INSERT INTO `c_configuration` ( `name`, `value`, `enabled`, `description`) VALUES ( 'rbl file check', 0, 1, NULL);
 INSERT INTO `c_configuration` ( `name`, `value`, `enabled`, `description`) VALUES ( 'min-clients-in-group-task-time', 1, 2, NULL);

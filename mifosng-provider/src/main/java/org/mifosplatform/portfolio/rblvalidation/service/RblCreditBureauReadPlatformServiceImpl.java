@@ -349,7 +349,7 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	                    +"left join m_client_identifier mci on mci.client_id=mc.id "
 	                    +"left join m_code_value gender on mc.gender_cv_id=gender.id "
 	                    +"left join m_code_value title on nct.salutation_cv_id=title.id "
-	                    +"left join `RBL Branch Name` rbl on  rbl.office_id=mc.office_id "
+	                    +"left join `rbl branch name` rbl on  rbl.office_id=mc.office_id "
 	                    +"left join m_code_value rblbranchName on rblbranchName.id=rbl.`RBL_Branch_cd_RBL Branch` ";
 	        }
 	        @Override

@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
-@Table(name = "m_sequence_Number")
+@Table(name = "m_sequence_number")
 public class OrganasitionSequenceNumber extends AbstractPersistable<Long> {
 	
 	@Column(name = "entity_type" )

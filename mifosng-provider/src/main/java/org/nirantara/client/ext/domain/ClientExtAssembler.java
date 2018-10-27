@@ -20,6 +20,7 @@ import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifier;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifierRepository;
+import org.mifosplatform.portfolio.client.exception.AdharNumberLengthException;
 import org.mifosplatform.portfolio.client.exception.ClientIdentifierNumericxception;
 import org.mifosplatform.portfolio.client.exception.MobileNumberLengthException;
 import org.mifosplatform.portfolio.loanaccount.domain.Loan;
@@ -141,7 +142,7 @@ public class ClientExtAssembler {
         	throw new ClientIdentifierNumericxception("Adhar");
         }
         if ( aadhaarNo.length() != 12) {
-        	throw new MobileNumberLengthException(aadhaarNo.length());
+        	throw new AdharNumberLengthException(aadhaarNo.length());
         }
         final String panNo = this.fromApiJsonHelper.extractStringNamed("panNo", element);
 
