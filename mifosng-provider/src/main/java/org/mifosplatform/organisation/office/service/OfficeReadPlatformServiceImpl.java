@@ -287,7 +287,7 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
     private static final class SequenceNumberMapper implements RowMapper<SequenceNumberData> {
 
         public String SequenceNumberMapper() {
-            return " seq.id as id, seq.entity_type as entityId, seq.seq_number as seqNumber from m_sequence_Number  seq ";
+            return " seq.id as id, seq.entity_type as entityId, seq.seq_number as seqNumber from m_sequence_number  seq ";
         }
 
         @Override
