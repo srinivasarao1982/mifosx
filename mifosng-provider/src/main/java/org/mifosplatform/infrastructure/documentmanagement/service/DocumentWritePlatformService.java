@@ -23,7 +23,7 @@ public interface DocumentWritePlatformService {
     @PreAuthorize(value = "hasAnyRole('ALL_FUNCTIONS', 'DELETE_DOCUMENT')")
     CommandProcessingResult deleteDocument(DocumentCommand documentCommand);
     //Nextru Specific - RBL changes
-    String documentNameGenerator(long clientId, String documentType);
+    String documentNameGenerator(long clientId, String documentType, String fileName);
     
     void uploadDocumentToRemoteHost(String rblTextFileName,boolean isReprocess, boolean isImageToBeSend, List<Long> clientIds);
     

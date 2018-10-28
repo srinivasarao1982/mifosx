@@ -47,7 +47,8 @@ public class CodeValueReadPlatformServiceImpl implements CodeValueReadPlatformSe
             final Integer position = rs.getInt("position");
             final String description = rs.getString("description");
             final String codescore =rs.getString("codescore");
-            return CodeValueData.instance(id, value, position, codescore);
+           // return CodeValueData.instance(id, value, position, codescore);
+            return CodeValueData.instance(id, value, position, description, codescore);
         }
     }
 
@@ -97,7 +98,8 @@ public class CodeValueReadPlatformServiceImpl implements CodeValueReadPlatformSe
 		final CodeValueDataMapper rm = new CodeValueDataMapper();
 		final String sql = "select" + rm.schema() 
 		                            + " join m_client_document_types mcdt on mcdt.documentTypeId = c.id "
-                                    + "order by cv.id ";
+		                            + " group by cv.id"
+                                    + " order by cv.id";
 	    return this.jdbcTemplate.query(sql, rm, new Object[] {});
 	}
 }
