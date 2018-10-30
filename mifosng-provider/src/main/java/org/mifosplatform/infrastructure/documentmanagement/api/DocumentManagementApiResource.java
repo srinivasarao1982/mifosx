@@ -127,7 +127,7 @@ public class DocumentManagementApiResource {
         String fileName = null;
         String documentName = documentType.replaceAll(" ", ""); // removing whitespace in documentType name
         if(entityType.equals(DOCUMENT_MANAGEMENT_ENTITY.CLIENTS.toString()) || entityType.equals(DOCUMENT_MANAGEMENT_ENTITY.LOANS.toString())){
-        	fileName = this.documentWritePlatformService.documentNameGenerator(entityId, documentName);
+        	fileName = this.documentWritePlatformService.documentNameGenerator(entityId, documentName,fileDetails.getFileName());
         }else{
         	fileName = fileDetails.getFileName();
         }

@@ -232,12 +232,14 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
     
     /*** Nextru Specific - Generate document Name as per RBI Policies **/
 	@Override
-	public String documentNameGenerator(final long clientId,final String documentType) {
+	public String documentNameGenerator(final long clientId,final String documentType, String fileName) {
 		    final Client client = this.clientRepository.findOne(clientId);
+		    final String [] fileNameArray = fileName.split("\\.");
+		    final String fileFormat = fileNameArray[1];
 	        final String bcName = "Nextru";
 	        final String clientExternalId = client.getExternalId();
-	        final String fileName = bcName + '_' + clientExternalId + '_' + documentType;
-	        return fileName;
+	        final String newFileName = bcName + '_' + clientExternalId + '_' + documentType + "." +  fileFormat;
+	        return newFileName;
 	}
 	
 	/*** Nextru specific - Validate for duplicate document name**/
