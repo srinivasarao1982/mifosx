@@ -160,6 +160,19 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					else{
 						customerData.append("EXISTINGCUSTOMER~"+(rblclientDatValidation.getExternalId())+"|");
 					}
+					String category="3";
+					if(rblclientDatValidation.getCategory()!=null){
+						if(rblclientDatValidation.getCategory().equalsIgnoreCase("SMALL FARMER")){
+							category="1";
+						}
+                        if(rblclientDatValidation.getCategory().equalsIgnoreCase("FARMER")){
+							category="2";
+
+						}
+                       if(rblclientDatValidation.getCategory().equalsIgnoreCase("Unemployed")){
+                    	   category="4";	
+						}
+					}
 					customerData.append(rblclientDatValidation.getExternalCenterId()).append("|").append(rblclientDatValidation.getTitle()).append("|");
 					customerData.append(rblclientDatValidation.getCustomerName()).append("|").append(rblclientDatValidation.getAddressline1()).append("|");
 					customerData.append(rblclientDatValidation.getAddressline2()).append("|").append(rblclientDatValidation.getAddressline3()).append("|");
@@ -174,7 +187,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					customerData.append(rblclientDatValidation.getVoterId()).append("|").append(rblclientDatValidation.getPanno()).append("|");
 					customerData.append(rblclientDatValidation.getBarcodeNumber()).append("|").append(rblclientDatValidation.getAdharseedingConsatnt()).append("|");
 					customerData.append(rblclientDatValidation.getHealth()).append("|").append(rblclientDatValidation.getOccupation()).append("|");
-					customerData.append(rblclientDatValidation.getEducationQualification()).append("|").append(rblclientDatValidation.getCategory()).append("|");
+					customerData.append(rblclientDatValidation.getEducationQualification()).append("|").append(category).append("|");
 					customerData.append(rblclientDatValidation.getLanguage()).append("|").append(rblclientDatValidation.getCardIssueFlag()).append("|");
 					customerData.append(rblclientDatValidation.getBcBranchCode()).append("|").append(rblclientDatValidation.getCollector()).append("|");
 					customerData.append(rblclientDatValidation.getApprover()).append("|").append(rblclientDatValidation.getSpouseName()).append("|");

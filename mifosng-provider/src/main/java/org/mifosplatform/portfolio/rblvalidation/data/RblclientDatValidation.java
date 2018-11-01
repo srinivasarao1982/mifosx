@@ -58,7 +58,8 @@ public class RblclientDatValidation {
 			String occupation, String educationQualification, String category, String language, Integer cardIssueFlag,
 			String bcBranchCode, String collector, String approver, String spouseName, Date spouseDateOfBirth,
 			String nomineeName, String nomineeRelation, Integer cbCheck, String bankName, String bankAccountNo,
-			String bankbranchName, Integer renewalFl,String panno,String barcodeNumber,String adharseedingConsatnt,Integer clientAge) {
+			String bankbranchName, Integer renewalFl,String panno,String barcodeNumber,String adharseedingConsatnt,Integer clientAge
+			) {
 		super();
 		this.externalId = externalId;
 		this.externalCenterId = externalCenterId;
@@ -383,6 +384,7 @@ public class RblclientDatValidation {
 	public void setClientAge(Integer clientAge) {
 		this.clientAge = clientAge;
 	}
+	
 		
 
 }

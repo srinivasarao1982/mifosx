@@ -336,7 +336,9 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
            
 		fr.write("***************Start Writing savings Data*************** " +"\n");
            List<RblSavingValidationData> rblsavingsDatas=this.rblDataReadplatformService.readRblSavingData(clientId);
-   		
+           if(rblsavingsDatas.size()<0||rblsavingsDatas==null ){
+          		fr.write("*************** RBL Savings Application Is Not Created for All Client Please Create it***************" +"\n");
+     		}
            for(RblSavingValidationData rblsavingsData: rblsavingsDatas){
        	 fr.write("***************Start Writing Data For Savings with External Id"+rblsavingsData.getExternalId()+"*************** " +"\n");
 
@@ -449,7 +451,9 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 
 			
            List<RblLoanValidationData> rblloanDatas=this.rblDataReadplatformService.readRblLoanData(clientId);
-      		
+      		if(rblloanDatas.size()<0||rblloanDatas==null ){
+           		fr.write("*************** Loan Application Is Not Created for All Client Please Create it***************" +"\n");
+      		}
            for(RblLoanValidationData rblloanData: rblloanDatas){
        		fr.write("*************** Start  Writing Data for Loan with External Id"+rblloanData.getExternalId()+"***************" +"\n");
 

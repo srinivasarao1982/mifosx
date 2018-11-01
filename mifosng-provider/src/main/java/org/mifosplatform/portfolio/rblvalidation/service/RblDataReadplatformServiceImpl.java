@@ -135,7 +135,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                     +"concat(ifnull(na.village_town,''),ifnull(na.taluka,'')) as addressline3,rblbranch.`city code` as cityCode,state.code_score as stateCode,na.pin_code as pincode, "
                    +"mc.date_of_birth as dateofBirth ,mc.mobile_no as mobileNumber,caste.code_score as caste,gender.code_score as gender, "
                    +"maritals.code_score as maritalStatus,relegion.code_score as relegion,'IN' as nataonality,profession.code_score as occupation, "
-                   +"'PS2' as category,edu.code_score as educationqualification,mrbl.pension_card as pensionCard, "
+                   +"profession.code_value as category,edu.code_score as educationqualification,mrbl.pension_card as pensionCard, "
                   +"mrbl.mother_tounge as motherTounge,rblbranch.`Branch Code` as branchCode,rblbranch.`operating region` as operatingRegionCode, "
                   +"nct.aadhaar_no as aadharNo ,mrbl.health as health ,mrbl.`language` as language,mrbl.card_issue_fl as cardIssueFl, "
                   +"rblbranch.`bc branch code` as bcBranchCode,rblbranch.collector as collector,rblbranch.approver as Approver, "
@@ -290,7 +290,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         try {
             final AppUser currentUser = this.context.authenticatedUser();            
             final RblLoanDatMapper rm = new RblLoanDatMapper();
-            String Sql ="select"+rm.schema() +"where mc.id in ("+clientId +")";
+            String Sql ="select"+rm.schema() +"where mc.id in ("+clientId +") and (ml.loan_status_id=100 or ml.loan_status_id=200)";
             List<RblLoanValidationData>RblLoanValidationDatas=new ArrayList<RblLoanValidationData>();
             RblLoanValidationDatas = this.jdbcTemplate.query(Sql, rm, new Object[] { });
             return RblLoanValidationDatas;
@@ -415,7 +415,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         try {
             final AppUser currentUser = this.context.authenticatedUser();            
             final RblSavingDatMapper rm = new RblSavingDatMapper();
-            String Sql ="select"+rm.schema() + " where mc.id in ("+clientId+")";
+            String Sql ="select"+rm.schema() + " where mc.id in ("+clientId+") and (msa.status_enum=100 or msa.status_enum=200) ";
             List<RblSavingValidationData>RblSavingValidationDatas=new ArrayList<RblSavingValidationData>();
             RblSavingValidationDatas = this.jdbcTemplate.query(Sql, rm, new Object[] {});
             return RblSavingValidationDatas;
