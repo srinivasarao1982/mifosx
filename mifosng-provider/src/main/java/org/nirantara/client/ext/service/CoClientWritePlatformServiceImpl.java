@@ -73,7 +73,7 @@ public class CoClientWritePlatformServiceImpl implements CoClientWritePlatformSe
         }
 
         // For nirantara ClientIdentifierWritePlatformService
-        this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
+        this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command,false);
 
         this.clientRepository.saveAndFlush(clientForUpdate);
 

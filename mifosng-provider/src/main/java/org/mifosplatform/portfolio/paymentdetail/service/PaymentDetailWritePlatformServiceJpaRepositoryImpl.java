@@ -5,12 +5,16 @@
  */
 package org.mifosplatform.portfolio.paymentdetail.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.portfolio.paymentdetail.PaymentDetailConstants;
 import org.mifosplatform.portfolio.paymentdetail.domain.PaymentDetail;
 import org.mifosplatform.portfolio.paymentdetail.domain.PaymentDetailRepository;
+import org.mifosplatform.portfolio.paymentdetail.exception.DuplicateReceiptNumberException;
+import org.mifosplatform.portfolio.paymentdetail.exception.ReceiptNumberMandatoryException;
+import org.mifosplatform.portfolio.paymentdetail.exception.ReceiptNumberMustBeNumericException;
 import org.mifosplatform.portfolio.paymenttype.domain.PaymentType;
 import org.mifosplatform.portfolio.paymenttype.domain.PaymentTypeRepositoryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +39,20 @@ public class PaymentDetailWritePlatformServiceJpaRepositoryImpl implements Payme
     public PaymentDetail createPaymentDetail(final JsonCommand command, final Map<String, Object> changes) {
         final Long paymentTypeId = command.longValueOfParameterNamed(PaymentDetailConstants.paymentTypeParamName);
         if (paymentTypeId == null) { return null; }
-
+        
+        final String receiptNumber =command.stringValueOfParameterNamed(PaymentDetailConstants.receiptNumberParamName);
+        if(receiptNumber!=null && receiptNumber!=""){
+        if (!(receiptNumber.matches("[0-9]+"))) {
+        	throw  new ReceiptNumberMustBeNumericException(receiptNumber);
+          }
+        }
+        else{
+        	throw  new ReceiptNumberMandatoryException(receiptNumber);
+        }
+        List<PaymentDetail>paymentdetails=this.paymentDetailRepository.getPaymentDetails(receiptNumber);
+        if(paymentdetails.size()>0){
+        	throw new DuplicateReceiptNumberException(receiptNumber);
+        }
         final PaymentType paymentType = this.paymentTyperepositoryWrapper.findOneWithNotFoundDetection(paymentTypeId);
         final PaymentDetail paymentDetail = PaymentDetail.generatePaymentDetail(paymentType, command, changes);
         return paymentDetail;

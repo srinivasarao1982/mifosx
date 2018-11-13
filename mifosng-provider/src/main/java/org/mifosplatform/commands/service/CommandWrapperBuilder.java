@@ -152,6 +152,14 @@ public class CommandWrapperBuilder {
         this.href = "/offices/" + officeId;
         return this;
     }
+    
+    public CommandWrapperBuilder updateSequenceNumber(final Long entityId) {
+        this.actionName = "UPDATE";
+        this.entityName = "SEQNUMBER";
+        this.entityId = entityId;
+        this.href = "/offices/sequenceNumber" + entityId;
+        return this;
+    }
 
     public CommandWrapperBuilder createOfficeTransaction() {
         this.actionName = "CREATE";
@@ -2406,6 +2414,151 @@ public class CommandWrapperBuilder {
         this.entityName = "PAYMENTTYPE";
         this.entityId = paymentTypeId;
         this.href = "/" + PaymentTypeApiResourceConstants.RESOURCE_NAME + paymentTypeId;
+        return this;
+    }
+    public CommandWrapperBuilder createBankDetails() {
+        this.actionName = "CREATE";
+        this.entityName = "BANKDETAILS";
+        this.href = "/bankdetails";
+        return this;
+    }
+    public CommandWrapperBuilder updateBankDetails(final Long bankdetailsId) {
+        this.actionName = "UPDATE";
+        this.entityName = "BANKDETAILS";
+        this.entityId = bankdetailsId;
+        this.href = "/bankdetails/" + bankdetailsId;
+        return this;
+    }
+    public CommandWrapperBuilder deleteBankDetails(final Long bankdetailsId) {
+        this.actionName = "DELETE";
+        this.entityName = "BANKDETAILS";
+        this.entityId = bankdetailsId;
+        this.href = "/bankdetails/" + bankdetailsId;
+        this.json = "{}";
+        return this;
+    }
+    public CommandWrapperBuilder createPartialLoan() {
+        this.actionName = "CREATE";
+        this.entityName = "PARTIALLOAN";
+        this.href = "/partialloan";
+        return this;
+    }
+    public CommandWrapperBuilder updatePartialLoan(final Long clientId,final Long groupId) {
+        this.actionName = "UPDATE";
+        this.entityName = "PARTIALLOAN";
+        this.clientId=clientId;
+        this.groupId=groupId;
+        this.href = "/partialloan/"+clientId+"/"+groupId;
+        return this;
+    }
+
+    public CommandWrapperBuilder createTaskDetails() {
+        this.actionName = "CREATE";
+        this.entityName = "TASK";
+        this.href = "/taskdetails";
+        return this;
+    }
+    public CommandWrapperBuilder updateTaskDetails(final Long taskId) {
+        this.actionName = "UPDATE";
+        this.entityName = "TASK";
+        this.entityId=taskId;
+        this.href = "/taskdetails/"+taskId;
+        return this;
+    }
+    public CommandWrapperBuilder createTaskConfiguratioDetails() {
+        this.actionName = "CREATE";
+        this.entityName = "TASKCONFIGURATION";
+        this.href = "/taskdetails/taskconfiguration";
+        return this;
+    }
+    public CommandWrapperBuilder updateTaskConfigurationDetails(final Long taskconfigurationId) {
+        this.actionName = "UPDATE";
+        this.entityName = "TASKCONFIGURATION";
+        this.entityId=taskconfigurationId;
+        this.href = "/taskdetails/taskconfiguration"+taskconfigurationId;
+        return this;
+    }
+    
+    public CommandWrapperBuilder deleteRblCenter(final Long centerId) {
+        this.actionName = "DELETE";
+        this.entityName = "RBLCENETR";
+        this.entityId=centerId;
+        this.href = "/rbl/rblcenter/"+centerId;
+        return this;
+    }
+    public CommandWrapperBuilder deleteRblCustomer(final Long customerId) {
+        this.actionName = "DELETE";
+        this.entityName = "RBLCUSTOMER";
+        this.entityId=customerId;
+        this.href = "/rbl/rblcustomer/"+customerId;
+        return this;
+    }
+    public CommandWrapperBuilder deleteRblLoan(final Long loanId) {
+        this.actionName = "DELETE";
+        this.entityName = "RBLLOAN";
+        this.entityId=loanId;
+        this.href = "/rbl/rblloan/"+loanId;
+        return this;
+    }
+    public CommandWrapperBuilder deleteRblGroup(final Long groupId) {
+        this.actionName = "DELETE";
+        this.entityName = "RBLGROUP";
+        this.entityId=groupId;
+        this.href = "/rbl/rblgroup/"+groupId;
+        return this;
+    }
+    
+    public CommandWrapperBuilder updateRblCenter(final Long centerId) {
+        this.actionName = "UPDATE";
+        this.entityName = "RBLCENTER";
+        this.entityId=centerId;
+        this.href = "/rbl/rblcenter/"+centerId;
+        return this;
+    }
+    public CommandWrapperBuilder UpdateRblCustomer(final Long customerId) {
+        this.actionName = "UPDATE";
+        this.entityName = "RBLCUSTOMER";
+        this.entityId=customerId;
+        this.href = "/rbl/rblcustomer/"+customerId;
+        return this;
+    }
+    public CommandWrapperBuilder UpdateRblLoan(final Long loanId) {
+        this.actionName = "UPDATE";
+        this.entityName = "RBLLOAN";
+        this.entityId=loanId;
+        this.href = "/rbl/rblloan/"+loanId;
+        return this;
+    }
+    public CommandWrapperBuilder UpdateRblGroup(final Long groupId) {
+        this.actionName = "UPDATE";
+        this.entityName = "RBLGROUP";
+        this.entityId=groupId;
+        this.href = "/rbl/rblgroup/"+groupId;
+        return this;
+    }
+    
+    public CommandWrapperBuilder createRblCenter() {
+        this.actionName = "CREATE";
+        this.entityName = "RBLCENTER";
+        this.href = "/rbl/rblcenter";
+        return this;
+    }
+    public CommandWrapperBuilder createRblCustomer() {
+        this.actionName = "CREATE";
+        this.entityName = "RBLCUSTOMER";
+        this.href = "/rbl/rblcustomer/";
+        return this;
+    }
+    public CommandWrapperBuilder createRblLoan() {
+        this.actionName = "CREATE";
+        this.entityName = "RBLLOAN";
+        this.href = "/rbl/rblloan/";
+        return this;
+    }
+    public CommandWrapperBuilder CreateRblGroup() {
+        this.actionName = "CREATE";
+        this.entityName = "RBLGROUP";
+        this.href = "/rbl/rblgroup";
         return this;
     }
 

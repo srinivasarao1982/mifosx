@@ -45,6 +45,7 @@ import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientNotFoundException;
 import org.mifosplatform.portfolio.group.data.GroupGeneralData;
+import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.savings.data.SavingsProductData;
 import org.mifosplatform.portfolio.savings.service.SavingsProductReadPlatformService;
 import org.mifosplatform.useradministration.domain.AppUser;
@@ -104,7 +105,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
     public ClientDetailedData retrieveClientDetailedTemplate(final Long officeId, final boolean staffInSelectedOfficeOnly,
             final Long clientId,final boolean loanOfficersOnly) {
         this.context.authenticatedUser();
-
+        
+        
         ClientData clientBasicDetails = retrieveTemplate(officeId, staffInSelectedOfficeOnly,loanOfficersOnly);
 
         final ClientAdditionalDetails additionalDetails = null;
@@ -174,6 +176,12 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
         Collection<CodeValueData> presentLoanPurposeTypes = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.PRESETLOANPURPOSETYPES));
+        
+        Collection<CodeValueData> gurdianTitles = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.GURDIANTITLE));
+
+        Collection<CodeValueData> gurdianRelations = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientApiConstants.GURDIANRELATION));
 
         ClientDataExt clientDataExt = null;
         List<AddressExtData> addressExtData = new ArrayList<>();
@@ -224,7 +232,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
                 kycDetails, salutation, maritalStatus, profession, educationQualification, annualIncome, landHolding, houseType, state,
                 district, identityProof, addressProof, familyrelationShip, familyOccupation, yesOrNo, cfaOccupation, externalLoanstatus,
                 addressTypes, presentLoanSourceTypes, presentLoanPurposeTypes, clientDataExt, addressExtData, familyDetailsExtData,
-                clientIdentifierData, occupationDetailsDatas, nomineeDetailsData, coapplicantDetailsData, spouseRelationShip);
+                clientIdentifierData, occupationDetailsDatas, nomineeDetailsData, coapplicantDetailsData, spouseRelationShip,gurdianRelations,gurdianTitles);
 
     }
 
@@ -578,7 +586,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
                     firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate,
                     imageId, staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
-                    classification,null,null,null,null);
+                    classification,null,null,null,null,null);
 
         }
     }
@@ -638,7 +646,8 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             builder.append("c.activation_date as activationDate, c.image_id as imageId, ");
             builder.append("c.staff_id as staffId, s.display_name as staffName, ");
             builder.append("c.default_savings_product as savingsProductId, sp.name as savingsProductName, ");
-            builder.append("c.default_savings_account as savingsAccountId ");
+            builder.append("c.default_savings_account as savingsAccountId, ");
+            builder.append("c.is_reprocessed as isReprocessed ");
             builder.append("from m_client c ");
             builder.append("join m_office o on o.id = c.office_id ");
             builder.append("left join m_staff s on s.id = c.staff_id ");
@@ -726,6 +735,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             final String activatedByUsername = rs.getString("activatedByUsername");
             final String activatedByFirstname = rs.getString("activatedByFirstname");
             final String activatedByLastname = rs.getString("activatedByLastname");
+            final Boolean isReprocessed = rs.getBoolean("isReprocessed");
 
             final ClientTimelineData timeline = new ClientTimelineData(submittedOnDate, submittedByUsername, submittedByFirstname,
                     submittedByLastname, activationDate, activatedByUsername, activatedByFirstname, activatedByLastname, closedOnDate,
@@ -734,7 +744,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
                     firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate,
                     imageId, staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId, clienttype,
-                    classification,groupName,centerName,groupId,centerId);
+                    classification,groupName,centerName,groupId,centerId,isReprocessed);
 
         }
     }

@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import org.mifosplatform.organisation.office.data.OfficeData;
 import org.mifosplatform.organisation.office.data.OfficeTransactionData;
+import org.mifosplatform.organisation.office.data.SequenceNumberData;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
 
 public interface OfficeReadPlatformService {
@@ -26,4 +27,8 @@ public interface OfficeReadPlatformService {
     Collection<OfficeTransactionData> retrieveAllOfficeTransactions();
 
     OfficeTransactionData retrieveNewOfficeTransactionDetails();
+    
+    Collection<OfficeData> retrieverblOffice(Long officeId);
+    
+    SequenceNumberData retriveSequenceNumber(Long entityId);
 }

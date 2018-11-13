@@ -21,6 +21,8 @@ import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepository;
 import org.mifosplatform.organisation.office.domain.OfficeTransaction;
 import org.mifosplatform.organisation.office.domain.OfficeTransactionRepository;
+import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
 import org.mifosplatform.organisation.office.serialization.OfficeCommandFromApiJsonDeserializer;
 import org.mifosplatform.organisation.office.serialization.OfficeTransactionCommandFromApiJsonDeserializer;
@@ -45,19 +47,22 @@ public class OfficeWritePlatformServiceJpaRepositoryImpl implements OfficeWriteP
     private final OfficeRepository officeRepository;
     private final OfficeTransactionRepository officeTransactionRepository;
     private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository;
+    private final SequenceNumberRepository sequenceNumberRepository;
 
     @Autowired
     public OfficeWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
             final OfficeCommandFromApiJsonDeserializer fromApiJsonDeserializer,
             final OfficeTransactionCommandFromApiJsonDeserializer moneyTransferCommandFromApiJsonDeserializer,
             final OfficeRepository officeRepository, final OfficeTransactionRepository officeMonetaryTransferRepository,
-            final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository) {
+            final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepository,
+            final SequenceNumberRepository sequenceNumberRepository) {
         this.context = context;
         this.fromApiJsonDeserializer = fromApiJsonDeserializer;
         this.moneyTransferCommandFromApiJsonDeserializer = moneyTransferCommandFromApiJsonDeserializer;
         this.officeRepository = officeRepository;
         this.officeTransactionRepository = officeMonetaryTransferRepository;
         this.applicationCurrencyRepository = applicationCurrencyRepository;
+        this.sequenceNumberRepository=sequenceNumberRepository;
     }
 
     @Transactional
@@ -244,4 +249,26 @@ public class OfficeWritePlatformServiceJpaRepositoryImpl implements OfficeWriteP
     public PlatformSecurityContext getContext() {
         return this.context;
     }
+    
+    @Transactional
+    @Override
+        public CommandProcessingResult updateSequenceNumber(final Long entityId, final JsonCommand command) {
+
+        try {
+            final AppUser currentUser = this.context.authenticatedUser();
+         
+            OrganasitionSequenceNumber organasitionSequenceNumber =this.sequenceNumberRepository.findOne(entityId);
+            organasitionSequenceNumber.updateSeqNumber(command.bigDecimalValueOfParameterNamed("sequenceNumber"));
+            this.sequenceNumberRepository.saveAndFlush(organasitionSequenceNumber);
+            return new CommandProcessingResultBuilder() //
+                    .withCommandId(command.commandId()) //
+                    .withEntityId(organasitionSequenceNumber.getId()) //
+                    .withOfficeId(organasitionSequenceNumber.getSeqNumber().longValue()) //
+                    .build();
+        } catch (final DataIntegrityViolationException dve) {
+            handleOfficeDataIntegrityIssues(command, dve);
+            return CommandProcessingResult.empty();
+        }
+    }
+ 
 }

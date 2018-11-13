@@ -87,6 +87,18 @@ public final class Group extends AbstractPersistable<Long> {
 
     @Column(name = "display_name", length = 100, unique = true)
     private String name;
+    
+    @Column(name = "is_new_center")
+    private Long isnewCenter;
+    
+    @Column(name = "is_cbcheck_required")
+    private Long iscbCheckRequired;
+    
+    @Column(name = "is_cbchecked")
+    private Long iscbChecked;   
+    
+    @Column(name = "is_grt_completed")
+    private Long isgrtCompleted;
 
     @Column(name = "hierarchy", length = 100)
     private String hierarchy;
@@ -122,7 +134,32 @@ public final class Group extends AbstractPersistable<Long> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "center", orphanRemoval = true)
     private Set<StaffAssignmentHistory> staffHistory;
 
-    // JPA default constructor for entity
+    public Long getIsnewCenter() {
+		return isnewCenter;
+	}
+
+	public void setIsnewCenter(Long isnewCenter) {
+		this.isnewCenter = isnewCenter;
+	}
+
+	public Long getIscbCheckRequired() {
+		return iscbCheckRequired;
+	}
+
+	public void setIscbCheckRequired(Long iscbCheckRequired) {
+		this.iscbCheckRequired = iscbCheckRequired;
+	}
+
+	
+	public Long getIscbChecked() {
+		return iscbChecked;
+	}
+
+	public void setIscbChecked(Long iscbChecked) {
+		this.iscbChecked = iscbChecked;
+	}
+
+	// JPA default constructor for entity
     protected Group() {
         this.name = null;
         this.externalId = null;
@@ -131,7 +168,7 @@ public final class Group extends AbstractPersistable<Long> {
 
     public static Group newGroup(final Office office, final Staff staff, final Group parent, final GroupLevel groupLevel,
             final String name, final String externalId, final boolean active, final LocalDate activationDate,
-            final Set<Client> clientMembers, final Set<Group> groupMembers, final LocalDate submittedOnDate, final AppUser currentUser) {
+            final Set<Client> clientMembers, final Set<Group> groupMembers, final LocalDate submittedOnDate, final AppUser currentUser,final Long isnewCenter,final Long iscbcheck,final Long iscbchecked,final Long isgrtCompleted) {
 
         // By default new group is created in PENDING status, unless explicitly
         // status is set to active
@@ -143,19 +180,22 @@ public final class Group extends AbstractPersistable<Long> {
         }
 
         return new Group(office, staff, parent, groupLevel, name, externalId, status, groupActivationDate, clientMembers, groupMembers,
-                submittedOnDate, currentUser);
+                submittedOnDate, currentUser,isnewCenter,iscbcheck,iscbchecked,isgrtCompleted);
     }
 
     private Group(final Office office, final Staff staff, final Group parent, final GroupLevel groupLevel, final String name,
             final String externalId, final GroupingTypeStatus status, final LocalDate activationDate, final Set<Client> clientMembers,
-            final Set<Group> groupMembers, final LocalDate submittedOnDate, final AppUser currentUser) {
+            final Set<Group> groupMembers, final LocalDate submittedOnDate, final AppUser currentUser,final Long isnewCenter,final Long iscbcheckRequired,final Long iscbchecked,final Long isgrtCompleted) {
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
-
+        this.iscbCheckRequired=iscbcheckRequired;
+        this.isnewCenter=isnewCenter;
         this.office = office;
         this.staff = staff;
         this.groupLevel = groupLevel;
         this.parent = parent;
+        this.iscbChecked=iscbchecked;
+        this.isgrtCompleted=isgrtCompleted;
 
         if (parent != null) {
             this.parent.addChild(this);
@@ -284,13 +324,33 @@ public final class Group extends AbstractPersistable<Long> {
             final Long newValue = command.longValueOfParameterNamed(GroupingTypesApiConstants.staffIdParamName);
             actualChanges.put(GroupingTypesApiConstants.staffIdParamName, newValue);
         }
+        
+        if (command.isChangeInLongParameterNamed(GroupingTypesApiConstants.isgrtCompletedparamname, this.isgrtCompleted)) {
+            final Long newValue = command.longValueOfParameterNamed(GroupingTypesApiConstants.isgrtCompletedparamname);
+            this.isgrtCompleted=newValue;
+            actualChanges.put(GroupingTypesApiConstants.isgrtCompletedparamname, newValue);
+        }
 
         if (command.isChangeInStringParameterNamed(GroupingTypesApiConstants.nameParamName, this.name)) {
             final String newValue = command.stringValueOfParameterNamed(GroupingTypesApiConstants.nameParamName);
             actualChanges.put(GroupingTypesApiConstants.nameParamName, newValue);
             this.name = StringUtils.defaultIfEmpty(newValue, null);
         }
-
+        
+        if (command.isChangeInLongParameterNamed(GroupingTypesApiConstants.isnewcenterParamName,this.isnewCenter)) {
+            final Long newValue = command.longValueOfParameterNamed(GroupingTypesApiConstants.isnewcenterParamName);
+            this.isnewCenter=newValue;
+        }
+        
+        if (command.isChangeInLongParameterNamed(GroupingTypesApiConstants.iscbchekrequiredparamName, this.iscbCheckRequired)) {
+            final Long newValue = command.longValueOfParameterNamed(GroupingTypesApiConstants.iscbchekrequiredparamName);
+            this.iscbCheckRequired=newValue;
+        }
+        if (command.isChangeInLongParameterNamed(GroupingTypesApiConstants.iscbcheckedparamName, this.iscbChecked)) {
+            final Long newValue = command.longValueOfParameterNamed(GroupingTypesApiConstants.iscbcheckedparamName);
+            this.iscbChecked=newValue;
+        }
+                
         final String dateFormatAsInput = command.dateFormat();
         final String localeAsInput = command.locale();
 
@@ -396,6 +456,9 @@ public final class Group extends AbstractPersistable<Long> {
         this.staff = staff;
     }
 
+    public void updateGrtCompletetion(final Long isgrtCompleted){    	
+    	this.isgrtCompleted=isgrtCompleted;
+    }
     public void unassignStaff() {
         if (this.isCenter() && this.isActive()) {
             LocalDate dateOfStaffUnassigned = DateUtils.getLocalDateOfTenant();
@@ -583,6 +646,8 @@ public final class Group extends AbstractPersistable<Long> {
             return false;
         }
     }
+    
+    
 
     public Set<Client> getActiveClientMembers() {
         Set<Client> activeClientMembers = new HashSet<>();
@@ -592,6 +657,26 @@ public final class Group extends AbstractPersistable<Long> {
             }
         }
         return activeClientMembers;
+    }
+    
+    public Boolean isGroupsClientCountWithinMaxRangeForAllMember(Integer maxClients) {
+        Set<Client> allClientMembers = getAllClientMembers();
+        if (maxClients == null) {
+            return true;
+        } else if (allClientMembers.size() <= maxClients) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public Set<Client> getAllClientMembers() {
+        Set<Client> allClientMembers = new HashSet<>();
+        for (Client client : this.clientMembers) {
+        	allClientMembers.add(client);
+            }
+       
+        return allClientMembers;
     }
 
     private void validateActivationDate(final List<ApiParameterError> dataValidationErrors) {
@@ -681,7 +766,19 @@ public final class Group extends AbstractPersistable<Long> {
         }
     }
 
-    private StaffAssignmentHistory findLatestIncompleteHistoryRecord() {
+    public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public void setGroupLevel(GroupLevel groupLevel) {
+		this.groupLevel = groupLevel;
+	}
+
+	private StaffAssignmentHistory findLatestIncompleteHistoryRecord() {
 
         StaffAssignmentHistory latestRecordWithNoEndDate = null;
         for (final StaffAssignmentHistory historyRecord : this.staffHistory) {
@@ -692,4 +789,22 @@ public final class Group extends AbstractPersistable<Long> {
         }
         return latestRecordWithNoEndDate;
     }
+
+	public Long getIsgrtCompleted() {
+		return isgrtCompleted;
+	}
+
+	public void setIsgrtCompleted(Long isgrtCompleted) {
+		this.isgrtCompleted = isgrtCompleted;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 }

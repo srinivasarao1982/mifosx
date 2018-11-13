@@ -19,7 +19,9 @@ import org.mifosplatform.organisation.monetary.data.CurrencyData;
 import org.mifosplatform.organisation.monetary.service.CurrencyReadPlatformService;
 import org.mifosplatform.organisation.office.data.OfficeData;
 import org.mifosplatform.organisation.office.data.OfficeTransactionData;
+import org.mifosplatform.organisation.office.data.SequenceNumberData;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
+import org.mifosplatform.organisation.office.exception.SequenceNumberNotFoundException;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.mifosplatform.useradministration.domain.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +190,23 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
             throw new OfficeNotFoundException(officeId);
         }
     }
+    
+    @Override
+    @Cacheable(value = "officesById", key = "T(org.mifosplatform.infrastructure.core.service.ThreadLocalContextUtil).getTenant().getTenantIdentifier().concat(#officeId)")
+    public Collection<OfficeData> retrieverblOffice( Long officeId) {
+
+        try {
+            this.context.authenticatedUser();
+            String hierarchySearchString ="."+officeId+"%";
+            final OfficeDropdownMapper rm = new OfficeDropdownMapper();
+            final String sql = "select " + rm.schema() + "where o.hierarchy like ? order by o.hierarchy";
+
+            return this.jdbcTemplate.query(sql, rm, new Object[] { hierarchySearchString });
+
+        } catch (final EmptyResultDataAccessException e) {
+            throw new OfficeNotFoundException(officeId);
+        }
+    }
 
     @Override
     public OfficeData retrieveNewOfficeTemplate() {
@@ -247,5 +266,37 @@ public class OfficeReadPlatformServiceImpl implements OfficeReadPlatformService 
 
     public PlatformSecurityContext getContext() {
         return this.context;
+    }
+    
+    public SequenceNumberData retriveSequenceNumber(final Long entityId) {
+
+        try {
+            this.context.authenticatedUser();
+
+            final SequenceNumberMapper rm = new SequenceNumberMapper();
+            final String sql = "select " + rm.SequenceNumberMapper() + " where seq.entity_type = ?";
+
+            final SequenceNumberData sequenceNumberData = this.jdbcTemplate.queryForObject(sql, rm, new Object[] { entityId });
+
+            return sequenceNumberData;
+        } catch (final EmptyResultDataAccessException e) {
+            throw new SequenceNumberNotFoundException(entityId);
+        }
+    }
+    
+    private static final class SequenceNumberMapper implements RowMapper<SequenceNumberData> {
+
+        public String SequenceNumberMapper() {
+            return " seq.id as id, seq.entity_type as entityId, seq.seq_number as seqNumber from m_sequence_number  seq ";
+        }
+
+        @Override
+        public SequenceNumberData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final Long entityId = rs.getLong("entityId");
+            final BigDecimal seqNumber= rs.getBigDecimal("seqNumber");
+            return new SequenceNumberData(id, entityId, seqNumber);
+        }
     }
 }

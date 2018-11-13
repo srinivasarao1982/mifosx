@@ -75,15 +75,16 @@ public class SearchReadPlatformServiceImpl implements SearchReadPlatformService 
             final String union = " union ";
             final String clientExactMatchSql = " (select 'CLIENT' as entityType, c.id as entityId, c.display_name as entityName, c.external_id as entityExternalId, c.account_no as entityAccountNo "
                     + " , c.office_id as parentId, o.name as parentName, c.mobile_no as entityMobileNo,c.status_enum as entityStatusEnum ,n.external_Id2 as entityExternalId2 ,null as loanApplicationId "
-                    + " from m_client c join n_client_ext n on n.client_id=c.id join m_office o on o.id = c.office_id where o.hierarchy like :hierarchy and (c.account_no like :search or c.display_name like :search or c.external_id like :search or c.mobile_no like :search or n.external_Id2 like :search)) ";
+                    + " from m_client c left join n_client_ext n on n.client_id=c.id left join  m_client_identifier mc on mc.client_id=c.id left join m_office o on o.id = c.office_id where o.hierarchy like :hierarchy and (c.account_no like :search or c.display_name like :search or c.external_id like :search or c.mobile_no like :search or n.external_Id2 like :search or mc.document_key like :search)) ";
 
             final String clientMatchSql = " (select 'CLIENT' as entityType, c.id as entityId, c.display_name as entityName, c.external_id as entityExternalId, c.account_no as entityAccountNo "
                     + " , c.office_id as parentId, o.name as parentName,c.mobile_no as entityMobileNo, c.status_enum as entityStatusEnum ,n.external_Id2 as entityExternalId2 ,null as loanApplicationId  "
-                    + " from m_client c join n_client_ext n on n.client_id=c.id join  m_office o on o.id = c.office_id where o.hierarchy like :hierarchy and (c.account_no like :partialSearch and c.account_no not like :search) or "
+                    + " from m_client c left join n_client_ext n on n.client_id=c.id  left join  m_client_identifier mc on mc.client_id=c.id left join m_office o on o.id = c.office_id where o.hierarchy like :hierarchy and (c.account_no like :partialSearch and c.account_no not like :search) or "
                     + "(c.display_name like :partialSearch and c.display_name not like :search) or "
                     + "(c.external_id like :partialSearch and c.external_id not like :search)or"
                     + "(c.mobile_no like :partialSearch and c.mobile_no not like :search) or "
-                    + "(n.external_Id2 like :partialSearch and n.external_Id2 not like :search))";
+                    + "(n.external_Id2 like :partialSearch and n.external_Id2 not like :search) or "
+                    + "(mc.document_key like :partialSearch and mc.document_key not like :search))";
 
             final String loanExactMatchSql = " (select 'LOAN' as entityType, l.id as entityId, pl.name as entityName, l.external_id as entityExternalId, l.account_no as entityAccountNo "
                     + " , c.id as parentId, c.display_name as parentName, null as entityMobileNo, l.loan_status_id as entityStatusEnum ,null as entityExternalId2,ext.loanApplication_Id as loanApplicationId "

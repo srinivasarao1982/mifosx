@@ -5,6 +5,7 @@
  */
 package org.mifosplatform.portfolio.group.service;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,8 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepository;
+import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.office.exception.InvalidOfficeException;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
 import org.mifosplatform.organisation.staff.domain.Staff;
@@ -91,6 +94,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
     private final ConfigurationDomainService configurationDomainService;
     private final SavingsAccountRepository savingsAccountRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
+    private final SequenceNumberRepository sequenceNumberRepository;
 
     @Autowired
     public GroupingTypesWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -100,7 +104,8 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final LoanRepository loanRepository, final SavingsAccountRepository savingsRepository,
             final CodeValueRepositoryWrapper codeValueRepository, final CommandProcessingService commandProcessingService,
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
-            final SavingsAccountRepository savingsAccountRepository, final LoanRepositoryWrapper loanRepositoryWrapper) {
+            final SavingsAccountRepository savingsAccountRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
+            final SequenceNumberRepository sequenceNumberRepository) {
         this.context = context;
         this.groupRepository = groupRepository;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -117,12 +122,18 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
         this.configurationDomainService = configurationDomainService;
         this.savingsAccountRepository = savingsAccountRepository;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
+        this.sequenceNumberRepository=sequenceNumberRepository;
     }
 
     private CommandProcessingResult createGroupingType(final JsonCommand command, final GroupTypes groupingType, final Long centerId) {
         try {
             final String name = command.stringValueOfParameterNamed(GroupingTypesApiConstants.nameParamName);
             final String externalId = command.stringValueOfParameterNamed(GroupingTypesApiConstants.externalIdParamName);
+            
+            final Long isnewcenter =command.longValueOfParameterNamed(GroupingTypesApiConstants.isnewcenterParamName);
+            final Long iscbcheckrequired=command.longValueOfParameterNamed(GroupingTypesApiConstants.iscbchekrequiredparamName);  
+            final Long iscbchecked=command.longValueOfParameterNamed(GroupingTypesApiConstants.iscbcheckedparamName);  
+            final Long isgrtCompleted=command.longValueOfParameterNamed(GroupingTypesApiConstants.isgrtCompletedparamname);  
 
             final AppUser currentUser = this.context.authenticatedUser();
             Long officeId = null;
@@ -163,7 +174,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             }
 
             final Group newGroup = Group.newGroup(groupOffice, staff, parentGroup, groupLevel, name, externalId, active, activationDate,
-                    clientMembers, groupMembers, submittedOnDate, currentUser);
+                    clientMembers, groupMembers, submittedOnDate, currentUser,isnewcenter,iscbcheckrequired,iscbchecked,isgrtCompleted);
 
             boolean rollbackTransaction = false;
             if (newGroup.isActive()) {
@@ -188,6 +199,23 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
 
             // pre-save to generate id for use in group hierarchy
             this.groupRepository.save(newGroup);
+            
+            if(groupingType.getId()==1){
+            Long seqId =(long) 3;
+            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+            BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newGroup.getExternalId())+1);
+            organasitionSequenceNumber.updateSeqNumber(seqNumber);
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+            }
+            else{
+            	Long seqId =(long) 2;
+                OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+                BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newGroup.getExternalId())+1);
+                organasitionSequenceNumber.updateSeqNumber(seqNumber);
+                this.sequenceNumberRepository.save(organasitionSequenceNumber);
+	
+            }
+  
 
             /*
              * Generate hierarchy for a new center/group and all the child
@@ -246,7 +274,12 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final Group group = this.groupRepository.findOneWithNotFoundDetection(groupId);
 
             if (group.isGroup()) {
+                  boolean isTaskTime=command.booleanPrimitiveValueOfParameterNamed("isTaskTime") ;
+                  if(isTaskTime){
+                	  validateGroupRulesBeforeActivationAtTaskTime(group);
+                  }else{
                 validateGroupRulesBeforeActivation(group);
+                  }
             }
 
             final LocalDate activationDate = command.localDateValueOfParameterNamed("activationDate");
@@ -271,6 +304,13 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
     private void validateGroupRulesBeforeActivation(final Group group) {
         Integer minClients = configurationDomainService.retrieveMinAllowedClientsInGroup();
         Integer maxClients = configurationDomainService.retrieveMaxAllowedClientsInGroup();
+        boolean isGroupClientCountValid = group.isGroupsClientCountWithinMinMaxRange(minClients, maxClients);
+        if (!isGroupClientCountValid) { throw new GroupMemberCountNotInPermissibleRangeException(group.getId(), minClients, maxClients); }
+    }
+    
+    private void validateGroupRulesBeforeActivationAtTaskTime(final Group group) {
+        Integer minClients = configurationDomainService.retrieveMinAllowedClientsInGroupAtTaskTime();
+        Integer maxClients = configurationDomainService.retrieveMaxAllowedClientsInGroupAtTaskTime();
         boolean isGroupClientCountValid = group.isGroupsClientCountWithinMinMaxRange(minClients, maxClients);
         if (!isGroupClientCountValid) { throw new GroupMemberCountNotInPermissibleRangeException(group.getId(), minClients, maxClients); }
     }
@@ -308,7 +348,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final Long officeId = groupForUpdate.officeId();
             final Office groupOffice = groupForUpdate.getOffice();
             final String groupHierarchy = groupOffice.getHierarchy();
-
+            
             this.context.validateAccessRights(groupHierarchy);
 
             final LocalDate activationDate = command.localDateValueOfParameterNamed(GroupingTypesApiConstants.activationDateParamName);

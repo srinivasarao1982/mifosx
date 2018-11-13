@@ -29,6 +29,7 @@ public class StaffReadPlatformServiceImpl implements StaffReadPlatformService {
     private final JdbcTemplate jdbcTemplate;
     private final PlatformSecurityContext context;
     private final StaffLookupMapper lookupMapper = new StaffLookupMapper();
+    private final StaffRoleLookupMapper staffRoleLookupMapper =new StaffRoleLookupMapper();
     private final StaffInOfficeHierarchyMapper staffInOfficeHierarchyMapper = new StaffInOfficeHierarchyMapper();
 
     @Autowired
@@ -148,6 +149,46 @@ public class StaffReadPlatformServiceImpl implements StaffReadPlatformService {
         final String sql = "select " + this.lookupMapper.schema() + " where s.office_id = ? and s.is_active=1 ";
 
         return this.jdbcTemplate.query(sql, this.lookupMapper, new Object[] { defaultOfficeId });
+    }
+    
+    @Override
+    public Collection<StaffData> retrieveAllStaffForDropdownBasedOnRole(final Long officeId,Long roleId) {
+
+        final Long defaultOfficeId = defaultToUsersOfficeIfNull(officeId);
+
+        final String sql = "select " + this.staffRoleLookupMapper.schema() + " where s.office_id = ? and s.is_active=1  and mar.role_id =?";
+
+        return this.jdbcTemplate.query(sql, this.lookupMapper, new Object[] { defaultOfficeId, roleId});
+    }
+    
+    
+    private static final class StaffRoleLookupMapper implements RowMapper<StaffData> {
+
+        private final String schemaSql;
+
+        public StaffRoleLookupMapper() {
+
+            final StringBuilder sqlBuilder = new StringBuilder(100);
+            sqlBuilder.append("s.id as id, s.display_name as displayName ");          
+            sqlBuilder.append("from m_staff s ");
+            sqlBuilder.append("  inner join m_appuser map on s.id=map.staff_id ");
+            sqlBuilder.append("inner join m_appuser_role  mar  on mar.appuser_id=map.id");
+            		
+
+            this.schemaSql = sqlBuilder.toString();
+        }
+
+        public String schema() {
+            return this.schemaSql;
+        }
+
+        @Override
+        public StaffData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+            final Long id = rs.getLong("id");
+            final String displayName = rs.getString("displayName");
+            return StaffData.lookup(id, displayName);
+        }
     }
 
     private Long defaultToUsersOfficeIfNull(final Long officeId) {

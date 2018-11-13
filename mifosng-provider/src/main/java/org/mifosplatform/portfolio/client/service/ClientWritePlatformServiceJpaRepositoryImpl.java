@@ -11,6 +11,7 @@
  */
 package org.mifosplatform.portfolio.client.service;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,8 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepository;
+import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
@@ -74,6 +77,7 @@ import org.nirantara.client.ext.domain.Coapplicant;
 import org.nirantara.client.ext.domain.FamilyDetails;
 import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
+import org.nirantara.client.ext.exception.MandatoryFieldException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +112,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final ClientExtAssembler clientExtAssembler;
     private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
+    private final SequenceNumberRepository sequenceNumberRepository;
+
 
     @Autowired
     public ClientWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -119,7 +125,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService,
             final CommandProcessingService commandProcessingService, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientExtAssembler clientExtAssembler,
-            final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService) {
+            final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService,
+            final SequenceNumberRepository sequenceNumberRepository) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.officeRepository = officeRepository;
@@ -138,6 +145,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         this.accountNumberFormatRepository = accountNumberFormatRepository;
         this.clientExtAssembler = clientExtAssembler;
         this.clientIdentifierWritePlatformService = clientIdentifierWritePlatformService;
+        this.sequenceNumberRepository=sequenceNumberRepository;
     }
 
     @Transactional
@@ -184,7 +192,10 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             throw new PlatformDataIntegrityException("error.msg.client.address.type.duplicated",
                     "Client address type duplicated");
         }else if (realCause.getMessage().contains("unique_identifier_key")) {
-            throw new PlatformDataIntegrityException("error.msg.duplicate.document.type.and.document.key",
+        	 String [] args=realCause.getMessage().split(" ");
+        	 String [] valueField= args[2].split("-");
+        		 CodeValue codeValue = codeValueRepository.findOneWithNotFoundDetection(Long.parseLong(valueField[0].substring(1, valueField[0].length())));        		
+            throw new PlatformDataIntegrityException("error.msg.duplicate.document.key",codeValue.label() +" No already exists",
                     "Duplicate type and key already exists");
         }
         logAsErrorUnexpectedDataIntegrityException(dve);
@@ -212,12 +223,21 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             if (groupId != null) {
                 clientParentGroup = this.groupRepository.findOne(groupId);
                 if (clientParentGroup == null) { throw new GroupNotFoundException(groupId); }
+                Integer minClients = configurationDomainService.retrieveMinAllowedClientsInGroup();
+                Integer maxClients = configurationDomainService.retrieveMaxAllowedClientsInGroup();
+                boolean isGroupClientCountValid = clientParentGroup.isGroupsClientCountWithinMaxRangeForAllMember(maxClients);
+                if (!isGroupClientCountValid) { throw new GroupMemberCountNotInPermissibleRangeException(clientParentGroup.getId(), minClients, maxClients); }
+
             }
 
             Staff staff = null;
             final Long staffId = command.longValueOfParameterNamed(ClientApiConstants.staffIdParamName);
+           
             if (staffId != null) {
                 staff = this.staffRepository.findByOfficeHierarchyWithNotFoundDetection(staffId, clientOffice.getHierarchy());
+            }
+            else{
+        	    throw new MandatoryFieldException("staff"); 
             }
 
             CodeValue gender = null;
@@ -225,7 +245,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             if (genderId != null) {
                 gender = this.codeValueRepository.findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.GENDER, genderId);
             }
-
+            else{
+        	    throw new MandatoryFieldException("gender"); 
+            }
             CodeValue clientType = null;
             final Long clientTypeId = command.longValueOfParameterNamed(ClientApiConstants.clientTypeIdParamName);
             if (clientTypeId != null) {
@@ -238,6 +260,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             if (clientClassificationId != null) {
                 clientClassification = this.codeValueRepository
                         .findOneByCodeNameAndIdWithNotFoundDetection(ClientApiConstants.CLIENT_CLASSIFICATION, clientClassificationId);
+            }
+            else{
+        	    throw new MandatoryFieldException("Religion"); 
             }
 
             SavingsProduct savingsProduct = null;
@@ -258,7 +283,13 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             this.clientRepository.save(newClient);
-
+            
+            Long seqId =(long) 1;
+            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+            BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newClient.getExternalId())+1);
+            organasitionSequenceNumber.updateSeqNumber(seqNumber);
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+            
             if (newClient.isAccountNumberRequiresAutoGeneration()) {
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);
                 newClient.updateAccountNo(accountNumberGenerator.generate(newClient, accountNumberFormat));
@@ -279,6 +310,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                     final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, newClient);
                     if (address != null && address.size() > 0) {
                         newClient.updateAddressExt(address);
+                      
+                       
                     }
                 }
             }
@@ -295,7 +328,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             // For nirantara ClientIdentifierWritePlatformService
-            this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command);
+            this.clientIdentifierWritePlatformService.addClientIdentifierService(newClient, command,false);
 
             // Occupation Details
             if (object.has("cfaOccupations")) {
@@ -358,6 +391,12 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             this.context.validateAccessRights(clientHierarchy);
 
             final Map<String, Object> changes = clientForUpdate.update(command);
+            
+            //nextru specific - do set isClientReprocessed flag
+            if(changes.containsKey(ClientApiConstants.isReprocessedParamName)){
+            	final Boolean newValue = command.booleanObjectValueOfParameterNamed(ClientApiConstants.isReprocessedParamName);
+            	clientForUpdate.setReprocessed(newValue);
+            }
 
             if (changes.containsKey(ClientApiConstants.staffIdParamName)) {
 
@@ -450,7 +489,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             // For nirantara ClientIdentifierWritePlatformService
-            this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command);
+            this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command,true);
 
             // For nirantara Occupation Details
             final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();

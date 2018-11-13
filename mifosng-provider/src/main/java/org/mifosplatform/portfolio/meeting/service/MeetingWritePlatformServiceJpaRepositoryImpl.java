@@ -274,7 +274,7 @@ public class MeetingWritePlatformServiceJpaRepositoryImpl implements MeetingWrit
             if (meeting == null) {
                 newMeeting = Meeting.createNew(calendarInstance, meetingDate);
             } else {
-                if (!forcedSubmitOfCollectionSheet) { throw new CollectionSheetHasAlreadyBeenSubmittedException(new LocalDate(meetingDate)); }
+                //if (!forcedSubmitOfCollectionSheet) { throw new CollectionSheetHasAlreadyBeenSubmittedException(new LocalDate(meetingDate)); }
                 newMeeting = meeting;
             }
           //  final Meeting newMeeting = (meeting != null) ? meeting : Meeting.createNew(calendarInstance, meetingDate);

@@ -19,9 +19,11 @@ import org.mifosplatform.infrastructure.core.exception.PlatformApiDataValidation
 import org.mifosplatform.infrastructure.core.service.DateUtils;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSourceServiceFactory;
 import org.mifosplatform.infrastructure.core.service.ThreadLocalContextUtil;
+import org.mifosplatform.infrastructure.documentmanagement.service.DocumentWritePlatformService;
 import org.mifosplatform.infrastructure.jobs.annotation.CronTarget;
 import org.mifosplatform.infrastructure.jobs.exception.JobExecutionException;
 import org.mifosplatform.infrastructure.jobs.service.JobName;
+import org.mifosplatform.portfolio.rblvalidation.service.RblEquifaxWritePlatformService;
 import org.mifosplatform.portfolio.savings.DepositAccountType;
 import org.mifosplatform.portfolio.savings.DepositAccountUtils;
 import org.mifosplatform.portfolio.savings.data.DepositAccountData;
@@ -49,18 +51,24 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
     private final SavingsAccountChargeReadPlatformService savingsAccountChargeReadPlatformService;
     private final DepositAccountReadPlatformService depositAccountReadPlatformService;
     private final DepositAccountWritePlatformService depositAccountWritePlatformService;
+    private final RblEquifaxWritePlatformService rblEquifaxWritePlatformService;
+    private final DocumentWritePlatformService documentWritePlatformService;
 
     @Autowired
     public ScheduledJobRunnerServiceImpl(final RoutingDataSourceServiceFactory dataSourceServiceFactory,
             final SavingsAccountWritePlatformService savingsAccountWritePlatformService,
             final SavingsAccountChargeReadPlatformService savingsAccountChargeReadPlatformService,
             final DepositAccountReadPlatformService depositAccountReadPlatformService,
-            final DepositAccountWritePlatformService depositAccountWritePlatformService) {
+            final DepositAccountWritePlatformService depositAccountWritePlatformService,
+            final RblEquifaxWritePlatformService rblEquifaxWritePlatformService,
+            final DocumentWritePlatformService documentWritePlatformService) {
         this.dataSourceServiceFactory = dataSourceServiceFactory;
         this.savingsAccountWritePlatformService = savingsAccountWritePlatformService;
         this.savingsAccountChargeReadPlatformService = savingsAccountChargeReadPlatformService;
         this.depositAccountReadPlatformService = depositAccountReadPlatformService;
         this.depositAccountWritePlatformService = depositAccountWritePlatformService;
+        this.rblEquifaxWritePlatformService=rblEquifaxWritePlatformService;
+        this.documentWritePlatformService = documentWritePlatformService;
     }
 
     @Transactional
@@ -362,4 +370,35 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
 
         logger.info(ThreadLocalContextUtil.getTenant().getName() + ": Results affected by update: " + result);
     }
+
+    @Transactional
+    @Override
+    @CronTarget(jobName = JobName.RBL_EQUIFAX_INTREGATION)
+	public void equifaxIntregation(String clientIds) {
+    	int sucessCount =0;
+    	int failureCount =0;
+    	if(clientIds!=null){
+    		String [] clientIddetails=clientIds.split(",");
+    		for(String clientId:clientIddetails){
+    			Long client =Long.parseLong(clientId);
+    		//	boolean result =this.rblEquifaxWritePlatformService.rblequifaxIntregation(client);    			
+    			/*if(result){
+    				sucessCount=sucessCount+1;
+    			}else{
+    				failureCount =failureCount+1;
+    			}*/
+    		}
+    	}
+        logger.info(ThreadLocalContextUtil.getTenant().getName() + ": Results affected SucessResult Are : " + sucessCount +"Failure Result Are "+failureCount);
+
+	}
+
+	@Override
+	@Transactional
+	@CronTarget(jobName = JobName.DOWNLOAD_RBL_DOCUMENTS_SCHEDULE)
+	public void downloadDocumentFromRemoteServer() {
+		this.documentWritePlatformService.downloadDocumentFromRemoteHost();
+		logger.info(ThreadLocalContextUtil.getTenant().getName() + "Documents Downloaded Sucessfully . . !");
+	}
+
 }

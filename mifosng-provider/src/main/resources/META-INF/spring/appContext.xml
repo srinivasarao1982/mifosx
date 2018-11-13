@@ -86,5 +86,7 @@
 			<bean class="org.springframework.core.task.SimpleAsyncTaskExecutor"/>
 		</property>
 	</bean>
+	
+	<context:property-placeholder location="classpath*:/META-INF/spring/application.properties" ignore-unresolvable="true"/>
 
 </beans>

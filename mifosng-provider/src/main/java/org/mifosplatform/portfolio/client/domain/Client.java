@@ -46,6 +46,7 @@ import org.mifosplatform.infrastructure.security.service.RandomPasswordGenerator
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
+import org.mifosplatform.portfolio.client.exception.MobileNumberLengthException;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccount;
 import org.mifosplatform.portfolio.savings.domain.SavingsProduct;
@@ -56,6 +57,7 @@ import org.nirantara.client.ext.domain.Coapplicant;
 import org.nirantara.client.ext.domain.FamilyDetails;
 import org.nirantara.client.ext.domain.NomineeDetails;
 import org.nirantara.client.ext.domain.OccupationDetails;
+import org.nirantara.client.ext.exception.MandatoryFieldException;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @SuppressWarnings("serial")
@@ -246,6 +248,9 @@ public final class Client extends AbstractPersistable<Long> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
     private List<Coapplicant> coapplicant = new ArrayList<>();
 
+    // nextru specific - to identify if client re-login after 1st time failure of verification by RBL
+    @Column(name="is_reprocessed")
+    private boolean reprocessed;
     public static Client createNew(final AppUser currentUser, final Office clientOffice, final Group clientParentGroup, final Staff staff,
             final SavingsProduct savingsProduct, final CodeValue gender, final CodeValue clientType, final CodeValue clientClassification,
             final JsonCommand command) {
@@ -253,6 +258,12 @@ public final class Client extends AbstractPersistable<Long> {
         final String accountNo = command.stringValueOfParameterNamed(ClientApiConstants.accountNoParamName);
         final String externalId = command.stringValueOfParameterNamed(ClientApiConstants.externalIdParamName);
         final String mobileNo = command.stringValueOfParameterNamed(ClientApiConstants.mobileNoParamName);
+        if(mobileNo==null){
+    	    throw new MandatoryFieldException("mobileNo"); 
+        }
+        if(mobileNo.length()!=10){
+    	    throw new MobileNumberLengthException(mobileNo.length()); 
+        }
 
         final String firstname = command.stringValueOfParameterNamed(ClientApiConstants.firstnameParamName);
         final String middlename = command.stringValueOfParameterNamed(ClientApiConstants.middlenameParamName);
@@ -261,6 +272,9 @@ public final class Client extends AbstractPersistable<Long> {
 
         final LocalDate dataOfBirth = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
 
+        if(dataOfBirth==null){
+    	    throw new MandatoryFieldException("dataOfBirth"); 
+        }
         ClientStatus status = ClientStatus.PENDING;
         boolean active = false;
         if (command.hasParameter("active")) {
@@ -577,7 +591,11 @@ public final class Client extends AbstractPersistable<Long> {
             final LocalDate newValue = command.localDateValueOfParameterNamed(ClientApiConstants.submittedOnDateParamName);
             this.submittedOnDate = newValue.toDate();
         }
-
+       
+        if(command.isChangeInBooleanParameterNamed(ClientApiConstants.isReprocessedParamName,isReprocessed())){
+        	final boolean valueAsInput = command.booleanPrimitiveValueOfParameterNamed(ClientApiConstants.isReprocessedParamName);
+        	actualChanges.put(ClientApiConstants.isReprocessedParamName, valueAsInput);
+        }
         validate();
 
         deriveDisplayName();
@@ -1017,4 +1035,19 @@ public final class Client extends AbstractPersistable<Long> {
         this.addressExt.clear();
     }
 
+	public boolean isReprocessed() {
+		return reprocessed;
+	}
+
+	public void setReprocessed(boolean reprocessed) {
+		this.reprocessed = reprocessed;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
 }

@@ -16,6 +16,11 @@ public interface DocumentReadPlatformService {
 
     FileData retrieveFileData(String entityType, Long entityId, Long documentId);
 
+    FileData retrieveRblFileData(String fileName, String fileLocation);
+
     DocumentData retrieveDocument(String entityType, Long entityId, Long documentId);
+    
+    //Nextru Specific - Method to check if the document with same name is present then return 'true' else 'false'
+    boolean validateDuplicateDoducmentName(String entityType, Long entityId, String fileName);
 
 }

@@ -1,0 +1,349 @@
+package org.mifosplatform.portfolio.rbl.domain;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.mifosplatform.infrastructure.core.api.JsonCommand;
+import org.mifosplatform.infrastructure.core.domain.AbstractAuditableCustom;
+import org.mifosplatform.portfolio.client.domain.Client;
+import org.mifosplatform.portfolio.loanaccount.api.PartialLoanApiConstant;
+import org.mifosplatform.portfolio.rbl.api.RblCustomerDetailsApiConstant;
+import org.mifosplatform.useradministration.domain.AppUser;
+
+@SuppressWarnings("serial")
+@Entity
+@Table(name = "m_rblcustomer") 
+public class RblCustomer extends AbstractAuditableCustom<AppUser, Long>{
+	
+	@ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+    
+	@Column(name = "pension_card", length = 50)
+    private String pensionCard;
+	
+	@Column(name = "adharSeeding_constant")
+    private String adharseedingconstant;
+	
+	@Column(name = "health" )
+    private String health;
+	
+	@Column(name = "gurdian_gender" )
+    private Long  gurdiangender;
+	
+	@Column(name = "language")
+    private String language;
+	
+	public RblCustomer() {
+		super();
+	}
+
+	@Column(name = "card_issue_fl" )
+    private Integer cardIssueFl;
+	
+	@Column(name = "cb_check")
+    private Integer cbCheck;
+	
+	@Column(name = "renewal_fl")
+    private Long renewalFl;
+	
+	@Column(name = "mother_tounge")
+    private String motheroung;
+	
+	
+	 @Column(name = "gurdian_name", length = 256)
+	 private String gurdianName;
+	
+	@Column(name = "gurdian_DatofBirth" )
+    private Date gurdianDateOfBirth;
+	
+	 @Column(name = "spouse_name", length = 256)
+	 private String spouseName;
+	
+	@Column(name = "spouse_DatofBirth" )
+    private Date spouseDateOfBirth;	
+	
+	@Column(name = "relation_cv_id")
+    private Long relation;
+	
+	@Column(name = "gurdian_mobileNo")
+    private String gurdianmobileNo;
+	
+	@Column(name = "title")
+    private Long title;
+	
+	
+	
+	public static RblCustomer create(final Client client, final String pensionCard, final String adharseedingconstant,final  String health, final String language,
+			final Integer cardIssueFl,final Integer cbCheck, final Long renewalFl, final String motheroung, final String gurdianName,
+			final Date gurdianDateOfBirth, final String spouseName, final Date spouseDateOfBirth,final Long gurdiangender,final Long relation,final String gurdianMobileNo,final Long Title){
+		 return new RblCustomer(client,pensionCard,adharseedingconstant,health,language,cardIssueFl,cbCheck,renewalFl,motheroung,gurdianName,gurdianDateOfBirth,spouseName,spouseDateOfBirth,gurdiangender,
+				 relation,gurdianMobileNo,Title); 
+	}
+	
+	public Map<String, Object> update(final JsonCommand command) {
+		
+        final Map<String, Object> actualChanges = new LinkedHashMap<>(9);
+
+        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.clintIdparamnam, this.client.getId())) {
+            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.clintIdparamnam);
+            actualChanges.put(RblCustomerDetailsApiConstant.clintIdparamnam, newValue);
+           }
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.pensioncardnoparamName, this.pensionCard)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.pensioncardnoparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.pensioncardnoparamName, newValue);
+            this.pensionCard=newValue;
+        }
+        
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName, this.adharseedingconstant)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.addaharseedingconstantparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.addaharseedingconstantparamName, newValue);
+            this.adharseedingconstant=newValue;
+        }
+        
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.healthparamName, this.health)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.healthparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.healthparamName, newValue);
+            this.health=newValue;
+        }
+
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.languagparamName, this.language)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.languagparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.languagparamName, newValue);
+            this.language=newValue;
+        }
+        
+        if (command.isChangeInIntegerParameterNamed(RblCustomerDetailsApiConstant.cardIssueflagparamName, this.cardIssueFl)) {
+            final Integer newValue = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.cardIssueflagparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.cardIssueflagparamName, newValue);
+            this.cardIssueFl=newValue;
+        }
+        
+        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname, this.gurdiangender)) {
+            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiangenderparamname);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdiangenderparamname, newValue);
+            this.gurdiangender=newValue;
+        }
+        if (command.isChangeInIntegerParameterNamed(RblCustomerDetailsApiConstant.cbcheckparamName, this.cbCheck)) {
+            final Integer newValue = command.integerValueOfParameterNamed(RblCustomerDetailsApiConstant.cbcheckparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.cbcheckparamName, newValue);
+            this.cbCheck=newValue;
+        }
+        
+        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.renewalFlag, this.renewalFl)) {
+            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.renewalFlag);
+            actualChanges.put(RblCustomerDetailsApiConstant.renewalFlag, newValue);
+            this.renewalFl=newValue;
+        }
+        
+        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.relationparamname, this.relation)) {
+            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.relationparamname);
+            actualChanges.put(RblCustomerDetailsApiConstant.relationparamname, newValue);
+            this.relation=newValue;
+        }       
+          
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.gurdianMobileNumberParamName, this.gurdianmobileNo)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdianMobileNumberParamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdianMobileNumberParamName, newValue);
+            this.gurdianmobileNo=newValue;
+        }
+        
+        if (command.isChangeInLongParameterNamed(RblCustomerDetailsApiConstant.gurdiantitleParamName, this.title)) {
+            final Long newValue = command.longValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiantitleParamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdiantitleParamName, newValue);
+            this.title=newValue;
+        }
+        
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.mothertoungparamname, this.motheroung)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.mothertoungeparamname);
+            actualChanges.put(RblCustomerDetailsApiConstant.mothertoungeparamname, newValue);
+            this.motheroung=newValue;
+        }
+        
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.gurdainnameparamName, this.gurdianName)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdainnameparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdainnameparamName, newValue);
+            this.gurdianName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+        
+        if (command.isChangeInStringParameterNamed(RblCustomerDetailsApiConstant.spouseNameparamName, this.spouseName)) {
+            final String newValue = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.spouseNameparamName);
+            actualChanges.put(RblCustomerDetailsApiConstant.spouseNameparamName, newValue);
+            this.spouseName = StringUtils.defaultIfEmpty(newValue, null);
+        }
+        
+        final String dateFormatAsInput = command.dateFormat();
+        final String localeAsInput = command.locale();
+
+        
+        if (command.isChangeInLocalDateParameterNamed(RblCustomerDetailsApiConstant.gurdiandateofBirt, getGurdianDateofBirt())) {
+            final String valueAsInput = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiandateofBirt);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdiandateofBirt, valueAsInput);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdiandateofBirt, dateFormatAsInput);
+            actualChanges.put(PartialLoanApiConstant.localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(RblCustomerDetailsApiConstant.gurdiandateofBirt);
+            this.gurdianDateOfBirth = newValue.toDate();
+        }
+        if (command.isChangeInLocalDateParameterNamed(RblCustomerDetailsApiConstant.spousedateofbirtparamname, getSpouseDateofBirthDate())) {
+            final String valueAsInput = command.stringValueOfParameterNamed(RblCustomerDetailsApiConstant.spousedateofbirtparamname);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdiandateofBirt, valueAsInput);
+            actualChanges.put(RblCustomerDetailsApiConstant.gurdiandateofBirt, dateFormatAsInput);
+            actualChanges.put(PartialLoanApiConstant.localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(RblCustomerDetailsApiConstant.spousedateofbirtparamname);
+            this.spouseDateOfBirth = newValue.toDate();
+        }
+        
+       
+       return actualChanges;
+    }
+
+	 public LocalDate getGurdianDateofBirt() {
+         return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.gurdianDateOfBirth), null);
+     }
+     public LocalDate getSpouseDateofBirthDate() {
+         return (LocalDate) ObjectUtils.defaultIfNull(new LocalDate(this.spouseDateOfBirth), null);
+     }
+    
+	public RblCustomer(Client client, String pensionCard, String adharseedingconstant, String health, String language,
+			Integer cardIssueFl, Integer cbCheck, Long renewalFl, String motheroung, String gurdianName,
+			Date gurdianDateOfBirth, String spouseName, Date spouseDateOfBirth,Long gurdiangender,
+			final Long relation,final String gurdianmobileNo,final Long title ) {
+		super();
+		this.client = client;
+		this.pensionCard = pensionCard;
+		this.adharseedingconstant = adharseedingconstant;
+		this.health = health;
+		this.language = language;
+		this.cardIssueFl = cardIssueFl;
+		this.cbCheck = cbCheck;
+		this.renewalFl = renewalFl;
+		this.motheroung = motheroung;
+		this.gurdianName = gurdianName;
+		this.gurdianDateOfBirth = gurdianDateOfBirth;
+		this.spouseName = spouseName;
+		this.spouseDateOfBirth = spouseDateOfBirth;
+		this.gurdiangender=gurdiangender;
+		this.relation=relation;
+		this.gurdianmobileNo=gurdianmobileNo;
+		this.title=title;
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+	public String getPensionCard() {
+		return pensionCard;
+	}
+
+	public void setPensionCard(String pensionCard) {
+		this.pensionCard = pensionCard;
+	}
+
+	public String getAdharseedingconstant() {
+		return adharseedingconstant;
+	}
+
+	public void setAdharseedingconstant(String adharseedingconstant) {
+		this.adharseedingconstant = adharseedingconstant;
+	}
+
+	public String getHealth() {
+		return health;
+	}
+
+	public void setHealth(String health) {
+		this.health = health;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public Integer getCardIssueFl() {
+		return cardIssueFl;
+	}
+
+	public void setCardIssueFl(Integer cardIssueFl) {
+		this.cardIssueFl = cardIssueFl;
+	}
+
+	public Integer getCbCheck() {
+		return cbCheck;
+	}
+
+	public void setCbCheck(Integer cbCheck) {
+		this.cbCheck = cbCheck;
+	}
+
+	public Long getRenewalFl() {
+		return renewalFl;
+	}
+
+	public void setRenewalFl(Long renewalFl) {
+		this.renewalFl = renewalFl;
+	}
+
+	public String getMotheroung() {
+		return motheroung;
+	}
+
+	public void setMotheroung(String motheroung) {
+		this.motheroung = motheroung;
+	}
+
+	public String getGurdianName() {
+		return gurdianName;
+	}
+
+	public void setGurdianName(String gurdianName) {
+		this.gurdianName = gurdianName;
+	}
+
+	public Date getGurdianDateOfBirth() {
+		return gurdianDateOfBirth;
+	}
+
+	public void setGurdianDateOfBirth(Date gurdianDateOfBirth) {
+		this.gurdianDateOfBirth = gurdianDateOfBirth;
+	}
+
+	public String getSpouseName() {
+		return spouseName;
+	}
+
+	public void setSpouseName(String spouseName) {
+		this.spouseName = spouseName;
+	}
+
+	public Date getSpouseDateOfBirth() {
+		return spouseDateOfBirth;
+	}
+
+	public void setSpouseDateOfBirth(Date spouseDateOfBirth) {
+		this.spouseDateOfBirth = spouseDateOfBirth;
+	}
+    
+	
+}

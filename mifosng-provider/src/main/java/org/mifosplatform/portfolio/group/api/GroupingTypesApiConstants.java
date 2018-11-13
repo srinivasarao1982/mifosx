@@ -28,6 +28,8 @@ public class GroupingTypesApiConstants {
     public static final String groupIdParamName = "groupId";
     public static final String clientIdParamName = "clientId";
     public static final String groupRolesParamName = "groupRoles";
+    public static final String isnewcenterParamName="isnewCenter";
+    public static final String iscbchekrequiredparamName="iscbcheckRequired";
 
     // general
     public static final String localeParamName = "locale";
@@ -42,7 +44,8 @@ public class GroupingTypesApiConstants {
     public static final String activeParamName = "active";
     public static final String activationDateParamName = "activationDate";
     public static final String groupMembersParamName = "groupMembers";
-
+    public static final String isgrtCompletedparamname="isgrtCompleted";
+    
     public static final String submittedOnDateParamName = "submittedOnDate";
     public static final String inheritStaffForClientAccounts   = "inheritStaffForClientAccounts";
 
@@ -61,24 +64,26 @@ public class GroupingTypesApiConstants {
     public static final String collectionMeetingCalendar = "collectionMeetingCalendar";
     public static final String timeLine = "timeline";
     public static final String closureReasons = "closureReasons";
+    public static final String isTaskTimeParamName="isTaskTime";
 
     // group close parameters
     public static final String closureDateParamName = "closureDate";
     public static final String closureReasonIdParamName = "closureReasonId";
+    public static final String iscbcheckedparamName="iscbchecked";
 
     // staff centres parameters
     public static final String meetingFallCenters = "meetingFallCenters";
-
+    
     public static final Set<String> CENTER_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, idParamName, nameParamName, externalIdParamName, officeIdParamName, staffIdParamName, activeParamName,
-            activationDateParamName, groupMembersParamName, submittedOnDateParamName));
+            activationDateParamName, groupMembersParamName, submittedOnDateParamName,isnewcenterParamName,iscbchekrequiredparamName,iscbcheckedparamName,isgrtCompletedparamname));
 
     public static final Set<String> GROUP_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName, dateFormatParamName,
             idParamName, nameParamName, externalIdParamName, centerIdParamName, officeIdParamName, staffIdParamName, activeParamName,
-            activationDateParamName, clientMembersParamName, collectionMeetingCalendar, submittedOnDateParamName));
+            activationDateParamName, clientMembersParamName, collectionMeetingCalendar, submittedOnDateParamName,iscbcheckedparamName,isgrtCompletedparamname));
 
     public static final Set<String> GROUP_ROLES_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(roleParamName,
-            clientIdParamName));
+            clientIdParamName,isgrtCompletedparamname));
 
     /**
      * These parameters will match the class level parameters of
@@ -88,25 +93,28 @@ public class GroupingTypesApiConstants {
     public static final Set<String> CENTER_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, nameParamName,
             externalIdParamName, officeIdParamName, officeNameParamName, staffIdParamName, staffNameParamName, hierarchyParamName,
             officeOptionsParamName, staffOptionsParamName, statusParamName, activeParamName, activationDateParamName, timeLine,
-            groupMembersParamName, collectionMeetingCalendar, closureReasons));
+            groupMembersParamName, collectionMeetingCalendar, closureReasons,isnewcenterParamName,iscbchekrequiredparamName,iscbcheckedparamName,
+            isgrtCompletedparamname));
 
     public static final Set<String> CENTER_GROUP_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, nameParamName,
             externalIdParamName, officeIdParamName, officeNameParamName, staffIdParamName, staffNameParamName, hierarchyParamName,
-            officeOptionsParamName, staffOptionsParamName, clientOptionsParamName));
+            officeOptionsParamName, staffOptionsParamName, clientOptionsParamName,iscbcheckedparamName,
+            isgrtCompletedparamname));
 
     public static final Set<String> GROUP_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(idParamName, nameParamName,
             externalIdParamName, officeIdParamName, officeNameParamName, "parentId", "parentName", staffIdParamName, staffNameParamName,
             hierarchyParamName, officeOptionsParamName, statusParamName, activeParamName, activationDateParamName, staffOptionsParamName,
-            clientOptionsParamName, timeLine));
+            clientOptionsParamName, timeLine,iscbcheckedparamName,
+            isgrtCompletedparamname));
 
     public static final Set<String> ACTIVATION_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
-            dateFormatParamName, activationDateParamName));
+            dateFormatParamName, activationDateParamName,iscbcheckedparamName,isTaskTimeParamName));
 
     public static final Set<String> COLLECTIONSHEET_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList("dueDate", "loanProducts", "groups"));
 
     public static final Set<String> GROUP_CLOSE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
-            dateFormatParamName, closureDateParamName, closureReasonIdParamName));
+            dateFormatParamName, closureDateParamName, closureReasonIdParamName,iscbcheckedparamName));
 
     public static final Set<String> STAFF_CENTER_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(staffIdParamName,
             staffNameParamName, meetingFallCenters));

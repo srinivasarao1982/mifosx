@@ -12,7 +12,8 @@ buildscript {
      classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.0',
                'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0',
                'org.zeroturnaround:gradle-jrebel-plugin:1.1.2',
-               'org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE' // also change springDataJpaVersion below
+               'org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE', // also change springDataJpaVersion below
+			   'com.jcraft:jsch:0.1.54'
   }
 }
 
@@ -45,7 +46,7 @@ group = 'org.mifosplatform'
 repositories {
 	jcenter()
 	maven {
-	url "http://repository.pentaho.org/artifactory/repo/"
+	url "http://nexus.pentaho.org/content/repositories/omni/"
     }
 	// mavenLocal() // useful for local dev using MariaDB4j SNAPSHOTs (not needed for real-world non-SNAPHOT builds)
 }

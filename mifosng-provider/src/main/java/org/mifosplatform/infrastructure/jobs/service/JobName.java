@@ -26,7 +26,10 @@ public enum JobName {
     RECALCULATE_INTEREST_FOR_LOAN("Recalculate Interest For Loans"),
     GENERATE_RD_SCEHDULE("Generate Mandatory Savings Schedule"),
     GENERATE_CENTER_MEETING_SCHEDULE("Generate Center Meeting Schedule"),
-    GENERATE_CORRECT_REPAYMENT_SCHEDULE("Generate Correct Repayment Schedule");
+    GENERATE_CORRECT_REPAYMENT_SCHEDULE("Generate Correct Repayment Schedule"),
+	RBL_EQUIFAX_INTREGATION("Rbl Equifax Intregation"),
+	DOWNLOAD_RBL_DOCUMENTS_SCHEDULE("Download RBL Document Schedule");
+
     private final String name;
 
     private JobName(final String name) {
