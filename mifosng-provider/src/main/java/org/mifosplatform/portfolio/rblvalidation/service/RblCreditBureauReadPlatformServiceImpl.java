@@ -337,7 +337,7 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	        public String schema() {
 	            return "  mc.external_id as externalId,nct.external_Id2 as barccodeNo,mp.loan_amount as partialLoanAmount,mc.display_name as customerName, "
 	                    +"mp.loan_amount as loanAmount,if(mrbl.renewal_fl=0,'Y','N') as renewalFl,title.code_score as title,nct.pan_no as pan,mc.mobile_no as mobileNo, "
-	                    +"mc.date_of_birth as dateofBirth, if(gender.code_value like 'Mal%',01,02) gender,rbl.`Branch Code` as branchCode,rbl.`Branch Name` as branchName ,"
+	                    +"mc.date_of_birth as dateofBirth, if(gender.code_value like 'Mal%','01','02') gender,rbl.`Branch Code` as branchCode,rbl.`Branch Name` as branchName ,"
 	                    +"rbl.`operating region` as operatingRegion,rbl. `operating region Name` as OperatingRegionName,'' as  adhar,'' as voterId,'' as ration "
 		               // +"(select document_key from m_client_identifier where client_id= ? and document_type_id=40)  adhar, "
 		               // +"(select document_key from m_client_identifier where client_id= ?  and document_type_id=41) voterId, "
@@ -368,14 +368,26 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	            final String branchCode=rs.getString("branchCode");
 	            final String branchName=rs.getString("branchName");
 	            final String rationCardNo=rs.getString("ration");
-	            final String voterId=rs.getString("voterId");   
-	            final String aadharNo=rs.getString("adhar");
+	             String voterId=rs.getString("voterId");
+	            if(voterId==null){
+	            	voterId="NA";
+	            }
+	             String aadharNo=rs.getString("adhar");
+	            if(aadharNo==null){
+	            	aadharNo="NA";
+	            }
 	            final String gender=rs.getString( "gender");
-	            final String operatingRegion=rs.getString("operatingRegion");
-	            final String operatingRegionName=rs.getString("OperatingRegionName");	         
+	             String operatingRegion=rs.getString("operatingRegion");
+	             if(operatingRegion==null){
+	            	 operatingRegion="NA";
+	             }
+	             String operatingRegionName=rs.getString("OperatingRegionName");
+	             if(operatingRegionName==null){
+	            	 operatingRegionName="NA";
+	             }
 	            RblOperatingRegion RblOperatingRegion =new RblOperatingRegion(operatingRegion,operatingRegionName);
-	            return new RblClientsData(barcodeNo,externalId,loanAmount,isRenewalLoan,customerName,pan,mobileNo,dateOfBirth,
-	            		branchCode,branchName,rationCardNo,voterId,aadharNo,gender,null,null,RblOperatingRegion);
+	            return new RblClientsData(barcodeNo,externalId,loanAmount,isRenewalLoan,customerName,mobileNo,dateOfBirth,
+	            		branchCode,branchName,voterId,aadharNo,gender,null,null,RblOperatingRegion);
 	            
 	           
 	        }
@@ -443,14 +455,8 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	            
 
 	            List<RblNomineeData>rblNomineeDatas=new ArrayList<RblNomineeData>();
-	            //RblAddressData rblAddressData =getAddressData( clientId,true);
-	            RblAddressData rblAddressData = new RblAddressData("","","","","","","");
-	            RblAddressData gurdianAddressData = new RblAddressData("","","","","","","","");
 	            rblNomineeDatas = this.jdbcTemplate.query(Sql, rm, new Object[] {});
-	            RblNomineeData rblNomineeData =rblNomineeDatas.get(0);
-	            RblGurdianData rblGurdianData =rblNomineeData.getGuardian();
-	            rblGurdianData.setAddress(gurdianAddressData);
-	            rblNomineeData.setAddress(rblAddressData);	            
+	            RblNomineeData rblNomineeData =rblNomineeDatas.get(0);	            
 	            return rblNomineeData;
 	        } catch (final EmptyResultDataAccessException e) {
 	            throw new PartialLoanNotFoundException(clientId);
@@ -498,7 +504,7 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 	             RblAddressData address=null;
 	            RblGurdianData rblGurdianData =RblGurdianData.create(title, gurdianname, gurdainrelation, gurdiandob, gurdiangender, null);
 	            		        	
-	        	return new RblNomineeData(Nomineetitle,name,relation,dateOfBirth,gender,pan,minor,nomineeID,nomineeAddressID,address,rblGurdianData);
+	        	return new RblNomineeData(Nomineetitle,name,relation,dateOfBirth);
 		    }
 	  
 

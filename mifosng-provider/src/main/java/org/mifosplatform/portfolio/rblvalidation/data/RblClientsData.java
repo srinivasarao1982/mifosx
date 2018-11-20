@@ -10,12 +10,10 @@ public class RblClientsData {
     private Long loanAmount;
     private String isRenewalLoan;
     private String customerName;
-    private String pan;
     private String mobileNo;
     private Date  dateOfBirth;
     private String branchCode;
     private String branchName;
-    private String rationCardNo;
     private String voterId;   
     private String aadharNo;
     private String gender;
@@ -26,8 +24,8 @@ public class RblClientsData {
   
     
 	public RblClientsData(String barcodeNo, String externalId, Long loanAmount, String isRenewalLoan,
-			String customerName, String pan, String mobileNo, Date dateOfBirth, String branchCode,
-			String branchName, String rationCardNo, String voterId, String aadharNo, String gender,
+			String customerName,String mobileNo, Date dateOfBirth, String branchCode,
+			String branchName,String voterId, String aadharNo, String gender,
 			RblNomineeData nominee, RblAddressData address, RblOperatingRegion operatingRegion) {
 		super();
 		this.barcodeNo = barcodeNo;
@@ -35,12 +33,10 @@ public class RblClientsData {
 		this.loanAmount = loanAmount;
 		this.isRenewalLoan = isRenewalLoan;
 		this.customerName = customerName;
-		this.pan = pan;
 		this.mobileNo = mobileNo;
 		this.dateOfBirth = dateOfBirth;
 		this.branchCode = branchCode;
 		this.branchName = branchName;
-		this.rationCardNo = rationCardNo;
 		this.voterId = voterId;
 		this.aadharNo = aadharNo;
 		this.gender = gender;
@@ -78,12 +74,7 @@ public class RblClientsData {
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
 	}
-	public String getPan() {
-		return pan;
-	}
-	public void setPan(String pan) {
-		this.pan = pan;
-	}
+	
 	public String getMobileNo() {
 		return mobileNo;
 	}
@@ -108,12 +99,7 @@ public class RblClientsData {
 	public void setBranchName(String branchName) {
 		this.branchName = branchName;
 	}
-	public String getRationCardNo() {
-		return rationCardNo;
-	}
-	public void setRationCardNo(String rationCardNo) {
-		this.rationCardNo = rationCardNo;
-	}
+	
 	public String getVoterId() {
 		return voterId;
 	}

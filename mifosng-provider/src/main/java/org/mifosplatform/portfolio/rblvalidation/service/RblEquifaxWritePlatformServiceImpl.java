@@ -18,6 +18,16 @@ import javax.net.ssl.KeyManagerFactory;
 //import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
 
 
 import org.joda.time.DateTime;
@@ -111,6 +121,7 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		String fileLocation=null;
 		String centerNames =null;
 		String fileNames=null;
+		String responsexml=null;
 		int x=1;
 		String [] stringclientsId =clientIds.split(",");
     	for(int i=1 ;i<stringclientsId.length;i++){
@@ -127,6 +138,10 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		RblAddressData RblNomineeAddressData = rblClientsData.getAddress();
 		RblOperatingRegion rblOperatingRegion = rblClientsData.getOperatingRegion();
 		final Client client =this.clientRepository.findOneWithNotFoundDetection(clientId);
+		
+		JSONObject json1 = new JSONObject(rblEquifaxData);
+		String xml1 = XML.toString(json1,"getConsumerCreditReport");
+		System.out.println(xml1);
 	    String centerName="";
 		Long centerId=null;
 		for(Group groups :client.getGroups()){
@@ -189,57 +204,65 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 					//return false;    
 		      }
 		 else{
-			 String pwd = password;
-				
-					InputStream keyStoreUrl = new FileInputStream(keyStoreUrl1);
-					InputStream trustStoreUrl = new FileInputStream(trustStoreUrl1);
-
-					KeyStore keyStore = KeyStore.getInstance("PKCS12");
-					keyStore.load(keyStoreUrl, pwd.toCharArray());
-					KeyManagerFactory keyManagerFactory = 
-					    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-					keyManagerFactory.init(keyStore, pwd.toCharArray());
-
-					KeyStore trustStore = KeyStore.getInstance("JKS");
-					trustStore.load(trustStoreUrl, pwd.toCharArray());
-					TrustManagerFactory trustManagerFactory = 
-					    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-					trustManagerFactory.init(trustStore);
-
-					final SSLContext sslContext = SSLContext.getInstance("SSL");
-					sslContext.init(keyManagerFactory.getKeyManagers(), 
-					                trustManagerFactory.getTrustManagers(), 
-					                new SecureRandom());
-					SSLContext.setDefault(sslContext);
+			 String pwd = password;				
+				try {
 					
-					URL url = new URL(rblUrl);
+					KeyStore keyStore  = KeyStore.getInstance("jks");
+				    FileInputStream instream = new FileInputStream(new File(keyStoreUrl1));
+				    try {
+				        keyStore.load(instream, pwd.toCharArray());
+				    } finally {
+				        instream.close();
+				    }
 
-					HttpsURLConnection connection = (HttpsURLConnection) url.openConnection(); 
+				    // Trust own CA and all self-signed certs
+				    SSLContext sslcontext = SSLContexts.custom()
+				        .loadKeyMaterial(keyStore, pwd.toCharArray())
+				        .build();
 					
-				    System.out.println("Response code : " + connection.getResponseCode());
-					connection.setRequestMethod("POST");
-					connection.setRequestProperty("Content-Type", 
-					                              "application/x-www-form-urlencoded;charset=utf-8");
+					  // Allow TLSv1.2 protocol only
+				    SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+				    		sslcontext,
+				            new String[] { "TLSv1.2" },
+				            null,
+				            SSLConnectionSocketFactory.getDefaultHostnameVerifier());
+				    
+				    //build httpclient
+				    CloseableHttpClient httpclient = HttpClients.custom()
+				            .setSSLSocketFactory(sslsf)
+				            .build();
+						
+		             // this is input request body. TO DO - Please replace this with actual input				    
+
+				    	try {
+				    	JSONObject json = new JSONObject(rblEquifaxData);
+				    	String xml = XML.toString(json,"getConsumerCreditReport");
+						
+				      
+				      HttpPost post = new HttpPost(rblUrl);
+				      post.setEntity(new StringEntity(xml));
+				      
+				      post.setHeader("Content-type", "application/xml");
+				      post.setHeader("Authorization", "Basic TkVYVFJVTElWRTpTcmluaXZhc0BuZXh0cnU=");
+				      
+				      // make post call and get response
+				      CloseableHttpResponse response =httpclient.execute(post);
+		              
+				      // Retrieve content  form response
+				      HttpEntity entity = response.getEntity();
+		               responsexml = EntityUtils.toString(entity);
+		              responsexml=responsexml.replaceAll("\\<\\?xml(.+?)\\?\\>", "").trim();
+				    }catch (Exception e){
+				    	// TODO Auto-generated catch block
+						e.printStackTrace();
+				    } finally {
+				           httpclient.close();
+				   }
 					
-					JSONObject json = new JSONObject(rblEquifaxData);
-					String xml = XML.toString(json,"getConsumerCreditReport");
-		
-					String urlParameters =  XML.toString(json,"getConsumerCreditReport");
-					 connection.setDoOutput(true);
-					 DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-					 wr.writeBytes(urlParameters);
-					 wr.flush();
-					 wr.close();
-					 String responseStatus = connection.getResponseMessage();
-					            BufferedReader in = new BufferedReader(new InputStreamReader(
-					            		connection.getInputStream()));
-					            String inputLine;
-					            StringBuffer responsexml = new StringBuffer();
-					            while ((inputLine = in.readLine()) != null) {
-					            	responsexml.append(inputLine);
-					            }
-					            in.close();		 
-			 
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			 
 			 CreditBureaRequest creditBureaRequest =CreditBureaRequest.create(centerId, rblClientsData.getBarcodeNo(), rblClientsData.getExternalId()
 					 , rblClientsData.getIsRenewalLoan(), rblClientsData.getCustomerName(), rblClientsData.getLoanAmount(), null, 
 					 rblNomineeData.getName(), rblNomineeData.getRelation(), rblAddressData.getLine1(), rblAddressData.getLine2(), rblAddressData.getLine3(),
