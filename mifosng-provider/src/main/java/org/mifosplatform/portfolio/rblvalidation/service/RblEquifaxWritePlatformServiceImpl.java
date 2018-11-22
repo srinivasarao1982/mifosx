@@ -43,6 +43,7 @@ import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.rblvalidation.data.RblAddressData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblClientsData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblEquifaxData;
+import org.mifosplatform.portfolio.rblvalidation.data.RblHeaderData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblNomineeData;
 import org.mifosplatform.portfolio.rblvalidation.data.RblOperatingRegion;
 import org.mifosplatform.portfolio.rblvalidation.domain.CredeitBureauResponseRepositoryWrapper;
@@ -305,8 +306,9 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 
 			 }
 			 JSONObject rsponse =(JSONObject) RblCreditBureauResponseData.getJSONObject("getConsumerCreditReport").getJSONObject("Header");
+			 RblHeaderData rblHeaderData= rblEquifaxData.getHeader();
 			 CreditBureaoResponse creditBureaoResponse=
-					 CreditBureaoResponse.create(centerId, rsponse.getString("RequestUUID"), rsponse.getString("ServiceName"), rsponse.getString("ChannelId"), rsponse.getString("CorpId"),
+					 CreditBureaoResponse.create(centerId, rblHeaderData.getRequestUUID(), rblHeaderData.getServiceName(), rblHeaderData.getChannelId(), rblHeaderData.getCorpId(),
 							 rblCreditReportReply.getString("creditApproved"), rblcreditReason.getString("reason"), rblCreditReportReply.getString("eligibleLoanAmount"), null, clientId);
 			 
 			 this.credeitBureauResponseRepositoryWrapper.save(creditBureaoResponse);

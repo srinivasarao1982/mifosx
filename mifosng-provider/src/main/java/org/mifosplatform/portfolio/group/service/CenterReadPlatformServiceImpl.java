@@ -33,6 +33,7 @@ import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.data.OfficeData;
+import org.mifosplatform.organisation.office.domain.OfficeRepositoryWrapper;
 import org.mifosplatform.organisation.office.service.OfficeReadPlatformService;
 import org.mifosplatform.organisation.staff.data.StaffData;
 import org.mifosplatform.organisation.staff.service.StaffReadPlatformService;
@@ -66,6 +67,7 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
     private final OfficeReadPlatformService officeReadPlatformService;
     private final StaffReadPlatformService staffReadPlatformService;
     private final CodeValueReadPlatformService codeValueReadPlatformService;
+    private final OfficeRepositoryWrapper officeRepositoryWrapper;
 
     // data mappers
     private final AllGroupTypesDataMapper allGroupTypesDataMapper = new AllGroupTypesDataMapper();
@@ -82,7 +84,8 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
     public CenterReadPlatformServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
             final ClientReadPlatformService clientReadPlatformService, final OfficeReadPlatformService officeReadPlatformService,
             final StaffReadPlatformService staffReadPlatformService, final CodeValueReadPlatformService codeValueReadPlatformService,
-            final PaginationParametersDataValidator paginationParametersDataValidator) {
+            final PaginationParametersDataValidator paginationParametersDataValidator,
+            final OfficeRepositoryWrapper officeRepositoryWrapper) {
         this.context = context;
         this.clientReadPlatformService = clientReadPlatformService;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -90,6 +93,7 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
         this.staffReadPlatformService = staffReadPlatformService;
         this.codeValueReadPlatformService = codeValueReadPlatformService;
         this.paginationParametersDataValidator = paginationParametersDataValidator;
+        this.officeRepositoryWrapper=officeRepositoryWrapper;
     }
 
     // 'g.' preffix because of ERROR 1052 (23000): Column 'column_name' in where
@@ -357,11 +361,15 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
     }
 
     @Override
-    public Collection<CenterData> retrieveAll(SearchParameters searchParameters, PaginationParameters parameters) {
+    public Collection<CenterData> retrieveAll(SearchParameters searchParameters, PaginationParameters parameters,Long officeId) {
 
         this.paginationParametersDataValidator.validateParameterValues(parameters, supportedOrderByValues, "audits");
         final AppUser currentUser = this.context.authenticatedUser();
-        final String hierarchy = currentUser.getOffice().getHierarchy();
+         String hierarchy = currentUser.getOffice().getHierarchy();
+
+        if(officeId!=null){
+        	hierarchy=	this.officeRepositoryWrapper.findOneWithNotFoundDetection(officeId).getHierarchy();
+        }
         final String hierarchySearchString = hierarchy + "%";
 
         final StringBuilder sqlBuilder = new StringBuilder(200);
@@ -378,14 +386,14 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
         if (searchParameters.isOrderByRequested()) {
             sqlBuilder.append(" order by ").append(searchParameters.getOrderBy()).append(' ').append(searchParameters.getSortOrder());
         }
-
+      if(officeId==null){
         if (searchParameters.isLimited()) {
             sqlBuilder.append(" limit ").append(searchParameters.getLimit());
             if (searchParameters.isOffset()) {
                 sqlBuilder.append(" offset ").append(searchParameters.getOffset());
             }
         }
-
+      }
         return this.jdbcTemplate.query(sqlBuilder.toString(), this.centerMapper, new Object[] { hierarchySearchString });
     }
 

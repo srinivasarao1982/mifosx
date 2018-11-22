@@ -25,7 +25,7 @@ public interface CenterReadPlatformService {
 
     Page<CenterData> retrievePagedAll(SearchParameters searchParameters, PaginationParameters parameters);
 
-    Collection<CenterData> retrieveAll(SearchParameters searchParameters, PaginationParameters parameters);
+    Collection<CenterData> retrieveAll(SearchParameters searchParameters, PaginationParameters parameters,Long officeId);
 
     GroupGeneralData retrieveCenterGroupTemplate(Long centerId);
 

@@ -90,6 +90,18 @@ CREATE TABLE `m_rblsendfile` (
 	PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `m_rblreceivefile` (
+	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`file_type` VARCHAR(100) NULL DEFAULT NULL,
+	`file_Name` VARCHAR(100) NULL DEFAULT NULL,
+	`file_path` VARCHAR(256) NULL DEFAULT NULL,
+	`createdby_id` BIGINT(20) NULL DEFAULT NULL,
+	`created_date` DATE NULL DEFAULT NULL,
+	`lastmodifiedby_id` BIGINT(20) NULL DEFAULT NULL,
+	`lastmodified_date` DATE NULL DEFAULT NULL,
+	PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `m_rblvalidatefile` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
 	`center_id` BIGINT(20) NULL DEFAULT NULL,

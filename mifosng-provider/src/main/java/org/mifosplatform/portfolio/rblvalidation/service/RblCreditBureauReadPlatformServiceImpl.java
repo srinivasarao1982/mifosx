@@ -402,9 +402,9 @@ private static final class RblValidateDataMapper implements RowMapper<RblValidat
 		            final RblAddressDataMapper rm = new RblAddressDataMapper();
 		            String Sql ="select "+rm.schema();
 		             if(iscoClient){
-		            	 Sql=Sql   +"where na.address_type_cv_id=20 and mc.id="+clientId; 
+		            	 Sql=Sql   +"where na.address_type_cv_id=26 and mc.id="+clientId; 
 		             }else{
-		            	 Sql=Sql   +"where na.address_type_cv_id=26 and mc.id="+clientId;  
+		            	 Sql=Sql   +"where na.address_type_cv_id=20 and mc.id="+clientId;  
 		             }
 
 		            List<RblAddressData>rblAddressData=new ArrayList<RblAddressData>();

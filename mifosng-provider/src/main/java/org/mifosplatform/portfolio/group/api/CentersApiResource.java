@@ -160,7 +160,7 @@ public class CentersApiResource {
             return this.toApiJsonSerializer.serialize(settings, centers, GroupingTypesApiConstants.CENTER_RESPONSE_DATA_PARAMETERS);
         }
 
-        final Collection<CenterData> centers = this.centerReadPlatformService.retrieveAll(searchParameters, parameters);
+        final Collection<CenterData> centers = this.centerReadPlatformService.retrieveAll(searchParameters, parameters,officeId);
         return this.toApiJsonSerializer.serialize(settings, centers, GroupingTypesApiConstants.CENTER_RESPONSE_DATA_PARAMETERS);
     }
 
