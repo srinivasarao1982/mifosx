@@ -41,7 +41,7 @@ public class CodeValue extends AbstractPersistable<Long> {
     @Column (name ="code_score")
     private String codeScore;
 
-    public static CodeValue createNew(final Code code, final String label, final int position, final String description,final Integer codeScore) {
+    public static CodeValue createNew(final Code code, final String label, final int position, final String description,final String codeScore) {
         return new CodeValue(code, label, position, description,codeScore );
     }
 
@@ -49,7 +49,7 @@ public class CodeValue extends AbstractPersistable<Long> {
         //
     }
 
-    private CodeValue(final Code code, final String label, final int position, final String description,final Integer codescore) {
+    private CodeValue(final Code code, final String label, final int position, final String description,final String codescore) {
         this.code = code;
         this.label = StringUtils.defaultIfEmpty(label, null);
         this.position = position;
@@ -75,10 +75,11 @@ public class CodeValue extends AbstractPersistable<Long> {
         final String label = command.stringValueOfParameterNamed(CODEVALUE_JSON_INPUT_PARAMS.NAME.getValue());
         Integer position = command.integerValueSansLocaleOfParameterNamed(CODEVALUE_JSON_INPUT_PARAMS.POSITION.getValue());
         String description = command.stringValueOfParameterNamed(CODEVALUE_JSON_INPUT_PARAMS.DESCRIPTION.getValue());
+        String codeScore =command.stringValueOfParameterNamed(CODEVALUE_JSON_INPUT_PARAMS.CODESCORE.getValue());
         if (position == null) {
             position = new Integer(0);
         }
-        return new CodeValue(code, label, position.intValue(),description,0);
+        return new CodeValue(code, label, position.intValue(),description,codeScore);
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -104,6 +105,12 @@ public class CodeValue extends AbstractPersistable<Long> {
             final Integer newValue = command.integerValueSansLocaleOfParameterNamed(positionParamName);
             actualChanges.put(positionParamName, newValue);
             this.position = newValue.intValue();
+        }
+        final String codeScoreParamName=CODEVALUE_JSON_INPUT_PARAMS.CODESCORE.getValue();
+        if (command.isChangeInStringParameterNamed(codeScoreParamName, this.codeScore)) {
+            final String newValue = command.stringValueOfParameterNamed(codeScoreParamName);
+            actualChanges.put(codeScoreParamName, newValue);
+            this.codeScore = StringUtils.defaultIfEmpty(newValue, null);
         }
 
         return actualChanges;
