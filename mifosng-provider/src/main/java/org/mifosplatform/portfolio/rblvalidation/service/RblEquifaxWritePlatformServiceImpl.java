@@ -125,7 +125,7 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 		String responsexml=null;
 		int x=1;
 		String [] stringclientsId =clientIds.split(",");
-    	for(int i=1 ;i<stringclientsId.length;i++){
+    	for(int i=0 ;i<stringclientsId.length;i++){
     	   Long clientId =Long.parseLong(stringclientsId[i]);
     	       
 		
