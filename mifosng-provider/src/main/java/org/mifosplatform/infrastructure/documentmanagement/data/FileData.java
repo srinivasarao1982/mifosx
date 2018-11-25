@@ -53,4 +53,8 @@ public class FileData {
             return null;
         }
     }
+    
+    public File getFile(){
+    	return this.file;
+    }
 }

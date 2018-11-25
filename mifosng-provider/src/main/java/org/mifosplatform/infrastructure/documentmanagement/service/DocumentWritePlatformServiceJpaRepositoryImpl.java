@@ -260,7 +260,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
         
         try {
         	jsch.addIdentity(keyFile.getAbsolutePath(),hostPassphrase);
-	    	session = jsch.getSession(hostName,hostUserName,Integer.getInteger(hostPortNumber));
+	    	session = jsch.getSession(hostUserName,hostName,Integer.parseInt(hostPortNumber));
             session.setConfig("StrictHostKeyChecking", "no");
             session.setPassword(hostPassword);
             session.connect();
@@ -273,10 +273,14 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                 if(!clientIds.isEmpty()){
                 	for(long clientId : clientIds){
                     	Collection<DocumentData> documentDataList = this.documentReadPlatformService.retrieveAllDocuments("clients", clientId);
-                    	for(DocumentData documentData : documentDataList){
-                        	FileData fileData = this.documentReadPlatformService.retrieveFileData(documentData.getParentEntityType(), documentData.getId(), documentData.getParentEntityId());
-                        	sftpChannel.put(fileData.file(),imageDestinationPath);
-                        }
+                    	if(documentDataList != null && !documentDataList.isEmpty() ){
+                    		for(DocumentData documentData : documentDataList){
+                            	FileData fileData = this.documentReadPlatformService.retrieveFileData(documentData.getParentEntityType(),documentData.getParentEntityId(),documentData.getId());
+                            	if(fileData!=null){
+                            		sftpChannel.put(fileData.getFile().getAbsolutePath(),imageDestinationPath);	
+                            	}
+                            }
+                    	}
                     }
                 }
                 //transfer rbl text document to remote server
@@ -284,8 +288,9 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                 	 DocumentData documentData = new DocumentData(losFileSourcePath,"Text/File",rblTextFileName);
                 	 final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(StorageType.FILE_SYSTEM);
                      FileData rblTextFiledoc = contentRepository.fetchFile(documentData);
-                     sftpChannel.put(rblTextFiledoc.file(),losFileDestinationPath);
-                     
+                     if(rblTextFiledoc != null){
+                    	 sftpChannel.put(rblTextFiledoc.getFile().getAbsolutePath(),losFileDestinationPath);
+                     }
                 }
                 
             }
@@ -296,10 +301,14 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                 if(!clientIds.isEmpty()){
                 	for(long clientId : clientIds){
                     	Collection<DocumentData> documentDataList = this.documentReadPlatformService.retrieveAllDocuments("clients", clientId);
-                    	for(DocumentData documentData : documentDataList){
-                        	FileData fileData = this.documentReadPlatformService.retrieveFileData(documentData.getParentEntityType(), documentData.getId(), documentData.getParentEntityId());
-                        	sftpChannel.put(fileData.file(),imageDestinationPath);
-                        }
+                    	if(documentDataList!= null && !documentDataList.isEmpty()){
+                    		for(DocumentData documentData : documentDataList){
+                            	FileData fileData = this.documentReadPlatformService.retrieveFileData(documentData.getParentEntityType(),documentData.getParentEntityId(),documentData.getId());
+                            	if(fileData!=null){
+                            		sftpChannel.put(fileData.getFile().getAbsolutePath(),imageDestinationPath);
+                            	}
+                            }	
+                    	}
                     }
                 }
             }
@@ -312,8 +321,9 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                	 DocumentData documentData = new DocumentData(losFileSourcePath,"Text/File",rblTextFileName);
                	 final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(StorageType.FILE_SYSTEM);
                     FileData rblTextFiledoc = contentRepository.fetchFile(documentData);
-                    sftpChannel.put(rblTextFiledoc.file(),losFileDestinationPath);
-                    
+                    if(rblTextFiledoc!=null){
+                    	sftpChannel.put(rblTextFiledoc.getFile().getAbsolutePath(),losFileDestinationPath);
+                    }
                }
             	
             }
@@ -343,7 +353,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 		 File keyFile = new File(remoteHostKey);
 	     try{
 	    	 jsch.addIdentity(keyFile.getAbsolutePath(),hostPassphrase);
-	    	 session = jsch.getSession(hostName,hostUserName,Integer.getInteger(hostPortNumber));
+	    	 session = jsch.getSession(hostUserName,hostName,Integer.parseInt(hostPortNumber));
 	         session.setConfig("StrictHostKeyChecking", "no");
 	         session.setPassword(hostPassword);
 	         session.connect();
