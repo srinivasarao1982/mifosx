@@ -308,7 +308,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             return   "  ml.external_id as externalId,mc.external_id as customerExternalId ,center.external_id as externalCenterId,"
                    + "mg.external_id as groupExternalId, mp.name as loanProductCode,purpose.code_score as loanPurpose,rbl.psl_code as pslcode,"
                     +"ml.principal_amount as loanAmount,'2' as disbursementMode,mp.number_of_repayments as noOfInstallment,"
-                    +"ifnull(ml.loan_counter,1) as loanCycle,nlt.loanApplication_Id as barcodeNo,ml.disbursedon_date as loanStratDate,"
+                    +"ifnull(ml.loan_counter,1) as loanCycle,nlt.loanApplication_Id as barcodeNo,ml.expected_firstrepaymenton_date as loanStratDate,"
                     +"ml.expected_firstrepaymenton_date as repaymentStartDate,ml.expected_disbursedon_date as ExceptedDisbursementDate,"
                     +"rbb.`bc branch code` as bcBranchCode,rbb.collector as colector ,rbb.approver as approver,rbl.to_Up_flag as TopUpLoanFlag,"
                     +"rbl.hosiptal_cash as hosiptalCash,rbl.prepaid_charge as prepaidCharge,"
@@ -431,7 +431,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
 
          public String schema() {
             return   "   msa.external_id as externalId,center.external_id as externalCenterId,mc.external_id as customerExternalId,"
-                     + "  '1' as accountType,msp.name as savingproductCode,msp.name as productName,msa.activatedon_date as accountOpeningDate,"
+                     + "  '1' as accountType,msp.name as savingproductCode,msp.name as productName,msa.submittedon_date as accountOpeningDate,"
                       +"title.code_score as nomineeTitle,nc.first_name as nomineeName,relation.code_score as nomineeRlation,nc.date_of_birth as nomineeDateOfBirth,"
                      +"gender.code_score as nomineeGender, concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as nomineeAddressline1,"
                      +"concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as gurdianAddressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as nomineeAddressline2,"

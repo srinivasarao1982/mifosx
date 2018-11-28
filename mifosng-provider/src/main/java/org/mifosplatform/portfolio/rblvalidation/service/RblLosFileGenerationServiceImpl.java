@@ -154,7 +154,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 				
 				for(RblclientDatValidation rblclientDatValidation:readRblClientDatas){	
 					StringBuilder customerData =new StringBuilder();
-					if(rblclientDatValidation.getExternalId().startsWith("555")){
+					if(rblclientDatValidation.getExternalId().startsWith("599")){
 						customerData.append("NEWCUSTOMER~"+rblclientDatValidation.getExternalId()+"|") ;
 					}
 					else{
