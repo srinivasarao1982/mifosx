@@ -52,5 +52,5 @@ public class ReceiveFileRecord extends AbstractAuditableCustom<AppUser, Long>{
 		this.filePath = filePath;
 	}
 
-	
+	public ReceiveFileRecord(){}
 }

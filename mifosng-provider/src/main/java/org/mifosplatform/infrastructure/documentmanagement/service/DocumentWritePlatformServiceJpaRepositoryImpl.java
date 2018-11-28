@@ -276,7 +276,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                     	if(documentDataList != null && !documentDataList.isEmpty() ){
                     		for(DocumentData documentData : documentDataList){
                             	FileData fileData = this.documentReadPlatformService.retrieveFileData(documentData.getParentEntityType(),documentData.getParentEntityId(),documentData.getId());
-                            	if(fileData!=null){
+                            	if(fileData!=null && fileData.getFile().exists()){
                             		sftpChannel.put(fileData.getFile().getAbsolutePath(),imageDestinationPath);	
                             	}
                             }
@@ -288,8 +288,9 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                 	 DocumentData documentData = new DocumentData(losFileSourcePath,"Text/File",rblTextFileName);
                 	 final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(StorageType.FILE_SYSTEM);
                      FileData rblTextFiledoc = contentRepository.fetchFile(documentData);
-                     if(rblTextFiledoc != null){
-                    	 sftpChannel.put(rblTextFiledoc.getFile().getAbsolutePath(),losFileDestinationPath);
+                     String rblTextFilePath = rblTextFiledoc.getFile().getPath() + "/" + rblTextFileName;
+                     if(rblTextFiledoc != null && rblTextFiledoc.getFile().exists()){
+                    	 sftpChannel.put(rblTextFilePath, losFileDestinationPath);
                      }
                 }
                 
@@ -304,7 +305,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                     	if(documentDataList!= null && !documentDataList.isEmpty()){
                     		for(DocumentData documentData : documentDataList){
                             	FileData fileData = this.documentReadPlatformService.retrieveFileData(documentData.getParentEntityType(),documentData.getParentEntityId(),documentData.getId());
-                            	if(fileData!=null){
+                            	if(fileData!=null && fileData.getFile().exists()){
                             		sftpChannel.put(fileData.getFile().getAbsolutePath(),imageDestinationPath);
                             	}
                             }	
@@ -321,8 +322,9 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
                	 DocumentData documentData = new DocumentData(losFileSourcePath,"Text/File",rblTextFileName);
                	 final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(StorageType.FILE_SYSTEM);
                     FileData rblTextFiledoc = contentRepository.fetchFile(documentData);
-                    if(rblTextFiledoc!=null){
-                    	sftpChannel.put(rblTextFiledoc.getFile().getAbsolutePath(),losFileDestinationPath);
+                    String rblTextFilePath = rblTextFiledoc.getFile().getPath() + "/" + rblTextFileName;
+                    if(rblTextFiledoc!=null && rblTextFiledoc.getFile().exists()){
+                    	sftpChannel.put(rblTextFilePath,losFileDestinationPath);
                     }
                }
             	
