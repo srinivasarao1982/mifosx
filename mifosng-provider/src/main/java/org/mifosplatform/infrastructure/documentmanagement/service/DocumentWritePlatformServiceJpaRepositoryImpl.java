@@ -234,11 +234,12 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 	@Override
 	public String documentNameGenerator(final long clientId,final String documentType, String fileName) {
 		    final Client client = this.clientRepository.findOne(clientId);
-		    final String [] fileNameArray = fileName.split("\\.");
-		    final String fileFormat = fileNameArray[1];
+		    String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+		    /*final String [] fileNameArray = fileName.split("\\.");
+		    final String fileFormat = fileNameArray[1];*/
 	        final String bcName = "Nextru";
 	        final String clientExternalId = client.getExternalId();
-	        final String newFileName = bcName + '_' + clientExternalId + '_' + documentType + "." +  fileFormat;
+	        final String newFileName = bcName + '_' + clientExternalId + '_' + documentType + fileExtension;
 	        return newFileName;
 	}
 	
