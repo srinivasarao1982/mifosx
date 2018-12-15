@@ -123,6 +123,7 @@ public class ClientsBankDetailsApiResource {
 	        return this.toApiJsonSerializer.serialize(settings, clientBankDetailsData, ClientsBankDetailsApiConstants.CLIENTBANK_DETAILS_RESPONSE_DATA_PARAMETERS);
 	    }
    
+	//Note- This API moved to Organization/RBI, So longer being used    
 	@GET
     @Path("{ifsccode}")
 	@Consumes({ MediaType.APPLICATION_JSON })
