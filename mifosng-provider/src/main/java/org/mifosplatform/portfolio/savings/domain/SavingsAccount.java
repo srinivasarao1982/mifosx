@@ -293,7 +293,15 @@ public class SavingsAccount extends AbstractPersistable<Long> {
         //
     }
 
-    public static SavingsAccount createNewApplicationForSubmittal(final Client client, final Group group, final SavingsProduct product,
+    public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public static SavingsAccount createNewApplicationForSubmittal(final Client client, final Group group, final SavingsProduct product,
             final Staff fieldOfficer, final String accountNo, final String externalId, final AccountType accountType,
             final LocalDate submittedOnDate, final AppUser submittedBy, final BigDecimal interestRate,
             final SavingsCompoundingInterestPeriodType interestCompoundingPeriodType,

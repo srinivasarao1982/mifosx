@@ -43,17 +43,19 @@ public class TaskApiConstant {
 	    public static final String taskStartTimeParamName="taskStartTime";
 	    public static final String tasklEndTimeParamName="taskEndTime";
 	    public static final String plannedDateparamname="plannedDate";
+	    public static final String isAppovedParamName ="isApproved";
+
 	    //response Paramater
 	   
 	    public static final String staffNameparamname="staffName";
 	    public static final String clientNameparamname="clientName";
 	    public static final String tasknameparamname="taskname";
 	    
-	    public static final Set<String> TASK_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, staffIdparamname, officeidparamname,centerIdparamname, attendencedetailsIdparamname, tasktypeparamname, taskstatusparamname,noteparamname,expectedcompliteddate,taskextradeatilparamname,taskcompleteddateparamname,taskStartTimeParamName,tasklEndTimeParamName,plannedDateparamname));
+	    public static final Set<String> TASK_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, staffIdparamname, officeidparamname,centerIdparamname, attendencedetailsIdparamname, tasktypeparamname, taskstatusparamname,noteparamname,expectedcompliteddate,taskextradeatilparamname,taskcompleteddateparamname,taskStartTimeParamName,tasklEndTimeParamName,plannedDateparamname,isAppovedParamName));
 	    		
-	    public static final Set<String> TASK_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, staffIdparamname, officeidparamname,centerIdparamname, attendencedetailsIdparamname, tasktypeparamname, taskstatusparamname,noteparamname,expectedcompliteddate,taskextradeatilparamname,taskcompleteddateparamname,taskidparamname,taskTypeParmName,taskTypeIdparamname,staffNameParamName,taskcreatedParamName,statusparamName,taskdetailsParamName,clientAttendenceDataparamname,taskStartTimeParamName,tasklEndTimeParamName,plannedDateparamname));
+	    public static final Set<String> TASK_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, staffIdparamname, officeidparamname,centerIdparamname, attendencedetailsIdparamname, tasktypeparamname, taskstatusparamname,noteparamname,expectedcompliteddate,taskextradeatilparamname,taskcompleteddateparamname,taskidparamname,taskTypeParmName,taskTypeIdparamname,staffNameParamName,taskcreatedParamName,statusparamName,taskdetailsParamName,clientAttendenceDataparamname,taskStartTimeParamName,tasklEndTimeParamName,plannedDateparamname,isAppovedParamName));
 
-	    public static final Set<String> TASK_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, staffIdparamname, officeidparamname,centerIdparamname, attendencedetailsIdparamname, tasktypeparamname, taskstatusparamname,noteparamname,expectedcompliteddate,staffNameparamname,clientNameparamname,tasknameparamname,taskextradeatilparamname,taskcompleteddateparamname,taskdetailIdparamname,taskcreatedDate,idparamName,taskTypeIdparamname,staffIdIdparamname,taskStartTimeParamName,tasklEndTimeParamName,plannedDateparamname));
+	    public static final Set<String> TASK_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, staffIdparamname, officeidparamname,centerIdparamname, attendencedetailsIdparamname, tasktypeparamname, taskstatusparamname,noteparamname,expectedcompliteddate,staffNameparamname,clientNameparamname,tasknameparamname,taskextradeatilparamname,taskcompleteddateparamname,taskdetailIdparamname,taskcreatedDate,idparamName,taskTypeIdparamname,staffIdIdparamname,taskStartTimeParamName,tasklEndTimeParamName,plannedDateparamname,isAppovedParamName));
 
 
 

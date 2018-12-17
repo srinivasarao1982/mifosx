@@ -7,6 +7,7 @@ package org.mifosplatform.portfolio.savings.service;
 
 import static org.mifosplatform.portfolio.savings.SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -36,6 +37,8 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.core.service.DateUtils;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.monetary.domain.Money;
+import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepository;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
@@ -94,6 +97,8 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     private final SavingsAccountDomainService savingsAccountDomainService;
     private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
+    private final SequenceNumberRepository sequenceNumberRepository;
+
 
     @Autowired
     public SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -106,7 +111,8 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final SavingsAccountChargeAssembler savingsAccountChargeAssembler, final CommandProcessingService commandProcessingService,
             final SavingsAccountDomainService savingsAccountDomainService,
             final SavingsAccountWritePlatformService savingsAccountWritePlatformService,
-            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientRepository clientrepo, final StaffRepository staffRepo) {
+            final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientRepository clientrepo, final StaffRepository staffRepo,
+            final SequenceNumberRepository sequenceNumberRepository) {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.savingAccountAssembler = savingAccountAssembler;
@@ -125,6 +131,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         this.savingsAccountWritePlatformService = savingsAccountWritePlatformService;
         this.clientrepo = clientrepo;
         this.staffRepo = staffRepo;
+        this.sequenceNumberRepository=sequenceNumberRepository;
     }
 
     /*
@@ -163,7 +170,16 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final AppUser submittedBy = this.context.authenticatedUser();
 
             final SavingsAccount account = this.savingAccountAssembler.assembleFrom(command, submittedBy);
+            //newly Added 
+            Long seqId =(long) 5;
+            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+            BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+            account.setExternalId(seqNumber.toString());            
+            
             this.savingAccountRepository.save(account);
+            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+
 
             generateAccountNumber(account);
 

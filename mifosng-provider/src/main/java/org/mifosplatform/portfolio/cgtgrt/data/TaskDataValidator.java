@@ -34,6 +34,7 @@ import org.mifosplatform.portfolio.cgtgrt.exception.TaskDetailsException;
 import org.mifosplatform.portfolio.cgtgrt.exception.TaskOrderException;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
+import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientNotFoundException;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.group.domain.GroupRepository;
@@ -52,6 +53,8 @@ public class TaskDataValidator {
     private final TaskRepository taskRepository;
     private final TaskConfigurationRepository taskConfigurationRepository;
 	private final GroupRepository groupRepository;
+    private final ClientRepositoryWrapper clientRepository;
+
 
     
 
@@ -60,13 +63,16 @@ public class TaskDataValidator {
     @Autowired
     public TaskDataValidator(final FromJsonHelper fromApiJsonHelper,final CodeValueRepositoryWrapper codeValueRepositoryWrapper,
     		final ClientRepositoryWrapper clientRepositoryWrapper,final TaskRepository taskRepository,
-    		final TaskConfigurationRepository taskConfigurationRepository,final GroupRepository groupRepository) {
+    		final TaskConfigurationRepository taskConfigurationRepository,final GroupRepository groupRepository,
+    	     final ClientRepositoryWrapper clientRepository)
+ {
         this.fromApiJsonHelper = fromApiJsonHelper;
 	    this.codeValueRepositoryWrapper=codeValueRepositoryWrapper;
 	    this.clientRepositoryWrapper=clientRepositoryWrapper;
 	    this.taskRepository=taskRepository;
 	    this.taskConfigurationRepository=taskConfigurationRepository;
 	    this.groupRepository=groupRepository;
+	    this.clientRepository=clientRepository;
 	    
 
     }
@@ -206,7 +212,7 @@ public class TaskDataValidator {
 	
   }
   
- public Set<TaskClientAttendence> assembletaskAttendence(final Tasks taskforUpdate,final JsonCommand command){
+ public Set<TaskClientAttendence> assembletaskAttendence(final Tasks taskforUpdate,final JsonCommand command,final boolean isUpdate){
 	 final String json = command.json();
      final JsonElement element = this.fromApiJsonHelper.parse(json);
      final JsonObject topLevelJsonElement = element.getAsJsonObject();
@@ -226,6 +232,15 @@ public class TaskDataValidator {
          if(attendanceTypeId==null){
 				throw new FieldCannotbeBlankException("attendanceTypeId");
 		  }
+         if(isUpdate){
+             final Integer isApproved = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TaskApiConstant.isAppovedParamName, taskdetailObject);
+             if(isApproved==0){
+             final Client clientforUpdate =this.clientRepository.findOneWithNotFoundDetection(clientId);
+			 ClientStatus status = ClientStatus.REJECTED;
+			 clientforUpdate.setStatus(status.getValue());
+			 this.clientRepository.saveAndFlush(clientforUpdate);
+             }
+         }
          TaskClientAttendence taskClientAttendence=TaskClientAttendence.createClientAttendance(taskforUpdate, client, attendanceTypeId);
          taskAttendenceDetailsSet.add(taskClientAttendence);
      }

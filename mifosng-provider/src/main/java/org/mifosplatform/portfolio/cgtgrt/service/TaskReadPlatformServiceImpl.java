@@ -52,7 +52,7 @@ public class TaskReadPlatformServiceImpl implements TaskReadPlatformService {
 	}
 	
 	@Override
-	public Taskdata retrieveTemplate(final Long officeId,final Long roleId) {
+	public Taskdata retrieveTemplate( Long officeId,final Long roleId) {
 		this.context.authenticatedUser();
 		
 		Collection<CodeValueData> tasktypeOptions = new ArrayList<>(this.codeValueReadPlatformService
@@ -63,6 +63,9 @@ public class TaskReadPlatformServiceImpl implements TaskReadPlatformService {
 		Collection<EnumOptionData> attendenceTypeOptions=this.attendanceDropdownReadPlatformService.retrieveAttendanceTypeOptions();
 		Collection<StaffData> staffOptions=null; 
 		if(roleId!=null){
+			if(roleId==11){
+				officeId=(long) 35;
+			}
 		 staffOptions=this.staffReadPlatformService.retrieveAllStaffForDropdownBasedOnRole(officeId,roleId);
 		}
 		Taskdata taskdata=Taskdata.template(staffOptions, tasktypeOptions, taskstatus, attendenceTypeOptions,taskTimeOptions);

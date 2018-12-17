@@ -13,6 +13,8 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepositoryWrapper;
+import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.Client;
@@ -47,6 +49,8 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	    private final GroupRepositoryWrapper groupRepositoryWrapper;
 	    private final StaffRepositoryWrapper staffRepositoryWrapper;
 	    private final LoanProductRepository loanProductRepository;
+	    private final SequenceNumberRepository sequenceNumberRepository;
+
 	    
 	    @Autowired
 	    public PartialLoanWritePlatformServiceImpl(final PlatformSecurityContext context,
@@ -54,7 +58,8 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	            final PartialLoanDataValidator partialLoanDataValidator,final CodeValueRepositoryWrapper codeValueRepositoryWrapper,
 	            final OfficeRepositoryWrapper officeRepositoryWrapper,
 	            final GroupRepositoryWrapper groupRepositoryWrapper,final StaffRepositoryWrapper staffRepositoryWrapper,
-	            final LoanProductRepository loanProductRepository)
+	            final LoanProductRepository loanProductRepository,
+	            final SequenceNumberRepository sequenceNumberRepository)
 	            {
 	        this.context = context;
 	        this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -65,6 +70,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	        this.loanProductRepository=loanProductRepository;
 	        this.officeRepositoryWrapper=officeRepositoryWrapper;
 	        this.partialLoanDataValidator=partialLoanDataValidator;
+	        this.sequenceNumberRepository=sequenceNumberRepository;
 	        
 	    }
 	    
@@ -95,7 +101,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                 final BigDecimal principal=command.bigDecimalValueOfParameterNamed(PartialLoanApiConstant.principalparamname);
                 final BigDecimal fixedEmi=command.bigDecimalValueOfParameterNamed(PartialLoanApiConstant.fixedemiAmountparamname);
                 final long loantenure=command.longValueOfParameterNamed(PartialLoanApiConstant.loantenureparamname);
-                final String rpdoNumber =command.stringValueOfParameterNamed(PartialLoanApiConstant.rpdonumberparamname);                
+                 String rpdoNumber =command.stringValueOfParameterNamed(PartialLoanApiConstant.rpdonumberparamname);                
                 final LocalDate submittedDate=command.localDateValueOfParameterNamed(PartialLoanApiConstant.submitteddateparamname);
                 final CodeValue status=null;
                 final boolean isfreashImport=command.booleanPrimitiveValueOfParameterNamed("freshImport");
@@ -112,6 +118,15 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                     }
                 }
                  int isDisburse=0;
+               //newly Added 
+                 Long seqId =(long) 4;
+                 OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+                 BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+                 rpdoNumber =seqNumber.toString();
+                 
+                 organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+                 this.sequenceNumberRepository.save(organasitionSequenceNumber);
+
                 PartialLoan partialLoan =PartialLoan.createpartialloan(client, group, product,office,staff,purpose,rpdoNumber,principal,loantenure,fixedEmi,submittedDate.toDate(),status,null,1,isDisburse);
 	            this.partialLoanRepositoryWrapper.save(partialLoan);
 	            return new CommandProcessingResultBuilder() //

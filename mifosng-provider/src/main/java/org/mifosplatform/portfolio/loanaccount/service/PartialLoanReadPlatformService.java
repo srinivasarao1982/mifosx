@@ -10,5 +10,6 @@ public interface PartialLoanReadPlatformService {
     List<PartialLoanData> retrievepartialLoanDetails(final Long parentId) ;
     List<Long>retriveAcceptedMember(final Long parentId,final Long isActive,final Long isDisburse);
     List<SequenceNumberData>retriveSequenceNumber(final Long parentId,final boolean isUpdateStatus) ;
+    List<PartialLoanData> retrievepartialLoanDetailsforclients(final Long clientId);
 
 }

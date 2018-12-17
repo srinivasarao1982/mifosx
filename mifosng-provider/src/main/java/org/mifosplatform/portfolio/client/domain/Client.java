@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,6 +34,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.mifosplatform.infrastructure.codes.domain.CodeValue;
@@ -46,6 +48,7 @@ import org.mifosplatform.infrastructure.security.service.RandomPasswordGenerator
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
+import org.mifosplatform.portfolio.client.exception.ClientDateOfBirtException;
 import org.mifosplatform.portfolio.client.exception.MobileNumberLengthException;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccount;
@@ -271,10 +274,18 @@ public final class Client extends AbstractPersistable<Long> {
         final String fullname = command.stringValueOfParameterNamed(ClientApiConstants.fullnameParamName);
 
         final LocalDate dataOfBirth = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
-
+      
         if(dataOfBirth==null){
     	    throw new MandatoryFieldException("dataOfBirth"); 
         }
+        Date date1 = dataOfBirth.toDate();
+        Date date2 = new Date();
+        long diff = date2.getTime() - date1.getTime();
+        int years= (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)/365;
+        if(years<18 && years>58 ){
+        	throw new ClientDateOfBirtException(years);
+        }
+
         ClientStatus status = ClientStatus.PENDING;
         boolean active = false;
         if (command.hasParameter("active")) {
@@ -579,7 +590,16 @@ public final class Client extends AbstractPersistable<Long> {
             actualChanges.put(ClientApiConstants.localeParamName, localeAsInput);
 
             final LocalDate newValue = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
+            Date date1 = newValue.toDate();
+            Date date2 = new Date();
+            long diff = date2.getTime() - date1.getTime();
+            int years= (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)/365;
+            if(years<18 && years>58 ){
+            	throw new ClientDateOfBirtException(years);
+            }
             this.dateOfBirth = newValue.toDate();
+            
+            
         }
 
         if (command.isChangeInLocalDateParameterNamed(ClientApiConstants.submittedOnDateParamName, getSubmittedOnDate())) {

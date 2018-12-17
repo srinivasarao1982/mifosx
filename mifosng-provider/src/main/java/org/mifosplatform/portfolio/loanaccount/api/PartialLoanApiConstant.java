@@ -50,16 +50,17 @@ public class PartialLoanApiConstant {
     
     public static final String clientIdparamname="clientId";
 	private static final String sequencNumberParamName="SequenceNumber";
+	private static final String loanPurposeIdParamName="loanPurposeId";
 	
     
     public static final Set<String> PARTIALLOAN_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, groupidparamname, clientidparamname, productidparamname, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, submitteddateparamname, loantenureparamname,
-    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname,isdisburseparamname));
+    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname,isdisburseparamname,loanPurposeIdParamName));
   
     public static final Set<String> PARTIALLOAN_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,idparamname, groupidparamname, clientidparamname, productidparamname, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, submitteddateparamname, loantenureparamname,
-    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname,isdisburseparamname));
+    		statusparamname, remarkparamname,clientidparamname,isactiveparamname,freshimportparamname,cbreceiveddateparamname,isdisburseparamname,loanPurposeIdParamName));
   
     public static final Set<String> PARTIALLOAN_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName,idparamname, responserpdonumberparamname, clientidparamname, loanAmountParamName, loanofficeridparamname, principalparamname,fixedemiAmountparamname,loanpurposeparamname,rpdonumberparamname, officeidparamname, subitteddateparamname, statusdataparamname,
-    		statusdataparamname,acceptedclientparamname, remarkparamname,clientidparamname,clientNameparamName,isActiveparamaname,isActiveparamaname,cbreceiveddateparamname,sequencNumberParamName,isdisburseparamname));
+    		statusdataparamname,acceptedclientparamname, remarkparamname,clientidparamname,clientNameparamName,isActiveparamaname,isActiveparamaname,cbreceiveddateparamname,sequencNumberParamName,isdisburseparamname,loanPurposeIdParamName));
   
 
 

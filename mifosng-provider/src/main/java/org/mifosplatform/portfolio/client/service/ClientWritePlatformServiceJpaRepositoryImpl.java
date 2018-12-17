@@ -281,14 +281,23 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 final CommandWrapper commandWrapper = new CommandWrapperBuilder().activateClient(null).build();
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
-
+            //newly Added 
+            Long seqId =(long) 1;
+            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+            BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+            newClient.setExternalId(seqNumber.toString());
             this.clientRepository.save(newClient);
             
-            Long seqId =(long) 1;
+            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+
+            
+           /* Long seqId =(long) 1;
             OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
             BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newClient.getExternalId())+1);
             organasitionSequenceNumber.updateSeqNumber(seqNumber);
             this.sequenceNumberRepository.save(organasitionSequenceNumber);
+      */      
             
             if (newClient.isAccountNumberRequiresAutoGeneration()) {
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);

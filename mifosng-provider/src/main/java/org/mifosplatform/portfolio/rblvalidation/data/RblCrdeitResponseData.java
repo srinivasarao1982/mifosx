@@ -13,9 +13,10 @@ public class RblCrdeitResponseData {
 	private Long eligible_Amount;
 	private String json;
 	private LocalDate checkdate;
+	private Long proposedAmount;
 	
 	public RblCrdeitResponseData(Long clientId, String requestUid, String serviceName, String chhanelId, String corId,
-			String credit_Approved, String reason, Long eligible_Amount, String json,LocalDate checkdate) {
+			String credit_Approved, String reason, Long eligible_Amount, String json,LocalDate checkdate,Long proposedAmount) {
 		super();
 		this.clientId = clientId;
 		this.requestUid = requestUid;
@@ -27,6 +28,7 @@ public class RblCrdeitResponseData {
 		this.eligible_Amount = eligible_Amount;
 		this.json = json;
 		this.checkdate=checkdate;
+		this.proposedAmount=proposedAmount;
 	}
 	public Long getClientId() {
 		return clientId;
@@ -87,6 +89,12 @@ public class RblCrdeitResponseData {
 	}
 	public void setCheckdate(LocalDate checkdate) {
 		this.checkdate = checkdate;
+	}
+	public Long getProposedAmount() {
+		return proposedAmount;
+	}
+	public void setProposedAmount(Long proposedAmount) {
+		this.proposedAmount = proposedAmount;
 	}
 	
 

@@ -98,6 +98,20 @@ public class PartialLoanApiResource {
         return this.toApiJsonSerializer.serialize(settings, partialLoanDatas,
         		  PartialLoanApiConstant.PARTIALLOAN_RESPONSE_DATA_PARAMETERS);
     }
+    
+    @GET
+    @Path("clients/{clientId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getParatialLoan(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
+
+        this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
+        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        List<PartialLoanData>partialLoanDatas=new ArrayList<PartialLoanData>();
+        partialLoanDatas = this.partialLoanReadPlatformService.retrievepartialLoanDetailsforclients(clientId);     
+        return this.toApiJsonSerializer.serialize(settings, partialLoanDatas,
+        		  PartialLoanApiConstant.PARTIALLOAN_RESPONSE_DATA_PARAMETERS);
+    }
 
 
    

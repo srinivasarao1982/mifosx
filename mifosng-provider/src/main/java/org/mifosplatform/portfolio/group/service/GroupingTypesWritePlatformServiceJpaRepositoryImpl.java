@@ -197,10 +197,30 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
 
+            OrganasitionSequenceNumber organasitionSequenceNumber =null;
+            BigDecimal seqNumber =null;
+            if(groupingType.getId()==1){
+                Long seqId =(long) 3;
+                 organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+                 newGroup.setExternalId(organasitionSequenceNumber.getSeqNumber().toString());
+                 seqNumber = organasitionSequenceNumber.getSeqNumber();
+                //organasitionSequenceNumber.updateSeqNumber(seqNumber);
+                //this.sequenceNumberRepository.save(organasitionSequenceNumber);
+                }
+                else{
+                	Long seqId =(long) 2;
+                     organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+                     newGroup.setExternalId(organasitionSequenceNumber.getSeqNumber().toString());
+                     seqNumber = organasitionSequenceNumber.getSeqNumber();
+                 //   this.sequenceNumberRepository.save(organasitionSequenceNumber);
+                }
+      
             // pre-save to generate id for use in group hierarchy
             this.groupRepository.save(newGroup);
-            
-            if(groupingType.getId()==1){
+            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+
+            /*if(groupingType.getId()==1){
             Long seqId =(long) 3;
             OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
             BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newGroup.getExternalId())+1);
@@ -214,7 +234,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
                 organasitionSequenceNumber.updateSeqNumber(seqNumber);
                 this.sequenceNumberRepository.save(organasitionSequenceNumber);
 	
-            }
+            }*/
   
 
             /*

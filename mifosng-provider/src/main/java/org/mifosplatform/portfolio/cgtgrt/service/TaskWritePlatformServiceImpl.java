@@ -256,7 +256,7 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 				
 				
 				Set<TaskClientAttendence> taskClientAttendenceDetails = this.taskDataValidator
-						.assembletaskAttendence(taskforUpdate, command);
+						.assembletaskAttendence(taskforUpdate, command,true);
 				Set<TaskDetails> taskDetailsData = this.taskDataValidator.assembletaskDetails(taskforUpdate, command);
 				taskforUpdate.updateattendencedeatisl(taskClientAttendenceDetails);
 				taskforUpdate.updatetaskdeatisl(taskDetailsData);

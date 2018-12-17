@@ -34,6 +34,7 @@ import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.serialization.FromJsonHelper;
 import org.mifosplatform.infrastructure.core.service.DateUtils;
+import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
 import org.mifosplatform.portfolio.account.service.AccountTransfersReadPlatformService;
@@ -70,6 +71,8 @@ public class SavingsAccountAssembler {
     private final SavingsAccountRepositoryWrapper savingsAccountRepository;
     private final SavingsAccountChargeAssembler savingsAccountChargeAssembler;
     private final FromJsonHelper fromApiJsonHelper;
+    private final SequenceNumberRepository sequenceNumberRepository;
+
 
     @Autowired
     public SavingsAccountAssembler(final SavingsAccountTransactionSummaryWrapper savingsAccountTransactionSummaryWrapper,
@@ -77,7 +80,8 @@ public class SavingsAccountAssembler {
             final StaffRepositoryWrapper staffRepository, final SavingsProductRepository savingProductRepository,
             final SavingsAccountRepositoryWrapper savingsAccountRepository,
             final SavingsAccountChargeAssembler savingsAccountChargeAssembler, final FromJsonHelper fromApiJsonHelper,
-            final AccountTransfersReadPlatformService accountTransfersReadPlatformService) {
+            final AccountTransfersReadPlatformService accountTransfersReadPlatformService,
+            final SequenceNumberRepository sequenceNumberRepository) {
         this.savingsAccountTransactionSummaryWrapper = savingsAccountTransactionSummaryWrapper;
         this.clientRepository = clientRepository;
         this.groupRepository = groupRepository;
@@ -86,6 +90,7 @@ public class SavingsAccountAssembler {
         this.savingsAccountRepository = savingsAccountRepository;
         this.savingsAccountChargeAssembler = savingsAccountChargeAssembler;
         this.fromApiJsonHelper = fromApiJsonHelper;
+        this.sequenceNumberRepository=sequenceNumberRepository;
         savingsHelper = new SavingsHelper(accountTransfersReadPlatformService);
     }
 

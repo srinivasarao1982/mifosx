@@ -156,7 +156,7 @@ private static final class RblCreditBureauResponseDataMapper implements RowMappe
      public RblCreditBureauResponseDataMapper() {}
 
      public String schema() {
-         return "  mcr.center_id as centerId,mcr.client_id as clientId,mcr.barcode_no as barcdode,mcr.external_id as externalId, "
+         return "  mcr.center_id as centerId,mcr.client_id as clientId,mcr.json as barcdode,mcr.external_id as externalId, "
                 +"mcr.is_Renewal_Loan as renewalfl,mcr.loanAmount as loanAmount,mcr.customer_Name as customerName,mcr.title as title,mcr.name as name, "
                 +"mcr.relation as rlation,mcr.line1 as line1,mcr.line2 as line2,mcr.line3 as line3,mcr.city_code as cityCode, "
                 +"mcr.city_Name as cityName,mcr.state_code as stateCode,mcr.pin as pincode,mcr.operating_RegionCode as operatingRegion, "
@@ -204,11 +204,15 @@ public List<RblCrdeitResponseData> getbreauErrorData(final Long centerId,final L
         final AppUser currentUser = this.context.authenticatedUser();
         
         final RblCrdeitErrorDataMapper rm = new RblCrdeitErrorDataMapper();
-        String Sql ="select"+rm.schema() +"where ";
+        //String Sql ="select"+rm.schema() +"where ";
+        String Sql ="";
+
         if(clientcbcheck){
-        	 Sql =Sql+ "  mce.client_id= "+clientId;
+             Sql ="select ml.principal_amount_proposed as proposedAmount ,  "+rm.schema() + " join m_loan ml on ml.client_id=mce.client_id where   ml.loan_status_id in (100,200) ";
+        	 Sql =Sql+ "  and mce.client_id= "+clientId;
 	
         }else{
+            Sql ="select null as proposedAmount ,"+rm.schema() +"where ";
         if(  centerId !=null){
      	   Sql=Sql + " mce.center_id= "+centerId ;
         }
@@ -217,7 +221,8 @@ public List<RblCrdeitResponseData> getbreauErrorData(final Long centerId,final L
          }
          if(fromDate!=null && toDate!=null){
          	Sql =Sql+ " and mce.created_date between"+ "'"+fromDate+"'"+" and" + "'"+toDate+"'";
-         }}
+         }        
+        }
         List<RblCrdeitResponseData>rblCrdeitResponseData=new ArrayList<RblCrdeitResponseData>();
         rblCrdeitResponseData = this.jdbcTemplate.query(Sql, rm, new Object[] { });
        // return rblCrdeitResponseData.get(0);
@@ -251,8 +256,9 @@ private static final class RblCrdeitErrorDataMapper implements RowMapper<RblCrde
     	final   String region=rs.getString("region");
     	final Long eligibalAmount =JdbcSupport.getLong(rs, "eligibalAmount"); 
     	final LocalDate checkdate =JdbcSupport.getLocalDate(rs, "checkDate");
+    	final Long proposedAmount=JdbcSupport.getLong(rs, "proposedAmount");
         return new RblCrdeitResponseData(clientId,requestId,serviceName,channelId,corId,creditApproved,region,
-        		eligibalAmount,null,checkdate);
+        		eligibalAmount,null,checkdate,proposedAmount);
     }
         		
 

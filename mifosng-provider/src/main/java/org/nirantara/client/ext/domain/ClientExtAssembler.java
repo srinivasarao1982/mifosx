@@ -25,6 +25,7 @@ import org.mifosplatform.portfolio.client.exception.ClientIdentifierNumericxcept
 import org.mifosplatform.portfolio.client.exception.MobileNumberLengthException;
 import org.mifosplatform.portfolio.loanaccount.domain.Loan;
 import org.nirantara.client.ext.exception.DupicateDocumentException;
+import org.nirantara.client.ext.exception.DuplicateExternalIdException;
 import org.nirantara.client.ext.exception.MandatoryFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -166,6 +167,13 @@ public class ClientExtAssembler {
         if(externalId2==null){
     	    throw new MandatoryFieldException("externalId2"); 
         }
+        ClientExt clientext =null;
+        clientext= this.clientExtRepository.findByExternalId(externalId2);
+        if(clientext!=null){
+    	    throw new DuplicateExternalIdException(externalId2); 
+
+        }
+
 
         if (id != null) {
             final ClientExt updateClientExt = this.clientExtRepository.findOne(id);
@@ -212,7 +220,17 @@ public class ClientExtAssembler {
 
                     final String houseNo = this.fromApiJsonHelper.extractStringNamed("houseNo", element);
 
+                    if((houseNo==null ||  houseNo.equals("")))
+                    {
+                    	throw new MandatoryFieldException("houseNo"); 
+                    }
+
                     final String streetNo = this.fromApiJsonHelper.extractStringNamed("streetNo", element);
+
+                    if((streetNo==null ||  streetNo.equals("")) )
+                    {
+                    	throw new MandatoryFieldException("streetNo"); 
+                    }
 
                     final String areaLocality = this.fromApiJsonHelper.extractStringNamed("areaLocality", element);
                       

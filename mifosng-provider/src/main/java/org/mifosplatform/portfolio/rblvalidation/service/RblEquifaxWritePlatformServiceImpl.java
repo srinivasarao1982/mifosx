@@ -290,6 +290,7 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 			  final  PartialLoan partialLoanforUpdate = this.partialLoanRepositoryWrapper.findActiveLoansByLoanIdAndGroupId(clientId, groupId, 1,0);
 			  partialLoanforUpdate.updatestatus(codevaluseStatus);
 			  partialLoanforUpdate.updateisActive(0);
+			  partialLoanforUpdate.updateisDisburse(1);
 			  this.partialLoanRepositoryWrapper.saveAndFlush(partialLoanforUpdate);
 			 }
 			 else{				 

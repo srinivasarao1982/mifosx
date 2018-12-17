@@ -7,7 +7,13 @@ package org.nirantara.client.ext.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ClientExtRepository extends JpaRepository<ClientExt, Long>, JpaSpecificationExecutor<ClientExt> {
+	
+	@Query("from ClientExt clientExt where clientExt.externalId2 = :externalId")
+	ClientExt findByExternalId(@Param("externalId") String externalId);
 
+	
 }
