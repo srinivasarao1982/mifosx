@@ -234,11 +234,13 @@ public class TaskDataValidator {
 		  }
          if(isUpdate){
              final Integer isApproved = this.fromApiJsonHelper.extractIntegerSansLocaleNamed(TaskApiConstant.isAppovedParamName, taskdetailObject);
+             if(isApproved!=null){
              if(isApproved==0){
              final Client clientforUpdate =this.clientRepository.findOneWithNotFoundDetection(clientId);
 			 ClientStatus status = ClientStatus.REJECTED;
 			 clientforUpdate.setStatus(status.getValue());
 			 this.clientRepository.saveAndFlush(clientforUpdate);
+             }
              }
          }
          TaskClientAttendence taskClientAttendence=TaskClientAttendence.createClientAttendance(taskforUpdate, client, attendanceTypeId);

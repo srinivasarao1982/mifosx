@@ -122,7 +122,7 @@ public class PartialLoanReadPlatformServiceImpl implements PartialLoanReadPlatfo
 	                    + " from m_partial_loan mpl "
 	                    + " left join m_client c on  mpl.client_id=c.id "
 	                    + " left join m_code_value mcv on mcv.id =mpl.status "
-	                    + " where mpl.client_id= ?)";
+	                    + " where mpl.client_id= ? ";
 	        }
 
 	        @Override

@@ -208,8 +208,8 @@ public List<RblCrdeitResponseData> getbreauErrorData(final Long centerId,final L
         String Sql ="";
 
         if(clientcbcheck){
-             Sql ="select ml.principal_amount_proposed as proposedAmount ,  "+rm.schema() + " join m_loan ml on ml.client_id=mce.client_id where   ml.loan_status_id in (100,200) ";
-        	 Sql =Sql+ "  and mce.client_id= "+clientId;
+             Sql ="select ml.loan_amount as proposedAmount ,  "+rm.schema() + " join m_partial_loan ml on ml.client_id=mce.client_id where    ";
+        	 Sql =Sql+ "   mce.client_id= "+clientId;
 	
         }else{
             Sql ="select null as proposedAmount ,"+rm.schema() +"where ";
