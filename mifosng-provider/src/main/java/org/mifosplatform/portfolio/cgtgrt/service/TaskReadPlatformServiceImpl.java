@@ -186,7 +186,7 @@ public class TaskReadPlatformServiceImpl implements TaskReadPlatformService {
         public String schema() {
             return   "  select mta.id as id,mc.display_name as clientName,mc.id as clientId,mta.attendance_type_enum  as attendenceType "
                     + " from m_taskattendence mta "
-                    + " join m_client mc on mta.client_id = mc.id "
+                    + " join m_client mc on mta.client_id = mc.id and mc.status_enum=300 "
                     + " where mta.task_id=?  ";
                }
 
