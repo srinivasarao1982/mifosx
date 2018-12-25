@@ -85,7 +85,12 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 
 	            final Long clientId = command.longValueOfParameterNamed(PartialLoanApiConstant.clientidparamname);
 	            final Client client = this.clientRepositoryWrapper.findOneWithNotFoundDetection(clientId);
-	            final Long groupId = command.longValueOfParameterNamed(PartialLoanApiConstant.groupidparamname);
+	             Long groupId = command.longValueOfParameterNamed(PartialLoanApiConstant.groupidparamname);
+	            if(groupId==0){
+	            for(Group gropus:client.getGroups()){
+	            	groupId =gropus.getId();
+	            }
+	            }
                 final Group group=this.groupRepositoryWrapper.findOneWithNotFoundDetection(groupId);
                 final Long staffId = command.longValueOfParameterNamed(PartialLoanApiConstant.loanofficeridparamname);	
                 final Staff staff=this.staffRepositoryWrapper.findOneWithNotFoundDetection(staffId);

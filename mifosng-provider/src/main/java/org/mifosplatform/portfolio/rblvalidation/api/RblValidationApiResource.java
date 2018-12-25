@@ -167,7 +167,7 @@ public class RblValidationApiResource {
     	Boolean isError =false;
     	if(clintId.length()>1){
     	String [] stringclientsId =clintId.split(",");    	
-    	for(int i=1 ;i<stringclientsId.length;i++){
+    	for(int i=0 ;i<stringclientsId.length;i++){
     	 Long clientId =Long.parseLong(stringclientsId[i]);    	 
         PartialLoan partialLoan= this.partialLoanRepository.findByClientIdAndLoanStatus(clientId,1, 0);
     	if(partialLoan==null){

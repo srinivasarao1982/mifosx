@@ -48,9 +48,9 @@ public class PartialLoanDataValidator {
 	        baseDataValidator.reset().parameter(PartialLoanApiConstant.clientidparamname).value(clientId).notNull()
 	                .longGreaterThanZero();
 
-	        final long groupId = this.fromApiJsonHelper.extractLongNamed(PartialLoanApiConstant.groupidparamname, element);
+	        /*final long groupId = this.fromApiJsonHelper.extractLongNamed(PartialLoanApiConstant.groupidparamname, element);
 	        baseDataValidator.reset().parameter(PartialLoanApiConstant.groupidparamname).value(groupId).notNull()
-	                .longGreaterThanZero();
+	                .longGreaterThanZero();*/
 
 	        final long productId = this.fromApiJsonHelper.extractLongNamed(PartialLoanApiConstant.productidparamname, element);
 	        baseDataValidator.reset().parameter(PartialLoanApiConstant.productidparamname).value(productId).notNull()
