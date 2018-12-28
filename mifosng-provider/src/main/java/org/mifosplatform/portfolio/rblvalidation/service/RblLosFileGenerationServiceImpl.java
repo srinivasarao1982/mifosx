@@ -173,6 +173,16 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
                     	   category="4";	
 						}
 					}
+					String extrafieldfour="WS4";
+					if(rblclientDatValidation.getCaste().equalsIgnoreCase("03")||rblclientDatValidation.getCaste().equalsIgnoreCase("07")){
+						extrafieldfour="WS2";
+					}
+                    if(rblclientDatValidation.getCaste().equalsIgnoreCase("06")||rblclientDatValidation.getCaste().equalsIgnoreCase("02")){
+                    	extrafieldfour="WS1";
+					}
+                    if(rblclientDatValidation.getCaste().equalsIgnoreCase("08")||rblclientDatValidation.getCaste().equalsIgnoreCase("04")){
+                    	extrafieldfour="WS3";
+					}
 					customerData.append(rblclientDatValidation.getExternalCenterId()).append("|").append(rblclientDatValidation.getTitle()).append("|");
 					customerData.append(rblclientDatValidation.getCustomerName()).append("|").append(rblclientDatValidation.getAddressline1()).append("|");
 					customerData.append(rblclientDatValidation.getAddressline2()).append("|").append(rblclientDatValidation.getAddressline3()).append("|");
@@ -195,7 +205,7 @@ public class RblLosFileGenerationServiceImpl implements RblLosFileGenerationServ
 					customerData.append(rblclientDatValidation.getNomineeRelation()).append("|").append(rblclientDatValidation.getCbCheck()).append("|");
 					customerData.append(rblclientDatValidation.getBankbranchName()).append("|").append(rblclientDatValidation.getBankAccountNo()).append("|");
 					customerData.append(rblclientDatValidation.getBankbranchName()).append("|").append(rblclientDatValidation.getRenewalFl());					
-					String extrafield=" |"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
+					String extrafield=" |"+"|"+"|"+"|"+extrafieldfour+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|"+"|" ; 
 					String actualfield=customerData.toString().replace("null", "" );
 					fr.write(actualfield + extrafield);
 					fr.write("\n");
