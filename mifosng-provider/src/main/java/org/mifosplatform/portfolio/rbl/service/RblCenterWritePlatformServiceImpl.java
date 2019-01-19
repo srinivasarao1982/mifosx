@@ -28,6 +28,7 @@ import org.mifosplatform.portfolio.loanaccount.service.PartialLoanWriteplatformS
 import org.mifosplatform.portfolio.loanproduct.domain.LoanProduct;
 import org.mifosplatform.portfolio.loanproduct.domain.LoanProductRepository;
 import org.mifosplatform.portfolio.rbl.api.RblCenterDeatilsApiConstant;
+import org.mifosplatform.portfolio.rbl.api.RblGroupDetailsApiConstant;
 import org.mifosplatform.portfolio.rbl.domain.RblCenter;
 import org.mifosplatform.portfolio.rbl.domain.RblCenterRepositoryWrapper;
 import org.mifosplatform.portfolio.rbl.domain.RblCustomer;
@@ -87,6 +88,23 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
            if(houseNo.length()<=0 &&houseNo.length()>500){
    			throw new MustbeBetweenException("House",1,500); 
            }
+           
+    	   final Integer distanceFromCenter = command.integerValueOfParameterNamed(RblGroupDetailsApiConstant.distancefrombranch);
+		   if(distanceFromCenter!=null){
+            	 String regex = "\\d+";
+            	if(distanceFromCenter.toString().matches(regex)){
+            		if(distanceFromCenter<1 && distanceFromCenter>9999){
+            			throw new MustbeBetweenException("distance From Center",3,9999);
+            		}            		
+            	}
+            	else{
+            		throw new MustbeNumericException("distance From Center");
+            	}
+
+             }
+             else{
+            	 throw new MandatoryParameterException("distance From Center");
+             }
            final String  streetNo =command.stringValueOfParameterNamed(RblCenterDeatilsApiConstant.streetnumberParamname);		
            if(streetNo==null){
             	 throw new MandatoryParameterException("street No");  
@@ -140,7 +158,7 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
              	 throw new MandatoryParameterException("Description");
   	
               }
-           RblCenter rblCenter =RblCenter.createrblcenter(centerId, maximumIndividual, meetingTime, houseNo, streetNo, arelocality, landmark, village, taluk, district, state,pin,description);
+           RblCenter rblCenter =RblCenter.createrblcenter(centerId, maximumIndividual, meetingTime, houseNo, streetNo, arelocality, landmark, village, taluk, district, state,pin,description,distanceFromCenter);
            this.rblCenterRepositoryWrapper.save(rblCenter);
            return new CommandProcessingResultBuilder() //
                    .withCommandId(rblCenter.getId()) //
@@ -235,7 +253,22 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
                  	 throw new MandatoryParameterException("pinCode");
                   }
 
-        		    
+                  final Integer distanceFromCenter = command.integerValueOfParameterNamed(RblGroupDetailsApiConstant.distancefrombranch);
+   			   if(distanceFromCenter!=null){
+   	            	 String regex = "\\d+";
+   	            	if(distanceFromCenter.toString().matches(regex)){
+   	            		if(distanceFromCenter<1 && distanceFromCenter>9999){
+   	            			throw new MustbeBetweenException("distance From Branch",3,9999);
+   	            		}            		
+   	            	}
+   	            	else{
+   	            		throw new MustbeNumericException("distance From Branch");
+   	            	}
+
+   	             }
+   	             else{
+   	            	 throw new MandatoryParameterException("distance From Branch");
+   	             }   
         		    final  RblCenter rblCenterforUpdate = this.rblCenterRepositoryWrapper.findOneWithNotFoundDetection(rblcenterId);
         		     if(rblCenterforUpdate!=null){
         		    final Map<String, Object> changes = rblCenterforUpdate.update(command);

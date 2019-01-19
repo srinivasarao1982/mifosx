@@ -37,6 +37,7 @@ import org.mifosplatform.portfolio.client.data.ClientDetailedData;
 import org.mifosplatform.portfolio.client.data.ClientFamilyDetails;
 import org.mifosplatform.portfolio.client.data.ClientIdentifierData;
 import org.mifosplatform.portfolio.client.data.ClientKYCData;
+import org.mifosplatform.portfolio.client.data.ClientRblOfficeData;
 import org.mifosplatform.portfolio.client.data.ClientTimelineData;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientEnumerations;
@@ -796,7 +797,61 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             return ClientData.lookup(id, displayName, officeId, officeName);
         }
     }
+    @Override
+    public ClientRblOfficeData retriveClientOfficeData(final Long officeId) {
+        try {
+            final ClientOfficeDataMapper mapper = new ClientOfficeDataMapper();
 
+            final String sql = "select " + mapper.clientLookupByIdentifierSchema();
+
+            return this.jdbcTemplate.queryForObject(sql, mapper, new Object[] { officeId });
+        } catch (final EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    private static final class ClientOfficeDataMapper implements RowMapper<ClientRblOfficeData> {
+
+        public String clientLookupByIdentifierSchema() {
+            return "c.`RBL_Branch_cd_RBL Branch` as rblbranch, c.`Branch Code` as branchCode, c.`Opening Date` as openingDate, c.`operating region` as operatingRegion, c.`bc branch code` as bcBranchCode, "
+                    + "c.collector as collector, c.approver as approver, c.`city code` as cityCode,c.`city name` as cityName,c.`operating region Name` as operatingRegionName,c.`Branch Name` as branchName "
+                    + " from `RBL Branch Name` c where c.office_id=?";
+        }
+
+        @Override
+        public ClientRblOfficeData mapRow(final ResultSet rs, @SuppressWarnings("unused") final int rowNum) throws SQLException {
+
+        	final String rblbranchNamer=rs.getString("rblbranch");
+        	final String branchCode=rs.getString("branchCode");
+        	final String operatingRegion=rs.getString("operatingRegion");
+        	final String bcBranchCode=rs.getString("bcBranchCode");
+        	final String collector=rs.getString("collector");
+        	final String approver=rs.getString("approver");
+        	final String cityCode=rs.getString("cityCode");
+        	final String cityName=rs.getString("cityName");
+        	final String operatingRegionName=rs.getString("operatingRegionName");
+        	final String branchName=rs.getString("branchName");
+            return ClientRblOfficeData.instancerblofficeData(rblbranchNamer, branchCode, operatingRegion, bcBranchCode, collector, approver, cityCode, cityName, operatingRegionName, branchName);
+        }
+    }
+
+    private Long defaultToUsersOfficeIfNull(final Long officeId) {
+        Long defaultOfficeId = officeId;
+        if (defaultOfficeId == null) {
+            defaultOfficeId = this.context.authenticatedUser().getOffice().getId();
+        }
+        return defaultOfficeId;
+    }
+
+    @Override
+    public ClientData retrieveAllNarrations(final String clientNarrations) {
+        final List<CodeValueData> narrations = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode(clientNarrations));
+        final Collection<CodeValueData> clientTypeOptions = null;
+        final Collection<CodeValueData> clientClassificationOptions = null;
+        return ClientData.template(null, null, null, null, narrations, null, null, clientTypeOptions, clientClassificationOptions);
+    }
+    
     @Override
     public ClientData retrieveClientByIdentifier(final Long identifierTypeId, final String identifierKey) {
         try {
@@ -838,20 +893,4 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         }
     }
 
-    private Long defaultToUsersOfficeIfNull(final Long officeId) {
-        Long defaultOfficeId = officeId;
-        if (defaultOfficeId == null) {
-            defaultOfficeId = this.context.authenticatedUser().getOffice().getId();
-        }
-        return defaultOfficeId;
-    }
-
-    @Override
-    public ClientData retrieveAllNarrations(final String clientNarrations) {
-        final List<CodeValueData> narrations = new ArrayList<>(
-                this.codeValueReadPlatformService.retrieveCodeValuesByCode(clientNarrations));
-        final Collection<CodeValueData> clientTypeOptions = null;
-        final Collection<CodeValueData> clientClassificationOptions = null;
-        return ClientData.template(null, null, null, null, narrations, null, null, clientTypeOptions, clientClassificationOptions);
-    }
 }

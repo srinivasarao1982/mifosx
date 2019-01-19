@@ -85,6 +85,8 @@ final public class ClientData implements Comparable<ClientData> {
     //Nirantara
     private final ClientDetailedData clientDetailedData;
     private final Boolean isReprocessed;
+    private final ClientRblOfficeData clientRblOfficeData;
+    
     
     public static ClientData template(final Long officeId, final LocalDate joinedDate, final Collection<OfficeData> officeOptions,
             final Collection<StaffData> staffOptions, final Collection<CodeValueData> narrations,
@@ -123,17 +125,18 @@ final public class ClientData implements Comparable<ClientData> {
         final Long groupId=null;
         final Long centerId=null;
         final  Boolean isReprocessed = null;
+		final ClientRblOfficeData clientRblOfficeData=null;
+
         return new ClientData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
                 middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, joinedDate, imageId, staffId,
                 staffName, officeOptions, groups, staffOptions, narrations, genderOptions, timeline, savingProductOptions,
                 savingsProductId, savingsProductName, savingsAccountId, savingAccountOptions, clientType, clientClassification,
-                clientTypeOptions, clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
+                clientTypeOptions, clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed,clientRblOfficeData);
 
     }
 
 	public static ClientData templateOnTop(final ClientData clientData,
 			final ClientData templateData) {
-
 		return new ClientData(clientData.accountNo, clientData.status,
 				clientData.subStatus, clientData.officeId,
 				clientData.officeName, clientData.transferToOfficeId,
@@ -154,12 +157,12 @@ final public class ClientData implements Comparable<ClientData> {
 				templateData.clientTypeOptions,
 				templateData.clientClassificationOptions,
 				templateData.clientDetailedData,clientData.groupName,clientData.centerName,
-				clientData.groupId,clientData.centerId,clientData.isReprocessed);
+				clientData.groupId,clientData.centerId,clientData.isReprocessed,clientData.clientRblOfficeData);
 
 	}
     
     public static ClientData templateOnTopClientDetailedData(ClientData clientData,
-			ClientDetailedData clientDetailedData) {
+			ClientDetailedData clientDetailedData,ClientRblOfficeData clientRblOfficeData) {
     	return new ClientData(clientData.accountNo, clientData.status, clientData.subStatus, clientData.officeId, clientData.officeName,
                 clientData.transferToOfficeId, clientData.transferToOfficeName, clientData.id, clientData.firstname, clientData.middlename,
                 clientData.lastname, clientData.fullname, clientData.displayName, clientData.externalId, clientData.mobileNo,
@@ -168,7 +171,7 @@ final public class ClientData implements Comparable<ClientData> {
                 clientData.genderOptions, clientData.timeline, clientData.savingProductOptions, clientData.savingsProductId,
                 clientData.savingsProductName, clientData.savingsAccountId, clientData.savingAccountOptions, clientData.clientType,
                 clientData.clientClassification, clientData.clientTypeOptions, clientData.clientClassificationOptions, clientDetailedData,
-                clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId,clientData.isReprocessed);
+                clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId,clientData.isReprocessed,clientRblOfficeData);
 				
 	}
 
@@ -194,7 +197,7 @@ final public class ClientData implements Comparable<ClientData> {
 				savingAccountOptions, clientData.clientType,
 				clientData.clientClassification, clientData.clientTypeOptions,
 				clientData.clientClassificationOptions,
-				clientData.clientDetailedData,clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId,clientData.isReprocessed);
+				clientData.clientDetailedData,clientData.groupName,clientData.centerName,clientData.groupId,clientData.centerId,clientData.isReprocessed,clientData.clientRblOfficeData);
 
 	}
 
@@ -218,7 +221,7 @@ final public class ClientData implements Comparable<ClientData> {
 				clientData.clientClassification, clientData.clientTypeOptions,
 				clientData.clientClassificationOptions,
 				clientData.clientDetailedData,clientData.groupName,clientData.centerName,
-				clientData.groupId,clientData.centerId,clientData.isReprocessed);
+				clientData.groupId,clientData.centerId,clientData.isReprocessed,null);
 
 	}
 
@@ -256,6 +259,7 @@ final public class ClientData implements Comparable<ClientData> {
 		final EnumOptionData status = null;
 		final CodeValueData subStatus = null;
 		final ClientDetailedData clientDetailedData = null;
+		final ClientRblOfficeData clientRblOfficeData=null;
 		final String groupName = null;
 		final String centerName =null;
 		final Long groupId =null;
@@ -270,7 +274,7 @@ final public class ClientData implements Comparable<ClientData> {
 				savingProductOptions, savingsProductId, savingsProductName,
 				savingsAccountId, savingAccountOptions, clientType,
 				clientClassification, clientTypeOptions,
-				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
+				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed,clientRblOfficeData);
 	}
 
 	public static ClientData lookup(final Long id, final String displayName,
@@ -308,6 +312,7 @@ final public class ClientData implements Comparable<ClientData> {
 		final Collection<CodeValueData> clientTypeOptions = null;
 		final Collection<CodeValueData> clientClassificationOptions = null;
 		final ClientDetailedData clientDetailedData = null;
+		final ClientRblOfficeData clientRblOfficeData=null;
 		final String groupName = null;
 		final String centerName = null;
 		final Long groupId = null;
@@ -322,7 +327,8 @@ final public class ClientData implements Comparable<ClientData> {
 				savingProductOptions, savingsProductId, savingsProductName,
 				savingsAccountId, savingAccountOptions, clientType,
 				clientClassification, clientTypeOptions,
-				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
+				clientClassificationOptions, clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed,
+				clientRblOfficeData);
 
 	}
 
@@ -344,11 +350,12 @@ final public class ClientData implements Comparable<ClientData> {
         final Collection<CodeValueData> clientTypeOptions = null;
         final Collection<CodeValueData> clientClassificationOptions = null;
         final ClientDetailedData clientDetailedData = null;
+        final ClientRblOfficeData clientRblOfficeData=null;
         return new ClientData(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id, firstname,
                 middlename, lastname, fullname, displayName, externalId, mobileNo, dateOfBirth, gender, activationDate, imageId, staffId,
                 staffName, allowedOffices, groups, staffOptions, closureReasons, genderOptions, timeline, savingProductOptions,
                 savingsProductId, savingsProductName, savingsAccountId, null, clientType, clientClassification, clientTypeOptions,
-                clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed);
+                clientClassificationOptions,clientDetailedData,groupName,centerName,groupId,centerId,isReprocessed,clientRblOfficeData);
 
     }
 
@@ -364,7 +371,8 @@ final public class ClientData implements Comparable<ClientData> {
             final Long savingsAccountId, final Collection<SavingsAccountData> savingAccountOptions, final CodeValueData clientType,
             final CodeValueData clientClassification, final Collection<CodeValueData> clientTypeOptions,
             final Collection<CodeValueData> clientClassificationOptions,final ClientDetailedData clientDetailedData, final String groupName,final String centerName,
-            final Long groupId,final Long centerId, final Boolean isReprocessed) {
+            final Long groupId,final Long centerId, final Boolean isReprocessed,
+            final ClientRblOfficeData clientRblOfficeData) {
         this.accountNo = accountNo;
         this.status = status;
         if (status != null) {
@@ -423,6 +431,7 @@ final public class ClientData implements Comparable<ClientData> {
         this.groupId=groupId;
         this.centerId=centerId;
         this.isReprocessed = isReprocessed;
+        this.clientRblOfficeData=clientRblOfficeData;
 
     }
 

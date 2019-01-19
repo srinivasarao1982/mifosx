@@ -10,6 +10,7 @@ import java.util.Collection;
 import org.mifosplatform.infrastructure.core.service.Page;
 import org.mifosplatform.portfolio.client.data.ClientData;
 import org.mifosplatform.portfolio.client.data.ClientDetailedData;
+import org.mifosplatform.portfolio.client.data.ClientRblOfficeData;
 import org.mifosplatform.infrastructure.core.service.SearchParameters;
 import org.nirantara.client.ext.data.ClientDataExt;
 
@@ -37,4 +38,6 @@ public interface ClientReadPlatformService {
 
     ClientDetailedData retrieveClientDetailedTemplate(Long officeId,
 			boolean staffInSelectedOfficeOnly, Long clientId,boolean loanOfficersOnly);
+    
+    ClientRblOfficeData retriveClientOfficeData(Long officeId);
 }

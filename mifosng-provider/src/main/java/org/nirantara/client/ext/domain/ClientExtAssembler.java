@@ -65,7 +65,7 @@ public class ClientExtAssembler {
         this.coapplicantRepository = coapplicantRepository;
     }
 
-    public ClientExt assembleClientExt(final JsonCommand command, final Client newClient) {
+    public ClientExt assembleClientExt(final JsonCommand command, final Client newClient,boolean isUpdate) {
 
         final JsonObject formDataObject = new JsonParser().parse(command.json()).getAsJsonObject();
         
@@ -133,7 +133,14 @@ public class ClientExtAssembler {
         if (houseTypeId != null) {
             houseTypeCodeValue = this.codeValueRepository.findOneWithNotFoundDetection(houseTypeId);
         }
-
+        final String maidenName = this.fromApiJsonHelper.extractStringNamed("maidenName", element);
+        if(maidenName==null){
+    	    throw new MandatoryFieldException("maidenName"); 
+        }
+        final String customerMotherName = this.fromApiJsonHelper.extractStringNamed("customerMotherName", element);
+        if(customerMotherName==null){
+    	    throw new MandatoryFieldException("customerMotherName"); 
+        }
         final String aadhaarNo = this.fromApiJsonHelper.extractStringNamed("aadhaarNo", element);
         if(aadhaarNo==null){
     	    throw new MandatoryFieldException("aadhaarNo"); 
@@ -167,11 +174,14 @@ public class ClientExtAssembler {
         if(externalId2==null){
     	    throw new MandatoryFieldException("externalId2"); 
         }
+        
+        if(isUpdate){
         ClientExt clientext =null;
         clientext= this.clientExtRepository.findByExternalId(externalId2);
         if(clientext!=null){
     	    throw new DuplicateExternalIdException(externalId2); 
 
+        }
         }
 
 
@@ -180,16 +190,16 @@ public class ClientExtAssembler {
             if (updateClientExt != null) {
                 updateClientExt.update(salutationCodeValue, maritalStatusCodeValue, professionCodeValue, professionOthers,
                         educationalQualificationCodeValue, annualIncomeCodeValue, landholdingCodeValue, houseTypeCodeValue, aadhaarNo,
-                        panNo, panFormCodeValue, nregaNo, spfirstname, spmiddlename, splastname, spouseRelationShip, externalId2);
+                        panNo, panFormCodeValue, nregaNo, spfirstname, spmiddlename, splastname, spouseRelationShip, externalId2,maidenName,customerMotherName);
                 return updateClientExt;
             }
             return ClientExt.createFrom(newClient, salutationCodeValue, maritalStatusCodeValue, professionCodeValue, professionOthers,
                     educationalQualificationCodeValue, annualIncomeCodeValue, landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-                    panFormCodeValue, nregaNo, spfirstname, spmiddlename, splastname, spouseRelationShip, externalId2);
+                    panFormCodeValue, nregaNo, spfirstname, spmiddlename, splastname, spouseRelationShip, externalId2,maidenName,customerMotherName);
         }
         return ClientExt.createFrom(newClient, salutationCodeValue, maritalStatusCodeValue, professionCodeValue, professionOthers,
                 educationalQualificationCodeValue, annualIncomeCodeValue, landholdingCodeValue, houseTypeCodeValue, aadhaarNo, panNo,
-                panFormCodeValue, nregaNo, spfirstname, spmiddlename, splastname, spouseRelationShip, externalId2);
+                panFormCodeValue, nregaNo, spfirstname, spmiddlename, splastname, spouseRelationShip, externalId2,maidenName,customerMotherName);
     }
 
     @SuppressWarnings("null")

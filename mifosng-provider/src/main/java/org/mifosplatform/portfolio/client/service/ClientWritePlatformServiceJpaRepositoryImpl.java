@@ -307,7 +307,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
 
             // For nirantara
             final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
-            ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, newClient);
+            ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, newClient,true);
             if (clientExt != null) {
                 newClient.updateClientExt(clientExt);
             }
@@ -472,7 +472,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             /** Update For Nirantara **/
             final JsonObject object = new JsonParser().parse(command.json()).getAsJsonObject();
             // For nirantara
-            ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, clientForUpdate);
+            ClientExt clientExt = this.clientExtAssembler.assembleClientExt(command, clientForUpdate,false);
             if (clientExt != null) {
                 clientForUpdate.updateClientExt(clientExt);
             }

@@ -40,6 +40,7 @@ import org.mifosplatform.portfolio.accountdetails.data.AccountSummaryCollectionD
 import org.mifosplatform.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.mifosplatform.portfolio.client.data.ClientData;
 import org.mifosplatform.portfolio.client.data.ClientDetailedData;
+import org.mifosplatform.portfolio.client.data.ClientRblOfficeData;
 import org.mifosplatform.portfolio.client.service.ClientReadPlatformService;
 import org.mifosplatform.portfolio.savings.data.SavingsAccountData;
 import org.mifosplatform.portfolio.savings.service.SavingsAccountReadPlatformService;
@@ -167,8 +168,10 @@ public class ClientsApiResource {
         /* Nirantara Changes */
         ClientDetailedData clientDetailedData = this.clientReadPlatformService.retrieveClientDetailedTemplate(clientData.getOfficeId(),
                 staffInSelectedOfficeOnly, clientId,false);
+        ClientRblOfficeData clientRblOfficeData =this.clientReadPlatformService.retriveClientOfficeData(clientData.getOfficeId()); 
         if (clientDetailedData != null) {
-            clientData = ClientData.templateOnTopClientDetailedData(clientData, clientDetailedData);
+        	
+            clientData = ClientData.templateOnTopClientDetailedData(clientData, clientDetailedData,clientRblOfficeData);
         }
         return this.toApiJsonSerializer.serialize(settings, clientData, ClientApiConstants.CLIENT_RESPONSE_DATA_PARAMETERS);
     }

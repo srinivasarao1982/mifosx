@@ -247,14 +247,14 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
         public RblGroupDatMapper() {}
 
         public String schema() {
-            return   "  mg.external_id as externalId,center.external_id as externalCenterId,center.display_name as centerName,mrblg.maximum_center as maximuncenter,"
-                     +" mrblg.group_type as groupType,mrblg.min_number as minumNumber,mrblg.max_numbeer as maximumNumber,mg.activation_date as formationDate,"
-                      +"mrblg.meeting_time as meetinTime,'Weekely' as meetingfrequency,mrblg.distance_from_center as distancefromBranch,"
+            return   "  mg.external_id as externalId,center.external_id as externalCenterId,center.display_name as centerName,(select value from c_configuration where name='max-center')  as maximuncenter, "
+                     +" 'JLG' as groupType,(select value from c_configuration where name='min-clients-in-group') as minumNumber,(select value from c_configuration where name='max-clients-in-group') as maximumNumber ,mg.activation_date as formationDate,"
+                      +"mrblg.meting_time as meetinTime,'Weekely' as meetingfrequency,mrblg.distance_from_branch as distancefromBranch,"
                       +"rblbranch.`Branch Code` as branchCode,mg.display_name as groupName, "
                       +"rblbranch.`operating region` as operatingRegionCode "
                       +"from m_group mg "
                       +"left join m_group center on center.id =mg.parent_id and center.level_id =1 "
-                      +"left join m_rblgroup mrblg on mg.id =mrblg.group_Id "
+                      +"join m_rblcenter mrblg on mg.parent_id =mrblg.center_id  "
                       +"left join `rbl branch name` rblbranch  on rblbranch.office_Id =mg.office_id ";
                       }        
       	

@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.domain.AbstractAuditableCustom;
 import org.mifosplatform.portfolio.rbl.api.RblCenterDeatilsApiConstant;
+import org.mifosplatform.portfolio.rbl.api.RblGroupDetailsApiConstant;
 import org.mifosplatform.useradministration.domain.AppUser;
 
 @SuppressWarnings("serial")
@@ -59,12 +60,16 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 	 
 	 @Column(name = "description", length = 30)
 	 private String  description;
+	 
+	 @Column(name = "distance_from_branch", length = 8)
+	 private Integer distanceFromCenter;
 
 	 
 	 public static RblCenter createrblcenter(Long centerId, Long maximumIndividual, String meetingTime, String houseNo, String streetNo,
-				String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin,final String description) {
+				String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin,final String description
+				,final Integer distanceFromCenter) {
            
-		 return new RblCenter(centerId,maximumIndividual,meetingTime,houseNo,streetNo,arelocality,landmark,village,taluk,district,state,pin,description);
+		 return new RblCenter(centerId,maximumIndividual,meetingTime,houseNo,streetNo,arelocality,landmark,village,taluk,district,state,pin,description,distanceFromCenter);
    	 
     }
 	 
@@ -90,6 +95,12 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 	            final Long newValue = command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.maximumindividualParamName);
 	            actualChanges.put(RblCenterDeatilsApiConstant.maximumindividualParamName, newValue);
 	            this.maximumIndividual=newValue;
+	        }
+	        
+	        if (command.isChangeInIntegerParameterNamed(RblCenterDeatilsApiConstant.distancefrombranch, this.distanceFromCenter)) {
+	            final Integer newValue = command.integerValueOfParameterNamed(RblCenterDeatilsApiConstant.distancefrombranch);
+	            actualChanges.put(RblCenterDeatilsApiConstant.distancefrombranch, newValue);
+	            this.distanceFromCenter=newValue;
 	        }
 	        
 	        if (command.isChangeInLongParameterNamed(RblCenterDeatilsApiConstant.stateparamname, this.state)) {
@@ -160,7 +171,8 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 			super();
 		}
 	public RblCenter(Long centerId, Long maximumIndividual, String meetingTime, String houseNo, String streetNo,
-			String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin,String description) {
+			String arelocality, String landmark, String village, String taluk, Long district, Long state,Long pin,String description
+			,final Integer distanceFromCenter) {
 		super();
 		this.centerId = centerId;
 		this.maximumIndividual = maximumIndividual;
@@ -175,6 +187,7 @@ public class RblCenter extends AbstractAuditableCustom<AppUser, Long>{
 		this.state = state;
 		this.pin=pin;
 		this.description=description;
+		this.distanceFromCenter=distanceFromCenter;
 	}
 
 	public Long getCenterId() {

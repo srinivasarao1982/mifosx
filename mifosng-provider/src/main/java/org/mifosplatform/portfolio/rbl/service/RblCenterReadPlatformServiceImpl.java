@@ -50,7 +50,7 @@ public class RblCenterReadPlatformServiceImpl  implements RblCenterReadPlatformS
         public RblCenterDataMapper() {}
 
         public String schema() {
-            return  "select mrbc.max_individual as maxindividual,mrbc.meting_time as meetingtime, mrbc.house_no as houseNo,"
+            return  "select mrbc.max_individual as maxindividual,mrbc.distance_from_branch as distancefrombranch, mrbc.meting_time as meetingtime, mrbc.house_no as houseNo,"
             		+" mrbc.street_no as streetNo,mrbc.area_loc as areaLoc,mrbc.landmark as landmark,mrbc.center_id as centerId, "
             		+" mrbc.village as village,mrbc.taluk as taluk,mrbc.district as district,mrbc.state as state,mcv.code_value as districtName,mcv1.code_value as stateName,mrbc.description as description,mrbc.pin as pin "
             		+"  from m_rblcenter mrbc join m_code_value mcv on mcv.id=mrbc.district"
@@ -75,8 +75,9 @@ public class RblCenterReadPlatformServiceImpl  implements RblCenterReadPlatformS
         	final Long districtId=JdbcSupport.getLong(rs, "district");;
         	final Long pincode=JdbcSupport.getLong(rs, "pin");;
         	final String description=rs.getString("description");
+        	final Integer distancefrombranch=JdbcSupport.getInteger(rs, "distancefrombranch");
 
-            RblCenterData rblCenterData=RblCenterData.createrblcenter(maxIndividual, centerId, meetingtime, houseNumbr, StreetNumber, areaLocality, landmark, village, taluk, district, state, statId, districtId, district, pincode, description);
+            RblCenterData rblCenterData=RblCenterData.createrblcenter(maxIndividual, centerId, meetingtime, houseNumbr, StreetNumber, areaLocality, landmark, village, taluk, district, state, statId, districtId, district, pincode, description,distancefrombranch);
           return rblCenterData;
         }
 

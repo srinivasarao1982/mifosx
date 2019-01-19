@@ -17,21 +17,24 @@ public class RblCenterData {
 	private final String districtName;
 	private final Long pincode;
 	private final String dscription;
+	private final Integer distancefrombranch;
 	
 	 
 
 	public static RblCenterData createrblcenter(final Long maximumindividual, final Long centerId,
 			final String meetingtime, final String houseNumbr, final String streetNumber, final String areaLocality,
 			final String landmark, final String village, final String taluk, final String district, final String state,
-			final Long statId, final Long districtId,final String districtName, final Long pincode, final String description) {
+			final Long statId, final Long districtId,final String districtName, final Long pincode, final String description
+			,final Integer distancefrombranch) {
 		return new RblCenterData(maximumindividual, centerId, meetingtime, houseNumbr, streetNumber, areaLocality,
-				landmark, village, taluk, district, state, statId, districtId, districtName, pincode, description);
+				landmark, village, taluk, district, state, statId, districtId, districtName, pincode, description,distancefrombranch);
 
 	}
 
 	public RblCenterData(Long maximumindividual, Long centerId, String meetingtime, String houseNumbr,
 			String streetNumber, String areaLocality, String landmark, String village, String taluk, String district,
-			String state, Long statId, Long districtId, final String districtName,Long pincode, String description) {
+			String state, Long statId, Long districtId, final String districtName,Long pincode, String description
+			,final Integer distancefrombranch) {
 		super();
 		this.maximumindividual = maximumindividual;
 		this.centerId = centerId;
@@ -48,6 +51,7 @@ public class RblCenterData {
 		this.districtName=districtName;
 		this.pincode = pincode;
 		this.dscription = description;
+		this.distancefrombranch=distancefrombranch;
 	}
 
 	public Long getMaximumindividual() {
@@ -110,6 +114,10 @@ public class RblCenterData {
 
 	public String getDscription() {
 		return dscription;
+	}
+
+	public Integer getDistancefrombranch() {
+		return distancefrombranch;
 	}
 
 	

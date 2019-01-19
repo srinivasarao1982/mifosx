@@ -22,6 +22,8 @@ public class RblCenterDeatilsApiConstant {
      public static final String pincodeparamName="pincode";
      public static final String descriptionparamname="dscription";
      public static final String stateparamname="state";
+ 	public static final String distancefrombranch="distancefrombranch";
+
      
 
 	 public static final String localeParamName = "locale";
@@ -29,13 +31,13 @@ public class RblCenterDeatilsApiConstant {
 
 		  public static final Set<String> RBLCENTER_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, centerIdparamname, maximumindividualParamName, meetingtimeParamName, housenumberParamname, 
 				  streetnumberParamname,arealocalityParamName,landmarkparamname,villageparamname,talukparamname,districtparamname,pincodeparamName,descriptionparamname,
-				  stateparamname));
+				  stateparamname,distancefrombranch));
 		  public static final Set<String> RBLCENTER_UPDATE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, centerIdparamname, maximumindividualParamName, meetingtimeParamName, housenumberParamname, 
 				  streetnumberParamname,arealocalityParamName,landmarkparamname,villageparamname,talukparamname,districtparamname,pincodeparamName,descriptionparamname,
-				  stateparamname));
+				  stateparamname,distancefrombranch));
 		  public static final Set<String> RBLCENTER_RESPONSE_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,dateFormatParamName, centerIdparamname, maximumindividualParamName, meetingtimeParamName, housenumberParamname, 
 				  streetnumberParamname,arealocalityParamName,landmarkparamname,villageparamname,talukparamname,districtparamname,pincodeparamName,descriptionparamname,
-				  stateparamname));
+				  stateparamname,distancefrombranch));
 
 	
 }
