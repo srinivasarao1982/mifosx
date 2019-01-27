@@ -338,6 +338,9 @@ public class CenterReadPlatformServiceImpl implements CenterReadPlatformService 
         sqlBuilder.append(this.centerMapper.schema());
         sqlBuilder.append(" where o.hierarchy like ?");
 
+        if (searchParameters.getIsgrtenable()==1) {
+            sqlBuilder.append(" and (g.id in (select center_id from m_task where task_type=290 and task_status=100)) ");
+        }
         final String extraCriteria = getCenterExtraCriteria(searchParameters);
 
         if (StringUtils.isNotBlank(extraCriteria)) {
