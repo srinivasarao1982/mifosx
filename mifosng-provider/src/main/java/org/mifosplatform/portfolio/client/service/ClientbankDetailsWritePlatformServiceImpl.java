@@ -3,11 +3,14 @@ package org.mifosplatform.portfolio.client.service;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import org.mifosplatform.infrastructure.codes.domain.CodeValue;
+import org.mifosplatform.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.portfolio.client.api.ClientApiConstants;
 import org.mifosplatform.portfolio.client.api.ClientsBankDetailsApiConstants;
 import org.mifosplatform.portfolio.client.data.ClientDataValidator;
 import org.mifosplatform.portfolio.client.domain.Client;
@@ -32,16 +35,18 @@ public class ClientbankDetailsWritePlatformServiceImpl implements ClientbankDeta
 	    private final ClientRepositoryWrapper clientRepository;
 	    private final ClientsBankDetailsRepositoryWrapper clientsBankDetailsRepositoryWrapper;
 	    private final ClientDataValidator clientDataValidator;
+	    private final CodeValueRepositoryWrapper codeValueRepository;
 	    
 	    @Autowired
 	    public ClientbankDetailsWritePlatformServiceImpl(final PlatformSecurityContext context,
 	            final ClientRepositoryWrapper clientRepository, final ClientIdentifierRepository clientIdentifierRepository,
 	            final ClientsBankDetailsRepositoryWrapper clientsBankDetailsRepositoryWrapper,
-	            final ClientDataValidator clientDataValidator) {
+	            final ClientDataValidator clientDataValidator,final CodeValueRepositoryWrapper codeValueRepository) {
 	        this.context = context;
 	        this.clientRepository = clientRepository;
 	        this.clientsBankDetailsRepositoryWrapper=clientsBankDetailsRepositoryWrapper;
 	        this.clientDataValidator= clientDataValidator;
+	        this.codeValueRepository = codeValueRepository;
 	        
 	    }
 
@@ -64,8 +69,15 @@ public class ClientbankDetailsWritePlatformServiceImpl implements ClientbankDeta
                 final BigDecimal lastTransactionAmount=command.bigDecimalValueOfParameterNamed(ClientsBankDetailsApiConstants.lasttransactionamountparamname);
                 final String bankName1=command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.banknameparamname);
                 final String micrCode=command.stringValueOfParameterNamed(ClientsBankDetailsApiConstants.micrcodeparamname);
+                final boolean isPrimaryAccount = command.booleanPrimitiveValueOfParameterNamed(ClientsBankDetailsApiConstants.isPrimaryAccount);
+                CodeValue accountType = null;
+                final Long accountTypeId = command.longValueOfParameterNamed(ClientsBankDetailsApiConstants.accountTypeParamName);
+                if (accountTypeId != null) {
+                	accountType = this.codeValueRepository
+                            .findOneByCodeNameAndIdWithNotFoundDetection(ClientsBankDetailsApiConstants.CLIENTBANKDETAIL_ACCOUNT_TYPE, accountTypeId);
+                }
 
-	            ClientBankDetails clientBankDetails =ClientBankDetails.registerbankdetails(client, benefeciaryName, accountNumber,bankName1,micrCode, lastTransactionAmount, ifscCode, bankName, branchAddress, command);
+	            ClientBankDetails clientBankDetails =ClientBankDetails.registerbankdetails(client, benefeciaryName, accountNumber,bankName1,micrCode, lastTransactionAmount, ifscCode, bankName, branchAddress,isPrimaryAccount,accountType,command);
 	            this.clientsBankDetailsRepositoryWrapper.save(clientBankDetails);
 	            return new CommandProcessingResultBuilder() //
 	                    .withCommandId(command.commandId()) //
@@ -85,14 +97,20 @@ public class ClientbankDetailsWritePlatformServiceImpl implements ClientbankDeta
            
 	    	try{
 	        this.context.authenticatedUser();	
-	        final ClientBankDetails ClientBankDetailsForUpdate = this.clientsBankDetailsRepositoryWrapper.findOneWithNotFoundDetection(bankdetailId);
+	        final ClientBankDetails clientBankDetailsForUpdate = this.clientsBankDetailsRepositoryWrapper.findOneWithNotFoundDetection(bankdetailId);
 	        clientDataValidator.validateUpdateBankDetails(command);
 
-            final Map<String, Object> changes = ClientBankDetailsForUpdate.update(command);
-             this.clientsBankDetailsRepositoryWrapper.saveAndFlush(ClientBankDetailsForUpdate);
+            final Map<String, Object> changes = clientBankDetailsForUpdate.update(command);
+            if (changes.containsKey("accountType")) {
+            	final Long accountTypeId = (Long) changes.get("accountType");
+            	 CodeValue newAccountType = this.codeValueRepository
+                         .findOneByCodeNameAndIdWithNotFoundDetection(ClientsBankDetailsApiConstants.CLIENTBANKDETAIL_ACCOUNT_TYPE, accountTypeId);
+            	 clientBankDetailsForUpdate.updateAccountType(newAccountType);
+            }
+             this.clientsBankDetailsRepositoryWrapper.saveAndFlush(clientBankDetailsForUpdate);
 	            return new CommandProcessingResultBuilder() //
 	                    .withCommandId(command.commandId()) //	                    
-	                    .withEntityId(ClientBankDetailsForUpdate.getId()) //
+	                    .withEntityId(clientBankDetailsForUpdate.getId()) //
 	                    .build();
 	        } catch (final DataIntegrityViolationException dve) {
 	            return CommandProcessingResult.empty();

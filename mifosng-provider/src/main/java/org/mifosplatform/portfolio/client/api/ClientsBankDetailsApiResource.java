@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,6 +27,8 @@ import javax.ws.rs.core.UriInfo;
 import org.mifosplatform.commands.domain.CommandWrapper;
 import org.mifosplatform.commands.service.CommandWrapperBuilder;
 import org.mifosplatform.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.mifosplatform.infrastructure.codes.data.CodeValueData;
+import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.mifosplatform.infrastructure.core.api.ApiRequestParameterHelper;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
@@ -49,19 +53,22 @@ public class ClientsBankDetailsApiResource {
 	    private final ToApiJsonSerializer<ClientBankDetailsData> toApiJsonSerializer;
 	    private final ApiRequestParameterHelper apiRequestParameterHelper;
 	    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+	    private final CodeValueReadPlatformService codeValueReadPlatformService;
 	    
 	    @Autowired
 	    public ClientsBankDetailsApiResource(final PlatformSecurityContext context, 
 	    		final ToApiJsonSerializer<ClientBankDetailsData> toApiJsonSerializer,
 	            final ClientBankDetailsReadPlatformService clientBankDetailsReadPlatformService,
 	            final ApiRequestParameterHelper apiRequestParameterHelper,
-	            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService
+	            final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService,
+	            final CodeValueReadPlatformService codeValueReadPlatformService
 	            ) {
 	        this.context = context;
 	        this.toApiJsonSerializer = toApiJsonSerializer;
 	        this.apiRequestParameterHelper = apiRequestParameterHelper;
 	        this.commandsSourceWritePlatformService = commandsSourceWritePlatformService;
 	        this.clientBankDetailsReadPlatformService=clientBankDetailsReadPlatformService;
+	        this.codeValueReadPlatformService = codeValueReadPlatformService;
 	          }
 	
 	    
@@ -113,12 +120,17 @@ public class ClientsBankDetailsApiResource {
 	    @GET	   
 	    @Consumes({ MediaType.APPLICATION_JSON })
 	    @Produces({ MediaType.APPLICATION_JSON })
-	    public String retrieveOne(@QueryParam("clientId") final Long clientId,@QueryParam("bankId") final Long bankId, @Context final UriInfo uriInfo  ) {
+	    public String retrieveOne(@QueryParam("bankdetailId") final Long bankdetailId, @Context final UriInfo uriInfo  ) {
 	        this.context.authenticatedUser().validateHasReadPermission(ClientsBankDetailsApiConstants.BANKDETAILS_RESOURCE_NAME);
 
 	        final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
-	        ClientBankDetailsData clientBankDetailsData = this.clientBankDetailsReadPlatformService.retrieveClientBankDetails(clientId,bankId);
+	        ClientBankDetailsData clientBankDetailsData = this.clientBankDetailsReadPlatformService.retrieveClientBankDetails(bankdetailId);
+	        
+	        if (settings.isTemplate()) {
+	        	final Collection<CodeValueData> accountTypesList = new ArrayList<>(this.codeValueReadPlatformService.retrieveCodeValuesByCode(ClientsBankDetailsApiConstants.CLIENTBANKDETAIL_ACCOUNT_TYPE));
+	        	clientBankDetailsData = ClientBankDetailsData.templateData(clientBankDetailsData, accountTypesList);
+	        }
 	        
 	        return this.toApiJsonSerializer.serialize(settings, clientBankDetailsData, ClientsBankDetailsApiConstants.CLIENTBANK_DETAILS_RESPONSE_DATA_PARAMETERS);
 	    }
@@ -156,4 +168,34 @@ public class ClientsBankDetailsApiResource {
 	}
 return response.toString();
 }
+	 /**
+	  API-To retrieve all bank details of specific client by clientId
+	  QueryParam- clientId
+	 */
+	 @GET	   
+	 @Path("/getbankdetailsbyclient")
+	 @Consumes({ MediaType.APPLICATION_JSON })
+	 @Produces({ MediaType.APPLICATION_JSON })
+	 public String getBankDetailsByClient(@QueryParam("clientId") final Long clientId,@Context final UriInfo uriInfo  ) {
+	     
+		 this.context.authenticatedUser().validateHasReadPermission(ClientsBankDetailsApiConstants.BANKDETAILS_RESOURCE_NAME);
+	     final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+	     List<ClientBankDetailsData> clientBankDetailsData = this.clientBankDetailsReadPlatformService.retriveAllBankDetailsByClientId(clientId);
+	     return this.toApiJsonSerializer.serialize(settings, clientBankDetailsData, ClientsBankDetailsApiConstants.CLIENTBANK_DETAILS_RESPONSE_DATA_PARAMETERS);
+	 }
+	 
+	 /**
+	  *  API-To retrieve the client bank detail template (e.g. account type code values)
+	  */
+	 @GET
+	 @Path("/template")
+	 @Consumes({ MediaType.APPLICATION_JSON })
+	 @Produces({ MediaType.APPLICATION_JSON })
+	 public String retriveClientBankDetailsTemplate(@Context final UriInfo uriInfo){
+		 this.context.authenticatedUser().validateHasReadPermission(ClientsBankDetailsApiConstants.BANKDETAILS_RESOURCE_NAME);
+		 final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+		 ClientBankDetailsData clientBankDetailsTemplate = this.clientBankDetailsReadPlatformService.retriveClientBankDetailsTemplate(ClientsBankDetailsApiConstants.CLIENTBANKDETAIL_ACCOUNT_TYPE);
+	     return this.toApiJsonSerializer.serialize(settings, clientBankDetailsTemplate, ClientsBankDetailsApiConstants.CLIENTBANK_DETAILS_RESPONSE_DATA_PARAMETERS);
+
+	 }
 }

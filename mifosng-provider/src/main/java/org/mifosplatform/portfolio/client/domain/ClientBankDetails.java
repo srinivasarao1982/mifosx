@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -15,6 +16,7 @@ import javax.persistence.UniqueConstraint;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
+import org.mifosplatform.infrastructure.codes.domain.CodeValue;
 import org.mifosplatform.infrastructure.core.api.JsonCommand;
 import org.mifosplatform.infrastructure.core.domain.AbstractAuditableCustom;
 import org.mifosplatform.portfolio.client.api.ClientsBankDetailsApiConstants;
@@ -59,12 +61,19 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 	    @Column(name = "lasttransaction_date" )
 	    private Date lasttransactiondate;
 	    
+	    @Column(name = "is_primary_account")
+	    private boolean isPrimaryAccount;
 	    
-	   public static ClientBankDetails registerbankdetails(final Client client, final String  beneficiaryname, final String  accountno,final String bankName,final String micrCode,final BigDecimal lastTransactionAmount, final String  ifsccode,
-                final String branchname, final String branchaddress,final JsonCommand command) {
+	    @ManyToOne(fetch = FetchType.LAZY)
+	    @JoinColumn(name = "account_type_cv_id", nullable = true)
+	    private CodeValue accountType;
+	    
+	 
+	public static ClientBankDetails registerbankdetails(final Client client, final String  beneficiaryname, final String  accountno,final String bankName,final String micrCode,final BigDecimal lastTransactionAmount, final String  ifsccode,
+                final String branchname, final String branchaddress, final boolean isPrimaryAccount, final CodeValue accountType, final JsonCommand command) {
 	        final LocalDate lasttransactiondate = command.localDateValueOfParameterNamed(ClientsBankDetailsApiConstants.lasttransactiondateparamname);
 
-		   return new ClientBankDetails(client,beneficiaryname,accountno,lastTransactionAmount,ifsccode,branchname,branchaddress,lasttransactiondate.toDate(),bankName,micrCode);
+		   return new ClientBankDetails(client,beneficiaryname,accountno,lastTransactionAmount,ifsccode,branchname,branchaddress,lasttransactiondate.toDate(),bankName,micrCode,isPrimaryAccount,accountType);
 	   }
       
 	   public Map<String, Object> update(final JsonCommand command) {
@@ -118,7 +127,17 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 	            actualChanges.put(ClientsBankDetailsApiConstants.lasttransactionamountparamname, newValue);
 	            this.lasttransactionAmount =newValue ;
 	        }
-
+	        
+	        if (command.isChangeInBooleanParameterNamed(ClientsBankDetailsApiConstants.isPrimaryAccount, this.isPrimaryAccount)){
+	        	final boolean newValue = command.booleanPrimitiveValueOfParameterNamed(ClientsBankDetailsApiConstants.isPrimaryAccount);
+	        	actualChanges.put(ClientsBankDetailsApiConstants.isPrimaryAccount, newValue);
+	        	this.isPrimaryAccount = newValue;
+	        }
+	        
+	        if (command.isChangeInLongParameterNamed(ClientsBankDetailsApiConstants.accountTypeParamName, this.accountType !=null ? this.accountType.getId() : 0)) {
+	            final Long newValue = command.longValueOfParameterNamed(ClientsBankDetailsApiConstants.accountTypeParamName);
+	            actualChanges.put(ClientsBankDetailsApiConstants.accountTypeParamName, newValue);
+	        }
 
 	        final String dateFormatAsInput = command.dateFormat();
 	        final String localeAsInput = command.locale();
@@ -140,7 +159,7 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 	    }
 
 		public ClientBankDetails(Client client, String beneficiaryname, String accountno,BigDecimal lasttransactionAmount, String ifsccode,
-				String branchname, String branchaddress, Date lasttransactiondate,String bankName,String micrCode) {
+				String branchname, String branchaddress, Date lasttransactiondate,String bankName,String micrCode, boolean isPrimaryAccount, CodeValue accountType) {
 			super();
 			this.client = client;
 			this.beneficiaryname = beneficiaryname;
@@ -152,6 +171,8 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 			this.lasttransactiondate = lasttransactiondate;
 			this.bankname=bankName;
 			this.micrcode=micrCode;
+			this.isPrimaryAccount = isPrimaryAccount;
+			this.accountType = accountType;
 		}
 
 		public Client getClient() {
@@ -237,7 +258,25 @@ public class ClientBankDetails extends AbstractAuditableCustom<AppUser, Long>{
 		public ClientBankDetails() {
 				super();
 			}
+
+		public boolean isPrimaryAccount() {
+			return isPrimaryAccount;
+		}
+
+		public void setPrimaryAccount(boolean isPrimaryAccount) {
+			this.isPrimaryAccount = isPrimaryAccount;
+		}
+		
+		   
+	   public CodeValue getAccountType() {
+			return accountType;
+	   }
+
+	   public void setAccountType(CodeValue accountType) {
+			this.accountType = accountType;
+	   }
 	   
-
-
+	   public void updateAccountType(final CodeValue newAccountType){
+		   this.accountType = newAccountType;
+	   }
 }

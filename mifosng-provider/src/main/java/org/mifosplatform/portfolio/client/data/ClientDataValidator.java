@@ -700,6 +700,17 @@ public final class ClientDataValidator {
                 element);
         baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.lasttransactiondateparamname).value(lastTransactionDate).notNull();
         }
+        
+        if (this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.isPrimaryAccount, element)){
+        	final boolean isPrimaryAccount = this.fromApiJsonHelper.extractBooleanNamed(ClientsBankDetailsApiConstants.isPrimaryAccount, element);
+        	baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.isPrimaryAccount).value(isPrimaryAccount).notNull();
+        }
+        
+        if(this.fromApiJsonHelper.parameterExists(ClientsBankDetailsApiConstants.accountTypeParamName, element)){
+        	final long accountType = this.fromApiJsonHelper.extractLongNamed(ClientsBankDetailsApiConstants.accountTypeParamName, element);
+        	baseDataValidator.reset().parameter(ClientsBankDetailsApiConstants.accountTypeParamName).value(accountType).notNull()
+            .longGreaterThanZero();
+        }
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
 
     }
