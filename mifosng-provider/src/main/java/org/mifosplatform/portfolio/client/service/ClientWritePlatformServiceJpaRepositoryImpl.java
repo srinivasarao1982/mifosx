@@ -478,7 +478,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             }
 
             // For nirantara Address
-
+         
+            if(object.get("naddress")!=null){
             final JsonArray addressArray = object.get("naddress").getAsJsonArray();
             if (addressArray != null && addressArray.size() > 0) {
                 final Set<Address> address = this.clientExtAssembler.assembleAddress(addressArray, clientForUpdate);
@@ -487,7 +488,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                     clientForUpdate.updateAddressExt(address);
                 }
             }
+            }
 
+            if(object.get("familyDetails")!=null){
             // For nirantara familyDetails
             final JsonArray familyDetailsArray = object.get("familyDetails").getAsJsonArray();
             if (familyDetailsArray != null && familyDetailsArray.size() > 0) {
@@ -496,10 +499,14 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                     clientForUpdate.updateFamilyDetails(familyDetails);
                 }
             }
-
+            }
+            
+            if(object.get("naddress")!=null){
             // For nirantara ClientIdentifierWritePlatformService
             this.clientIdentifierWritePlatformService.addClientIdentifierService(clientForUpdate, command,true);
+            }
 
+            if(object.get("cfaOccupations")!=null){
             // For nirantara Occupation Details
             final JsonArray occupationDetailsArray = object.get("cfaOccupations").getAsJsonArray();
             if (occupationDetailsArray != null && occupationDetailsArray.size() > 0) {
@@ -509,7 +516,9 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                     clientForUpdate.updateOccupationDetails(occupationDetails);
                 }
             }
+            }
 
+            if(object.get("nomineeDetails")!=null){
             // For nirantara Nominee Details
             final JsonArray nomineeDetailsArray = object.get("nomineeDetails").getAsJsonArray();
             if (nomineeDetailsArray != null && nomineeDetailsArray.size() > 0) {
@@ -517,6 +526,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 if (nomineeDetails != null && nomineeDetails.size() > 0) {
                     clientForUpdate.updateNomineeDetails(nomineeDetails);
                 }
+            }
             }
 
             // Co Applicant Details

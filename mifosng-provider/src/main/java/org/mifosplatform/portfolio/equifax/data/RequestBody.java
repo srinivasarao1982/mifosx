@@ -12,12 +12,12 @@ public class RequestBody {
 	 public String Gender;
 	 public String PANId;
 	 public String MobilePhone;
-	 public HomePhone HomePhone;
+	 public String HomePhone;
 	 
 	 
 	public RequestBody(String inquiryPurpose, String transactionAmount, String firstName, String lastName,
 			String addrLine1, String state, String postal, String dOB, String gender, String pANId, String mobilePhone,
-			org.mifosplatform.portfolio.equifax.data.HomePhone homePhone) {
+			String homePhone) {
 		super();
 		InquiryPurpose = inquiryPurpose;
 		TransactionAmount = transactionAmount;
@@ -98,10 +98,10 @@ public class RequestBody {
 	public void setMobilePhone(String mobilePhone) {
 		MobilePhone = mobilePhone;
 	}
-	public HomePhone getHomePhone() {
+	public String getHomePhone() {
 		return HomePhone;
 	}
-	public void setHomePhone(HomePhone homePhone) {
+	public void setHomePhone(String homePhone) {
 		HomePhone = homePhone;
 	}
 	 
