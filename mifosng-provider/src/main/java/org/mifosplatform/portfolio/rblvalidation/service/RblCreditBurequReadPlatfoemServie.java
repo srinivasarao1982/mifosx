@@ -15,7 +15,7 @@ public interface RblCreditBurequReadPlatfoemServie {
 
 	List<RblCreditBureauData> getbreauRequstData(final Long cemterId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck);
 	List<RblCreditBureauData> getbreauResponseData(final Long cemterId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck);
-	List<RblCrdeitResponseData> getbreauErrorData(final Long cemterId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck);
+	List<RblCrdeitResponseData> getbreauErrorData(final Long cemterId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck,final boolean eligibleAmountcheck);
     List<RblValidatefileData>getValidateFileData(final Long centerId,final String fromDate,final String toDate,final String fileType);
 	RblEquifaxData generateDataforCreditBureau(final Long clientId);
     

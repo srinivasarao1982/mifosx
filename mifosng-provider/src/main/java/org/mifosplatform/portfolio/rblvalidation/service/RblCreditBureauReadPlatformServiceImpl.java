@@ -199,7 +199,7 @@ private static final class RblCreditBureauResponseDataMapper implements RowMappe
 
  }
 @Override
-public List<RblCrdeitResponseData> getbreauErrorData(final Long centerId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck) {
+public List<RblCrdeitResponseData> getbreauErrorData(final Long centerId,final Long clientId,String fromDate,String toDate,final boolean clientcbcheck,final boolean eligibleAmountcheck) {
     try {
         final AppUser currentUser = this.context.authenticatedUser();
         
@@ -210,6 +210,10 @@ public List<RblCrdeitResponseData> getbreauErrorData(final Long centerId,final L
         if(clientcbcheck){
              Sql ="select ml.loan_amount as proposedAmount ,  "+rm.schema() + " join m_partial_loan ml on ml.client_id=mce.client_id where    ";
         	 Sql =Sql+ "   mce.client_id= "+clientId;
+        	 
+        	 if(eligibleAmountcheck){
+        		 Sql =Sql+ " and mce.id in (select max(id) from m_creditbureau_response where client_id= "+clientId+")"; 
+        	 }
 	
         }else{
             Sql ="select null as proposedAmount ,"+rm.schema() +"where ";

@@ -115,7 +115,7 @@ public class RblValidationApiResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public String getParatialLoan(@QueryParam("centerId") final Long centerId,@QueryParam("clientId") final Long clientId,
-    		@QueryParam("fromDate") final String fromDate,@QueryParam("toDate") final String toDate,@QueryParam("valufor") final String valufor,@QueryParam("clientcbcheck") final boolean clientcbcheck,@Context final UriInfo uriInfo) {
+    		@QueryParam("fromDate") final String fromDate,@QueryParam("toDate") final String toDate,@QueryParam("valufor") final String valufor,@QueryParam("clientcbcheck") final boolean clientcbcheck,@QueryParam("eligibleAmountcheck") final boolean eligibleAmountcheck,@Context final UriInfo uriInfo) {
 
         this.context.authenticatedUser().validateHasReadPermission(RblApiValidationConstant.RBLDETAILS_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
@@ -129,7 +129,7 @@ public class RblValidationApiResource {
         			RblApiValidationConstant.RBL_REQUEST_DATA_PARAMETERS);
         }
         else if(valufor.equalsIgnoreCase("response")){
-        	rblCrdeitResponseData =this.rblCreditBurequReadPlatfoemServie.getbreauErrorData(centerId, clientId, fromDate, toDate,clientcbcheck);
+        	rblCrdeitResponseData =this.rblCreditBurequReadPlatfoemServie.getbreauErrorData(centerId, clientId, fromDate, toDate,clientcbcheck,eligibleAmountcheck);
         	return this.toApiJsonSerializerResponse.serialize(settings, rblCrdeitResponseData,
         			RblApiValidationConstant.RBLRESPONSE_DATA_PARAMETERS);
         	   }
