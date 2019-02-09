@@ -15,6 +15,7 @@ import org.mifosplatform.portfolio.equifax.domain.EquifaxRequest;
 import org.mifosplatform.portfolio.equifax.domain.EquifaxRequestRepositoryWrapper;
 import org.mifosplatform.portfolio.equifax.domain.EquifaxResponseRepositoeyWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 @Service
@@ -27,17 +28,41 @@ public class EquifaxServiceImpl  implements EquifaxService{
         private final EquifaxRequestRepositoryWrapper equifaxRequestRepositoryWrapper;
         private final EquifaxResponseRepositoeyWrapper equifaxResponseRepositoeyWrapper;
         private final EquifaxErrorRepositoryWrapper equifaxErrorRepositoryWrapper;
+        private final String CustomerId;
+        private final String UserId;
+        private final String Password;
+        private final String MemberNumber;
+        private final String SecurityCode;
+        private final String ProductCode;
+        private final String ProductVersion;
+        private final String ReportFormat;
+        private final String CustRefField;
+
       
         @Autowired
         public EquifaxServiceImpl(final PlatformSecurityContext context, final RoutingDataSource dataSource,
         		final EquifaxClientDetailsService equifaxClientDetailsService,final EquifaxRequestRepositoryWrapper equifaxRequestRepositoryWrapper,
-        		final EquifaxResponseRepositoeyWrapper equifaxResponseRepositoeyWrapper,final EquifaxErrorRepositoryWrapper equifaxErrorRepositoryWrapper) {                
+        		final EquifaxResponseRepositoeyWrapper equifaxResponseRepositoeyWrapper,final EquifaxErrorRepositoryWrapper equifaxErrorRepositoryWrapper,
+        		@Value("${CustomerId}") final String CustomerId,@Value("${UserId}") final String UserId,
+        		@Value("${Password}") final String Password,@Value("${MemberNumber}") final String MemberNumber,
+        		@Value("${SecurityCode}") final String SecurityCode,@Value("${ProductCode}") final String ProductCode,
+        		@Value("${ReportFormat}") final String ReportFormat,@Value("${CustRefField}") final String CustRefField,
+        		@Value("${ProductVersion}") final String ProductVersion) {                
             this.context = context;
             this.jdbcTemplate = new JdbcTemplate(dataSource);
             this.equifaxClientDetailsService=equifaxClientDetailsService;
             this.equifaxRequestRepositoryWrapper=equifaxRequestRepositoryWrapper;
             this.equifaxResponseRepositoeyWrapper=equifaxResponseRepositoeyWrapper;
             this.equifaxErrorRepositoryWrapper=equifaxErrorRepositoryWrapper;
+            this.CustomerId=CustomerId;
+            this.UserId=UserId;
+            this.Password=Password;
+            this.MemberNumber=MemberNumber;
+            this.SecurityCode=SecurityCode;
+            this.ProductCode=ProductCode;
+            this.ProductVersion=ProductVersion;
+            this.ReportFormat=ReportFormat;
+            this.CustRefField=CustRefField;
          }
 
 		@Override

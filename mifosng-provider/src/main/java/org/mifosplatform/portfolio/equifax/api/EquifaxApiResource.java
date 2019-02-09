@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Path("/equifaxIntregation")
+@Path("/equifaxintregation")
 @Component
 @Scope("singleton")
 public class EquifaxApiResource {
@@ -80,34 +80,13 @@ public class EquifaxApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public Response create(final String apiRequestBodyAsJson,@QueryParam("clientId") String clientId,
     		@QueryParam("centerId") final Long centerId) {
-    	String errorMsg="";
-    	Boolean isError =false;
-    	/*if(clintId.length()>1){
-    	String [] stringclientsId =clintId.split(",");    	
+        	
+    	String [] stringclientsId =clientId.split(",");    	
     	for(int i=0 ;i<stringclientsId.length;i++){
-    	 Long clientId =Long.parseLong(stringclientsId[i]);    	 
-        PartialLoan partialLoan= this.partialLoanRepository.findByClientIdAndLoanStatus(clientId,1, 0);
-    	if(partialLoan==null){
-    		errorMsg=errorMsg+"Partial Loan is Not Create for Client"+ clientId+"\n";
-    		isError=true;
+    		Long clientIdforequifax =Long.parseLong(stringclientsId[i]);
+        	this.equifaxService.getCreditBureauResult(clientIdforequifax,centerId);     
     	}
-    	}
-    	}
-    	else{
-       	 Long clientId =Long.parseLong(clintId);    	 
-        // PartialLoan partialLoan= this.partialLoanRepository.findByClientIdAndLoanStatus(clientId,1, 0);
-     	if(partialLoan==null){
-     		errorMsg=errorMsg+"Partial Loan is Not Create for Client"+ clientId+"\n";
-     		isError=true;
-     	}
-    	}    	
-    	if(isError){
-    		throw new PartialLoanNotCreatedException(errorMsg);
-    	}*/
         Response response = Response.status(200).build();  	
-   	     Long clientIds =Long.parseLong(clientId);    	 
-
-    	this.equifaxService.getCreditBureauResult(clientIds,centerId);     
         return response;			
 	}
     
