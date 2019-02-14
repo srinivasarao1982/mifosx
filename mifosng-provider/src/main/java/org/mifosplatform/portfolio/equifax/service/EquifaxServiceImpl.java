@@ -4,6 +4,7 @@ package org.mifosplatform.portfolio.equifax.service;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.json.XML;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
@@ -117,48 +118,63 @@ public class EquifaxServiceImpl  implements EquifaxService{
         	   isError=true;
            }
            
-           if(requestBody.getFirstName()==null){
-        	   errsg =errsg+"First Name  Cannot be Null \n";
-        	   isError=true;
-           }
-           if(requestBody.getFirstName().length()>40){
+           if(requestBody.getFirstName()!=null){
+        	   if(requestBody.getFirstName().length()>40){
         	   errsg =errsg+"First Name  length cannot be greater than 40 \n";
         	   isError=true;
+        	   }
            }
-           
-           if(requestBody.getLastName()==null){
-        	   errsg =errsg+"Last Name  Cannot be Null \n";
+           else{
+        	   errsg =errsg+"First Name  Cannot be Null \n";
         	   isError=true;
-           }
-           if(requestBody.getLastName().length()>40){
+           }           
+           
+           
+           if(requestBody.getLastName()!=null){
+        	   if(requestBody.getLastName().length()>40){
         	   errsg =errsg+"Last Name  length cannot be greater than 40 \n";
         	   isError=true;
+        	   }
            }
-           if(requestBody.getState()==null){
-        	   errsg =errsg+"State Line1 Cannot be Null \n";
-        	   isError=true;
-           }
-           if(requestBody.getState().length()>2){
-        	   errsg =errsg+"State  length cannot be greater than 200 \n";
-        	   isError=true;
-           }
-           if(requestBody.getPostal()==null){
-        	   errsg =errsg+"Postal Line1 Cannot be Null \n";
-        	   isError=true;
-           }
-           if(requestBody.getPostal().length()>10){
-        	   errsg =errsg+"Postal Line1 cannot be greater than 10 \n";
-        	   isError=true;
+           else{
+        	   errsg =errsg+"Last Name  Cannot be Null \n";
+        	   isError=true;   
            }
            
-           if(requestBody.getAddrLine1()==null){
+           if(requestBody.getState()!=null){
+        	   if(requestBody.getState().length()>2){
+            	   errsg =errsg+"State  length cannot be greater than 200 \n";
+            	   isError=true;
+               }
+           }
+           else{
+        	   errsg =errsg+"State Line1 Cannot be Null \n";
+        	   isError=true;   
+           }
+         
+           if(requestBody.getPostal()!=null){
+        	   if(requestBody.getPostal().length()>10){
+            	   errsg =errsg+"Postal Line1 cannot be greater than 10 \n";
+            	   isError=true;
+               } 
+           }
+           else{
+        	   errsg =errsg+"Postal Line1 Cannot be Null \n";
+        	   isError=true; 
+           }
+           
+           
+           if(requestBody.getAddrLine1()!=null){
+        	   if(requestBody.getAddrLine1().length()>200){
+            	   errsg =errsg+"Address Line1  length cannot be greater than 200 \n";
+            	   isError=true;
+               }
+           }
+           else{
         	   errsg =errsg+"Address Line1 Cannot be Null \n";
-        	   isError=true;
+        	   isError=true; 
            }
-           if(requestBody.getAddrLine1().length()>200){
-        	   errsg =errsg+"Address Line1  length cannot be greater than 200 \n";
-        	   isError=true;
-           }
+          
            
            if(requestBody.getDOB()==null){
         	   errsg =errsg+"Dob  Cannot be Null \n";
@@ -177,18 +193,23 @@ public class EquifaxServiceImpl  implements EquifaxService{
         	   errsg =errsg+"Mobile Phone Cannot be Null \n";
         	   isError=true;
            }
-            if(isError){
+            /*if(isError){
             	EquifaxError equifaxError =EquifaxError.createEuifaxError(centerId, clientId, errsg);
+            	try{
             	this.equifaxErrorRepositoryWrapper.save(equifaxError);
+            	}
+            	catch(Exception e){
+            		System.out.println(e.getMessage());
+            	}
               }
-            else{
-            	Date dateOfBirt =new Date(requestBody.getDOB());
+            else{*/
+            	DateTime dateOfBirt =new DateTime(requestBody.getDOB());
             	EquifaxRequest equifaxRequest =EquifaxRequest.create(centerId, clientId,
             			Long.parseLong(requestBody.getInquiryPurpose()), Long.parseLong(requestBody.getTransactionAmount()), requestBody.getFirstName(), requestBody.getAddrLine1(),
-            			requestBody.getState(), requestBody.getPostal(), dateOfBirt, requestBody.getGender(), requestBody.getPANId(),
+            			requestBody.getState(), requestBody.getPostal(), dateOfBirt.toDate(), requestBody.getGender(), requestBody.getPANId(),
             			requestBody.getMobilePhone(), requestBody.getHomePhone());
                    	this.equifaxRequestRepositoryWrapper.save(equifaxRequest);
-            }
+            //}
            
            
            

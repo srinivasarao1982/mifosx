@@ -160,7 +160,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                 +"left join m_code_value relegion  on relegion.id =mc.client_classification_cv_id "
                  +"left join m_code_value profession on profession.id =nct.profession_cv_id "
                 +"left join m_code_value edu on edu.id=nct.educational_qualification_cv_id "
-                +"left join `RBL Branch Name` rblbranch on rblbranch.office_id =mc.office_id "
+                +"left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id "
                  +"left join n_coapplicant nco on nco.client_id =mc.id "   
                 +"left join m_code_value nomineeRelation on nomineeRelation.id=nco.sp_relationship_cv_id "
                +"left join m_bankdetails bankdtails on bankdtails.client_id = mc.id ";
@@ -255,7 +255,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                       +"from m_group mg "
                       +"left join m_group center on center.id =mg.parent_id and center.level_id =1 "
                       +"join m_rblcenter mrblg on mg.parent_id =mrblg.center_id  "
-                      +"left join `RBL Branch Name` rblbranch  on rblbranch.office_Id =mg.office_id ";
+                      +"left join `rbl branch name` rblbranch  on rblbranch.office_Id =mg.office_id ";
                       }        
       	
         @Override
@@ -342,7 +342,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                     +"left join m_code_value gurdiangender on gurdiangender.id =mrbl.gurdian_gender "
                     +"left join m_code_value gurdianrelation on gurdianrelation.id =mrbl.relation_cv_id "
                     +"left join m_code_value maritalStaus on maritalStaus.id=nct.marital_status_cv_id "
-                    +"left join `RBL Branch Name` rbb on rbb.office_id =mc.office_id ";
+                    +"left join `rbl branch name` rbb on rbb.office_id =mc.office_id ";
         }        
       	
         @Override
@@ -458,7 +458,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                      +"left join m_code_value gurdianTitle on gurdianTitle.id =mrbl.title "
                      +"left join m_code_value gurdiangender on gurdiangender.id =mrbl.gurdian_gender "
                      +"left join m_code_value gurdianrelation on gurdianrelation.id =mrbl.relation_cv_id "
-                    +"left join `RBL Branch Name` rblbranch on rblbranch.office_id =mc.office_id ";
+                    +"left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id ";
         }        
       	
         @Override
