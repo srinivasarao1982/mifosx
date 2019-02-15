@@ -815,7 +815,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         public String clientLookupByIdentifierSchema() {
             return "c.`RBL_Branch_cd_RBL Branch` as rblbranch, c.`Branch Code` as branchCode, c.`Opening Date` as openingDate, c.`operating region` as operatingRegion, c.`bc branch code` as bcBranchCode, "
                     + "c.collector as collector, c.approver as approver, c.`city code` as cityCode,c.`city name` as cityName,c.`operating region Name` as operatingRegionName,c.`Branch Name` as branchName "
-                    + " from `RBL Branch Name` c where c.office_id=?";
+                    + " from `rbl branch name` c where c.office_id=?";
         }
 
         @Override
