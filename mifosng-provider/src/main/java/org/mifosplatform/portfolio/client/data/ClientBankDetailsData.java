@@ -96,6 +96,16 @@ public class ClientBankDetailsData {
 			return new ClientBankDetailsData(clientBankData.id,clientBankData.clientId, clientBankData.beneficiaryname, clientBankData.ifsccode, clientBankData.branchname, clientBankData.branchaddress, clientBankData.lasttransactiondate, clientBankData.lasttransactionamount, 
 					clientBankData.accountnumber, clientBankData.bankname, clientBankData.micrcode, clientBankData.createdby, clientBankData.createddate, clientBankData.lastmodifyby, clientBankData.lastmodifiedDate, clientBankData.isPrimaryAccount, accountTypesList,clientBankData.accountType);
 		}
+		public String getAccountnumber() {
+			return accountnumber;
+		}
+		public boolean isPrimaryAccount() {
+			return isPrimaryAccount;
+		}
+		public Long getId() {
+			return id;
+		}
+		
         
         
 }
