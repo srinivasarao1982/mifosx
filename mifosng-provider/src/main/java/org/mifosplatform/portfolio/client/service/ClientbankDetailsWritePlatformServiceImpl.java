@@ -1,6 +1,7 @@
 package org.mifosplatform.portfolio.client.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import org.mifosplatform.infrastructure.codes.domain.CodeValue;
@@ -12,12 +13,15 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
 import org.mifosplatform.portfolio.client.api.ClientsBankDetailsApiConstants;
+import org.mifosplatform.portfolio.client.data.ClientBankDetailsData;
 import org.mifosplatform.portfolio.client.data.ClientDataValidator;
 import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientBankDetails;
 import org.mifosplatform.portfolio.client.domain.ClientIdentifierRepository;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientsBankDetailsRepositoryWrapper;
+import org.mifosplatform.portfolio.client.exception.ClientBankDetailsDuplicateAccountNumberException;
+import org.mifosplatform.portfolio.client.exception.ClientBankDetailsDuplicatePrimaryAccountException;
 import org.mifosplatform.portfolio.client.exception.DuplicateClientIdentifierException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,17 +40,20 @@ public class ClientbankDetailsWritePlatformServiceImpl implements ClientbankDeta
 	    private final ClientsBankDetailsRepositoryWrapper clientsBankDetailsRepositoryWrapper;
 	    private final ClientDataValidator clientDataValidator;
 	    private final CodeValueRepositoryWrapper codeValueRepository;
+	    private final ClientBankDetailsReadPlatformService clientBankDetailsReadPlatformService;
 	    
 	    @Autowired
 	    public ClientbankDetailsWritePlatformServiceImpl(final PlatformSecurityContext context,
 	            final ClientRepositoryWrapper clientRepository, final ClientIdentifierRepository clientIdentifierRepository,
 	            final ClientsBankDetailsRepositoryWrapper clientsBankDetailsRepositoryWrapper,
-	            final ClientDataValidator clientDataValidator,final CodeValueRepositoryWrapper codeValueRepository) {
+	            final ClientDataValidator clientDataValidator,final CodeValueRepositoryWrapper codeValueRepository,
+	            final ClientBankDetailsReadPlatformService clientBankDetailsReadPlatformService) {
 	        this.context = context;
 	        this.clientRepository = clientRepository;
 	        this.clientsBankDetailsRepositoryWrapper=clientsBankDetailsRepositoryWrapper;
 	        this.clientDataValidator= clientDataValidator;
 	        this.codeValueRepository = codeValueRepository;
+	        this.clientBankDetailsReadPlatformService = clientBankDetailsReadPlatformService;
 	        
 	    }
 
@@ -76,7 +83,20 @@ public class ClientbankDetailsWritePlatformServiceImpl implements ClientbankDeta
                 	accountType = this.codeValueRepository
                             .findOneByCodeNameAndIdWithNotFoundDetection(ClientsBankDetailsApiConstants.CLIENTBANKDETAIL_ACCOUNT_TYPE, accountTypeId);
                 }
-
+                
+                //duplicate entry validattion check
+                
+                List<ClientBankDetailsData> clientBankDetailsData = this.clientBankDetailsReadPlatformService.retriveAllBankDetailsByClientId(clientId);
+                if(clientBankDetailsData!=null && !clientBankDetailsData.isEmpty()){
+                	for(ClientBankDetailsData clientData : clientBankDetailsData){
+                    	if(clientData.getAccountnumber()!=null && clientData.getAccountnumber().equals(accountNumber)){
+                    		throw new ClientBankDetailsDuplicateAccountNumberException(accountNumber);
+                    	}
+                    	if(isPrimaryAccount && clientData.isPrimaryAccount()){
+                    		throw new ClientBankDetailsDuplicatePrimaryAccountException(accountNumber);
+                    	}
+                    }
+                } 
 	            ClientBankDetails clientBankDetails =ClientBankDetails.registerbankdetails(client, benefeciaryName, accountNumber,bankName1,micrCode, lastTransactionAmount, ifscCode, bankName, branchAddress,isPrimaryAccount,accountType,command);
 	            this.clientsBankDetailsRepositoryWrapper.save(clientBankDetails);
 	            return new CommandProcessingResultBuilder() //
@@ -107,6 +127,22 @@ public class ClientbankDetailsWritePlatformServiceImpl implements ClientbankDeta
                          .findOneByCodeNameAndIdWithNotFoundDetection(ClientsBankDetailsApiConstants.CLIENTBANKDETAIL_ACCOUNT_TYPE, accountTypeId);
             	 clientBankDetailsForUpdate.updateAccountType(newAccountType);
             }
+            
+            //duplicate entry validattion check
+            
+            List<ClientBankDetailsData> clientBankDetailsData = this.clientBankDetailsReadPlatformService.retriveAllBankDetailsByClientId(clientBankDetailsForUpdate.getClient().getId());
+            if(clientBankDetailsData!=null && !clientBankDetailsData.isEmpty()){
+            	for(ClientBankDetailsData clientData : clientBankDetailsData){
+            		if(clientBankDetailsForUpdate.getId()!=clientData.getId()){
+            			if(clientData.getAccountnumber()!=null && clientData.getAccountnumber().equals(clientBankDetailsForUpdate.getAccountno())){
+                    		throw new ClientBankDetailsDuplicateAccountNumberException(clientData.getAccountnumber());
+                    	}
+                    	if(clientBankDetailsForUpdate.isPrimaryAccount() && clientData.isPrimaryAccount()){
+                    		throw new ClientBankDetailsDuplicatePrimaryAccountException(clientData.getAccountnumber());
+                    	}	
+            		}
+                }
+            } 
              this.clientsBankDetailsRepositoryWrapper.saveAndFlush(clientBankDetailsForUpdate);
 	            return new CommandProcessingResultBuilder() //
 	                    .withCommandId(command.commandId()) //	                    
