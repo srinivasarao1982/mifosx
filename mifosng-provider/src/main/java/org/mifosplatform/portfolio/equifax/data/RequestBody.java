@@ -2,7 +2,7 @@ package org.mifosplatform.portfolio.equifax.data;
 
 public class RequestBody {
 	 public String InquiryPurpose;
-	 public String TransactionAmount;
+	 public Long TransactionAmount;
 	 public String FirstName;
 	 public String LastName;
 	 public String AddrLine1;
@@ -15,7 +15,7 @@ public class RequestBody {
 	 public String HomePhone;
 	 
 	 
-	public RequestBody(String inquiryPurpose, String transactionAmount, String firstName, String lastName,
+	public RequestBody(String inquiryPurpose, Long transactionAmount, String firstName, String lastName,
 			String addrLine1, String state, String postal, String dOB, String gender, String pANId, String mobilePhone,
 			String homePhone) {
 		super();
@@ -38,10 +38,10 @@ public class RequestBody {
 	public void setInquiryPurpose(String inquiryPurpose) {
 		InquiryPurpose = inquiryPurpose;
 	}
-	public String getTransactionAmount() {
+	public Long getTransactionAmount() {
 		return TransactionAmount;
 	}
-	public void setTransactionAmount(String transactionAmount) {
+	public void setTransactionAmount(Long transactionAmount) {
 		TransactionAmount = transactionAmount;
 	}
 	public String getFirstName() {

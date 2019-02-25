@@ -4,6 +4,17 @@ package org.mifosplatform.portfolio.equifax.service;
 
 import java.util.Date;
 
+import javax.net.ssl.SSLContext;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.json.XML;
@@ -71,38 +82,7 @@ public class EquifaxServiceImpl  implements EquifaxService{
 			try{
 			
 			RequestBody requestBody =this.equifaxClientDetailsService.getRequestBody(clientId);			
-			 String xml1 ="<soapenv:Envelope xmlns:soapenv="+"http://schemas.xmlsoap.org/soap/envelope/"+" xmlns:ns="+"http://services.equifax.com/eport/ws/schemas/1.0"+">"
-			+" <soapenv:Header/>"
-			+" <soapenv:Body>"
-			+" <ns:InquiryRequest>";
-			
-           JSONObject inputJSON = new JSONObject();
-           inputJSON.append("ns:CustomerId", "someValue1");
-           inputJSON.append("ns:UserId", "someValue2");
-           inputJSON.append("ns:Password", "someValue1");
-           inputJSON.append("ns:MemberNumber", "someValue2");
-           inputJSON.append("ns:SecurityCode", "someValue1");
-           inputJSON.append("ns:ProductCode", "someValue2");
-           inputJSON.append("ns:CustomerId", "someValue1");
-           inputJSON.append("ns:ProductVersion", "someValue2");
-           inputJSON.append("ns:ReportFormat", "someValue2");
-           inputJSON.append("ns:CustRefField", "someValue2");
-           String headeInput = XML.toString(inputJSON,"ns:RequestHeader");
-
-           
-           JSONObject customerJSON = new JSONObject();
-           customerJSON.append("ns:InquiryPurpose", requestBody.getInquiryPurpose());
-           customerJSON.append("ns:TransactionAmount",requestBody.getTransactionAmount());
-           customerJSON.append("ns:FirstName", requestBody.getFirstName());
-           customerJSON.append("ns:LastName", requestBody.getLastName());
-           customerJSON.append("ns:AddrLine1",requestBody.getAddrLine1());
-           customerJSON.append("ns:State", requestBody.getState());
-           customerJSON.append("ns:Postal", requestBody.getPostal());
-           customerJSON.append("ns:DOB", requestBody.getDOB());
-           customerJSON.append("ns:Gender", requestBody.getGender());
-           customerJSON.append("ns:PANId", requestBody.getPANId());
-           customerJSON.append("ns:MobilePhone", requestBody.getMobilePhone());
-           
+			 
            String errsg="";
            boolean  isError=false;
            if(requestBody.getInquiryPurpose()==null ){
@@ -193,6 +173,102 @@ public class EquifaxServiceImpl  implements EquifaxService{
         	   errsg =errsg+"Mobile Phone Cannot be Null \n";
         	   isError=true;
            }
+           
+           
+           if(isError){
+           	EquifaxError equifaxError =EquifaxError.createEuifaxError(centerId, clientId, errsg,requestBody.getTransactionAmount(),requestBody.FirstName);
+           	try{
+           	this.equifaxErrorRepositoryWrapper.save(equifaxError);
+           	}
+           	catch(Exception e){
+           		System.out.println(e.getMessage());
+           	}
+             }
+           else{
+        	   String xml1 ="<soapenv:Envelope xmlns:soapenv="+"\"http://schemas.xmlsoap.org/soap/envelope/\""+" xmlns:ns="+"\"http://services.equifax.com/eport/ws/schemas/1.0\""+">"
+        				+" <soapenv:Header/>"
+        				+" <soapenv:Body>"
+        				+" <ns:InquiryRequest>";
+        				
+        	           JSONObject inputJSON = new JSONObject();
+        	           inputJSON.append("ns:UserId", "UAT_NIRANT");
+        	           inputJSON.append("ns:Password", "abcd*1234");
+        	           inputJSON.append("ns:MemberNumber", "028FZ00016");
+        	           inputJSON.append("ns:SecurityCode", "FR7");
+        	           inputJSON.append("ns:ProductCode", "MCR");
+        	           inputJSON.append("ns:CustomerId", "21");
+        	           inputJSON.append("ns:ProductVersion", "1.0");
+        	           inputJSON.append("ns:ReportFormat", "XML");
+        	           //inputJSON.append("ns:CustRefField", "someValue2");
+        	           String headeInput = XML.toString(inputJSON,"ns:RequestHeader");
+
+        	           
+        	           JSONObject customerJSON = new JSONObject();
+        	           customerJSON.append("ns:InquiryPurpose", requestBody.getInquiryPurpose());
+        	           customerJSON.append("ns:TransactionAmount",requestBody.getTransactionAmount());
+        	           customerJSON.append("ns:FirstName", requestBody.getFirstName());
+        	           customerJSON.append("ns:LastName", requestBody.getLastName());
+        	           customerJSON.append("ns:AddrLine1",requestBody.getAddrLine1());
+        	           customerJSON.append("ns:State", requestBody.getState());
+        	           customerJSON.append("ns:Postal", requestBody.getPostal());
+        	           customerJSON.append("ns:DOB", requestBody.getDOB());
+        	           customerJSON.append("ns:Gender", requestBody.getGender());
+        	           customerJSON.append("ns:PANId", requestBody.getPANId());
+        	           customerJSON.append("ns:MobilePhone", requestBody.getMobilePhone());
+        	           
+        	           String  requestbodyInput = XML.toString(customerJSON,"ns:RequestBody");
+        	           String footerxml="</ns:InquiryRequest>"+"</soapenv:Body>"+"</soapenv:Envelope>";
+        	           
+        	           System.out.println("xml Value is"+ xml1);
+        	           xml1=xml1+headeInput+requestbodyInput+footerxml;
+        	           System.out.println(xml1);
+        	          
+
+           	DateTime dateOfBirt =new DateTime(requestBody.getDOB());
+           	EquifaxRequest equifaxRequest =EquifaxRequest.create(centerId, clientId,
+           			requestBody.getInquiryPurpose(),requestBody.getTransactionAmount(), requestBody.getFirstName(), requestBody.getAddrLine1(),
+           			requestBody.getState(), requestBody.getPostal(), dateOfBirt.toDate(), requestBody.getGender(), requestBody.getPANId(),
+           			requestBody.getMobilePhone(), requestBody.getHomePhone());
+                  	this.equifaxRequestRepositoryWrapper.save(equifaxRequest);
+           
+          
+          
+		    //build httpclient
+		    CloseableHttpClient httpclient = HttpClients.custom()
+		            .build();
+				
+            // this is input request body. TO DO - Please replace this with actual input				    
+
+		    	try {
+		    						
+		      
+		      HttpPost post = new HttpPost("https://eportuat.equifax.co.in/creditreportws/CreditReportWSInquiry/v1.0?wsdl");
+		      post.setEntity(new StringEntity(xml1));
+		      
+		      post.setHeader("Content-type", "application/xml");
+		     // post.setHeader("Authorization", "Basic TkVYVFJVTElWRTpTcmluaXZhc0BuZXh0cnU=");
+		      
+		      // make post call and get response
+		      CloseableHttpResponse response =httpclient.execute(post);
+             
+		      // Retrieve content  form response
+		      HttpEntity entity = response.getEntity();
+             String responsexml = EntityUtils.toString(entity);
+             responsexml=responsexml.replaceAll("\\<\\?xml(.+?)\\?\\>", "").trim();
+             System.out.println(responsexml);
+		    }catch (Exception e){
+		    	// TODO Auto-generated catch block
+				e.printStackTrace();
+		    } finally {
+		           httpclient.close();
+		   }
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			 
+
             /*if(isError){
             	EquifaxError equifaxError =EquifaxError.createEuifaxError(centerId, clientId, errsg);
             	try{
@@ -203,7 +279,7 @@ public class EquifaxServiceImpl  implements EquifaxService{
             	}
               }
             else{*/
-            	DateTime dateOfBirt =new DateTime(requestBody.getDOB());
+            	/*DateTime dateOfBirt =new DateTime(requestBody.getDOB());
             	EquifaxRequest equifaxRequest =EquifaxRequest.create(centerId, clientId,
             			Long.parseLong(requestBody.getInquiryPurpose()), Long.parseLong(requestBody.getTransactionAmount()), requestBody.getFirstName(), requestBody.getAddrLine1(),
             			requestBody.getState(), requestBody.getPostal(), dateOfBirt.toDate(), requestBody.getGender(), requestBody.getPANId(),
@@ -213,18 +289,11 @@ public class EquifaxServiceImpl  implements EquifaxService{
            
            
            
-          String  requestbodyInput = XML.toString(customerJSON,"ns:RequestBody");
-          String footerxml="</ns:InquiryRequest>"+"</soapenv:Body>"+"</soapenv:Envelope>";
-          
-          System.out.println("xml Value is"+ xml1);
-          System.out.println(headeInput);
-          System.out.println(requestbodyInput);
-          System.out.println(footerxml);
-
+        
 			}
 			catch(Exception e){
 				
-			}
+			}*/
          
            
            

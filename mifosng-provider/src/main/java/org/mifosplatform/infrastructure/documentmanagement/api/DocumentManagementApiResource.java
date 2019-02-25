@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -45,7 +46,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import javax.imageio.ImageIO;
+import org.imgscalr.Scalr;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
@@ -108,10 +114,10 @@ public class DocumentManagementApiResource {
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
     @Produces({ MediaType.APPLICATION_JSON })
     public String createDocument(@PathParam("entityType") final String entityType, @PathParam("entityId") final Long entityId,
-            @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file") final InputStream inputStream,
+            @HeaderParam("Content-Length") final Long fileSize, @FormDataParam("file")  InputStream inputStream,
             @FormDataParam("file") final FormDataContentDisposition fileDetails, @FormDataParam("file") final FormDataBodyPart bodyPart,
             @FormDataParam("name") final String name, @FormDataParam("description") final String description,
-            @FormDataParam("documentType") final String documentType) {
+            @FormDataParam("documentType") final String documentType) throws IOException {
 
         /**
          * TODO: also need to have a backup and stop reading from stream after
@@ -131,8 +137,16 @@ public class DocumentManagementApiResource {
         }else{
         	fileName = fileDetails.getFileName();
         }
+        BufferedImage originalImage = ImageIO.read(inputStream);
+
+        originalImage= Scalr.resize(originalImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_EXACT, 128, 153);
+         //To save with original ratio uncomment next line and comment the above.
+         //originalImage= Scalr.resize(originalImage, 153, 128);
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         inputStream = new ByteArrayInputStream(baos.toByteArray());
         final DocumentCommand documentCommand = new DocumentCommand(null, null, commonEntityType,entityId, name,fileName,
                 fileSize, bodyPart.getMediaType().toString(), description, null);
+        
         final Long documentId = this.documentWritePlatformService.createDocument(documentCommand, inputStream);
 
         return this.toApiJsonSerializer.serialize(CommandProcessingResult.resourceResult(documentId, null));

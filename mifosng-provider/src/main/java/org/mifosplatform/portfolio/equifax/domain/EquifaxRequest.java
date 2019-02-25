@@ -23,7 +23,7 @@ public class EquifaxRequest extends AbstractAuditableCustom<AppUser, Long>{
     private Long clientId;	
 	
 	@Column(name = "inquiry_purpose", nullable =false)
-    private Long inquiryPurpose;
+    private String inquiryPurpose;
 	
 	@Column(name = "transaction_amount", nullable =false)
     private  Long transactionamount;
@@ -56,14 +56,14 @@ public class EquifaxRequest extends AbstractAuditableCustom<AppUser, Long>{
     @Column(name = "home_phone", nullable =false)
     private String homephone;
     
-    public static EquifaxRequest create (Long centerId, Long clientId, Long inquiryPurpose, Long transactionamount, String firstName,
+    public static EquifaxRequest create (Long centerId, Long clientId, String inquiryPurpose, Long transactionamount, String firstName,
 			String addressline1, String state, String postal, Date dateOfBirth, String gender, String panId,
 			String mobilePhone, String homephone){
     	return new EquifaxRequest(centerId,clientId,inquiryPurpose,transactionamount,firstName,addressline1,state,postal,dateOfBirth,
     			gender,panId,mobilePhone,homephone);
     }
 
-	public EquifaxRequest(Long centerId, Long clientId, Long inquiryPurpose, Long transactionamount, String firstName,
+	public EquifaxRequest(Long centerId, Long clientId, String inquiryPurpose, Long transactionamount, String firstName,
 			String addressline1, String state, String postal, Date dateOfBirth, String gender, String panId,
 			String mobilePhone, String homephone) {
 		super();
@@ -98,11 +98,11 @@ public class EquifaxRequest extends AbstractAuditableCustom<AppUser, Long>{
 		this.clientId = clientId;
 	}
 
-	public Long getInquiryPurpose() {
+	public String getInquiryPurpose() {
 		return inquiryPurpose;
 	}
 
-	public void setInquiryPurpose(Long inquiryPurpose) {
+	public void setInquiryPurpose(String inquiryPurpose) {
 		this.inquiryPurpose = inquiryPurpose;
 	}
 

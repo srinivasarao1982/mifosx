@@ -62,9 +62,12 @@ import org.mifosplatform.portfolio.savings.domain.SavingsAccountAssembler;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountCharge;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountChargeAssembler;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountDomainService;
+import org.mifosplatform.portfolio.savings.domain.SavingsAccountRepository;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
+import org.mifosplatform.portfolio.savings.domain.SavingsAccountStatusType;
 import org.mifosplatform.portfolio.savings.domain.SavingsProduct;
 import org.mifosplatform.portfolio.savings.domain.SavingsProductRepository;
+import org.mifosplatform.portfolio.savings.exception.SavingAccountExistException;
 import org.mifosplatform.portfolio.savings.exception.SavingsProductNotFoundException;
 import org.mifosplatform.useradministration.domain.AppUser;
 import org.slf4j.Logger;
@@ -98,6 +101,8 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final SequenceNumberRepository sequenceNumberRepository;
+    private final SavingsAccountRepository savingsRepository;
+
 
 
     @Autowired
@@ -112,7 +117,8 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final SavingsAccountDomainService savingsAccountDomainService,
             final SavingsAccountWritePlatformService savingsAccountWritePlatformService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientRepository clientrepo, final StaffRepository staffRepo,
-            final SequenceNumberRepository sequenceNumberRepository) {
+            final SequenceNumberRepository sequenceNumberRepository,
+            final SavingsAccountRepository savingsRepository) {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.savingAccountAssembler = savingAccountAssembler;
@@ -132,6 +138,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         this.clientrepo = clientrepo;
         this.staffRepo = staffRepo;
         this.sequenceNumberRepository=sequenceNumberRepository;
+        this.savingsRepository=savingsRepository;
     }
 
     /*
@@ -557,7 +564,16 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             if (fieldOfficerId != null) {
                   staff = this.staffRepo.findOne(fieldOfficerId);
             }
-
+           
+            List<SavingsAccount> savingsAccounts =this.savingsRepository.findSavingAccountByClientId(clientId);
+            if(savingsAccounts.size()>0){
+            	for(SavingsAccount savingsAccount:savingsAccounts){
+            		if(savingsAccount.isActive() || savingsAccount.isSubmittedAndPendingApproval()||savingsAccount.isApproved()){
+            		   throw new SavingAccountExistException();	
+            		}
+            	}
+            }
+            
             SavingsAccountDataDTO savingsAccountDataDTO = new SavingsAccountDataDTO(client, group, product, staff, new LocalDate(date),
                     submittedBy, fmt);
             if (!isactive) {

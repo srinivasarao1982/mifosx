@@ -9,21 +9,23 @@ public class EquifaxRequestData {
     private String inquiryPurpose;	
     private String firstName;  
     private String mobilePhone;
+    private Long transactionAmount;
     
     
     public static EquifaxRequestData create(Long centerId, Long clientId, String inquiryPurpose, String firstName,
-			String mobilePhone){
-    	     return new EquifaxRequestData (centerId,clientId,inquiryPurpose,firstName,mobilePhone);
+			String mobilePhone,Long transactionAmount){
+    	     return new EquifaxRequestData (centerId,clientId,inquiryPurpose,firstName,mobilePhone,transactionAmount);
      }
     
 	public EquifaxRequestData(Long centerId, Long clientId, String inquiryPurpose, String firstName,
-			String mobilePhone) {
+			String mobilePhone,Long transactionAmount) {
 		super();
 		this.centerId = centerId;
 		this.clientId = clientId;
 		this.inquiryPurpose = inquiryPurpose;
 		this.firstName = firstName;
 		this.mobilePhone = mobilePhone;
+		this.transactionAmount=transactionAmount;
 	}
 	public Long getCenterId() {
 		return centerId;
@@ -54,6 +56,14 @@ public class EquifaxRequestData {
 	}
 	public void setMobilePhone(String mobilePhone) {
 		this.mobilePhone = mobilePhone;
+	}
+
+	public Long getTransactionAmount() {
+		return transactionAmount;
+	}
+
+	public void setTransactionAmount(Long transactionAmount) {
+		this.transactionAmount = transactionAmount;
 	}
     
     

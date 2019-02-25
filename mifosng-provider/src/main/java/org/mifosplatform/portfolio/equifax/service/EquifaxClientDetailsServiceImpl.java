@@ -60,7 +60,7 @@ public class EquifaxClientDetailsServiceImpl implements EquifaxClientDetailsServ
 
 			final String firstName = rs.getString("firstName");
 			final String lastName = rs.getString("lastName");
-			final String principalAmount = rs.getString("transactionAmount");
+			final Long principalAmount = JdbcSupport.getLong(rs,"transactionAmount");
 			final String addressLine1 = rs.getString("addressline1");
 			// final String customerName=rs.getString("customerName");
 			final String state = rs.getString("state");
@@ -82,7 +82,7 @@ public class EquifaxClientDetailsServiceImpl implements EquifaxClientDetailsServ
 		final AppUser currentUser = this.context.authenticatedUser();
 
 		final EquifaxErrorBodyDataMapper rm = new EquifaxErrorBodyDataMapper();
-		String Sql = rm.schema() + "where  mec.centerId =" + centerId + " and mec.created_date >='" + fromDate + "'"
+		String Sql = rm.schema() + " where  mec.center_id =" + centerId + " and mec.created_date >='" + fromDate + "'"
 				+ " and mec.created_date  <='" + toDate + "'";
 
 		List<EquifaxErrorData> equifaxErrorData = this.jdbcTemplate.query(Sql, rm, new Object[] {});
@@ -94,8 +94,8 @@ public class EquifaxClientDetailsServiceImpl implements EquifaxClientDetailsServ
 		}
 
 		public String schema() {
-			return " select  mec.center_id as centerId,mec.client_id as clientId,mec.error as error "
-					+ " from m_equifax_error mec ";
+			return " select  mec.center_id as centerId,mec.client_id as clientId,mec.error as error,mec.customer_name as customerName,mec.transaction_amount as transactionAmount "
+					+ " from  m_equifax_error mec ";
 
 		}
 
@@ -106,7 +106,11 @@ public class EquifaxClientDetailsServiceImpl implements EquifaxClientDetailsServ
 			final Long centerId = JdbcSupport.getLong(rs, "centerId");
 			final Long clientId = JdbcSupport.getLong(rs, "clientId");
 			final String error = rs.getString("error");
-			return new EquifaxErrorData(centerId, clientId, error);
+			final Long transactionAmount = JdbcSupport.getLong(rs, "transactionAmount");
+			final String customerName = rs.getString("customerName");
+
+
+			return new EquifaxErrorData(centerId, clientId, error,transactionAmount,customerName);
 		}
 	}
 
@@ -115,8 +119,8 @@ public class EquifaxClientDetailsServiceImpl implements EquifaxClientDetailsServ
 		final AppUser currentUser = this.context.authenticatedUser();
 
 		final EquifaxRequestDataMapper rm = new EquifaxRequestDataMapper();
-		String Sql = rm.schema() + "where  mre.centerId =" + centerId + " and mre.created_date >='" + fromDate + "'"
-				+ " and mre.created_date  <='" + toDate + "'";
+		String Sql = rm.schema() + "where  mec.center_id =" + centerId + " and mec.created_date >='" + fromDate + "'"
+				+ " and mec.created_date  <='" + toDate + "'";
 
 		List<EquifaxRequestData> equifaxRequestData = this.jdbcTemplate.query(Sql, rm, new Object[] {});
 		return equifaxRequestData;
@@ -127,8 +131,8 @@ public class EquifaxClientDetailsServiceImpl implements EquifaxClientDetailsServ
 		}
 
 		public String schema() {
-			return " select  mec.center_id as centerId,mec.client_id as clientId,mec.inquiry_purpose as enquirypurpose, mec.first_name as firstName,mec.mobile_phone as mobileNo"
-					+ " from m_equifax_request re ";
+			return " select  mec.center_id as centerId,mec.client_id as clientId,mec.inquiry_purpose as enquirypurpose,mec.transaction_amount as Amount, mec.first_name as firstName,mec.mobile_phone as mobileNo"
+					+ " from m_equifax_request mec ";
 
 		}
 
@@ -138,10 +142,27 @@ public class EquifaxClientDetailsServiceImpl implements EquifaxClientDetailsServ
 
 			final Long centerId = JdbcSupport.getLong(rs, "centerId");
 			final Long clientId = JdbcSupport.getLong(rs, "clientId");
-			final String enquirypurpose = rs.getString("enquirypurpose");
+			final Long amount = JdbcSupport.getLong(rs, "Amount");
+
+			 String enquirypurpose = rs.getString("enquirypurpose");
+			if(enquirypurpose.equalsIgnoreCase("1G")){
+				enquirypurpose="Testing";
+			}
+			if(enquirypurpose.equalsIgnoreCase("2E")){
+				enquirypurpose="Housing Loan";
+			}
+			if(enquirypurpose.equalsIgnoreCase("1E")){
+				enquirypurpose="Personal Loan";
+			}
+			if(enquirypurpose.equalsIgnoreCase("0E")){
+				enquirypurpose="Business Loan";
+			}
+			if(enquirypurpose.equalsIgnoreCase("3E")){
+				enquirypurpose="Others";
+			}
 			final String firstName = rs.getString("firstName");
 			final String mobileNumber = rs.getString("mobileNo");
-			return new EquifaxRequestData(centerId, clientId, enquirypurpose, firstName, mobileNumber);
+			return new EquifaxRequestData(centerId, clientId, enquirypurpose, firstName, mobileNumber,amount);
 		}
 	}
 

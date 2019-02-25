@@ -133,6 +133,8 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 
             final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository();
             final String fileLocation = contentRepository.saveFile(inputStream, documentCommand);
+            
+
 
             final Document document = Document.createNew(documentCommand.getParentEntityType(), documentCommand.getParentEntityId(),
                     documentCommand.getName(), documentCommand.getFileName(), documentCommand.getSize(), documentCommand.getType(),
