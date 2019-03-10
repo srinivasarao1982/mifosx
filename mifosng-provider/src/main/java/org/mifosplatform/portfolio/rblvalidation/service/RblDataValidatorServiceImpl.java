@@ -6,10 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.mifosplatform.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.mifosplatform.infrastructure.core.service.RoutingDataSource;
+import org.mifosplatform.infrastructure.documentmanagement.domain.Document;
+import org.mifosplatform.infrastructure.documentmanagement.domain.DocumentRepository;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.portfolio.group.domain.Group;
 import org.mifosplatform.portfolio.group.domain.GroupRepository;
@@ -36,19 +40,22 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 	private final RblDataReadplatformService rblDataReadplatformService;
 	private final ValidateRblFileRepository validateRblFileRepository;
 	private final GroupRepository groupRepository;
+	private final DocumentRepository documentRepository;
 
 	@Autowired
 	public RblDataValidatorServiceImpl(final PlatformSecurityContext context,
 			final CodeValueReadPlatformService codeValueReadPlatformService, final RoutingDataSource dataSource,
 			final RblDataReadplatformService rblDataReadplatformService,
 			final ValidateRblFileRepository validateRblFileRepository,
-			final GroupRepository groupRepository) {
+			final GroupRepository groupRepository,
+			final DocumentRepository documentRepository) {
 		this.context = context;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.codeValueReadPlatformService = codeValueReadPlatformService;
 		this.rblDataReadplatformService=rblDataReadplatformService;
 		this.validateRblFileRepository= validateRblFileRepository;
 		this.groupRepository=groupRepository;
+		this.documentRepository=documentRepository;
 	}
 
 	@Override
@@ -586,9 +593,14 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			if (rblclientsData.getCustomerName()==null){				
 				fr.write(rblclientsData.getCustomerName() +"  Customer Name Cannot be Null  and length must be greater than 0 and lest equal to 100"+"\n");
 			}else{
-				if(!(rblclientsData.getCustomerName().length()>0)&&(rblclientsData.getCustomerName().length()<=100)){
+				if(!(rblclientsData.getCustomerName().length()>0)&&(rblclientsData.getCustomerName().length()<=100)){					
 					fr.write(rblclientsData.getCustomerName() +"  Customer Name  length must be greater than 0 and lest equal to 100"+"\n");
-				}
+				}				
+				Pattern pattern = Pattern.compile("[a-zA-Z0-9]*");				 
+			     Matcher matcher = pattern.matcher(rblclientsData.getCustomerName());			 
+			      if (!matcher.matches()) {
+						fr.write(rblclientsData.getCustomerName() +"  Customer Name  Contains Special Character"+"\n");
+			      } 
 			}
            
 			if(rblclientsData.getTitle()==null){
@@ -735,7 +747,23 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 	
 				}
 			}
+			
 	    }
+           
+			fr.write("****************************************Start Writing Document Related Information for Clients******************************** "+"\n");
+      
+           String clientsIds[]=clientId.split(",");
+           for(int i=0;i<clientsIds.length;i++){
+        	Long  clientIdforDocument=Long.parseLong(clientsIds[0]);
+        	 List<Document>documentList=this.documentRepository.getnoFile(clientIdforDocument);
+				fr.write("Document Uploaded for Clients "+clientIdforDocument+ "Are"+"\n");
+				fr.write("Total Number of Document Uploaded for Clients "+clientIdforDocument+ "Are:  "+documentList.size()+"\n");
+        	 for(Document document:documentList){
+				fr.write(document.getFileName()+"\n");
+        	 }
+        	   
+           }
+           
            fr.close();
       // 	public ValidatefileRecord(Long centerId, String fileType, String fileName, String fileLocation) {
           Long  LoandbcenterId=null;

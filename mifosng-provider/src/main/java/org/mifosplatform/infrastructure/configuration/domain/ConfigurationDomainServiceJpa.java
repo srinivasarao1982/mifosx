@@ -79,10 +79,18 @@ public class ConfigurationDomainServiceJpa implements ConfigurationDomainService
                 .findOneByNameWithNotFoundDetection(allowTransactionsOnHolidayProperty);
         return property.isEnabled();
     }
-
+    
     @Override
     public boolean allowTransactionsOnNonWorkingDayEnabled() {
         final String propertyName = "allow-transactions-on-non_workingday";
+        final GlobalConfigurationProperty property = this.globalConfigurationRepository.findOneByNameWithNotFoundDetection(propertyName);
+        return property.isEnabled();
+    }
+    
+    
+    @Override
+    public boolean clientlevelLoanCounterEnable() {
+        final String propertyName = "loan-counter";
         final GlobalConfigurationProperty property = this.globalConfigurationRepository.findOneByNameWithNotFoundDetection(propertyName);
         return property.isEnabled();
     }

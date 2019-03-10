@@ -138,11 +138,17 @@ public class DocumentManagementApiResource {
         	fileName = fileDetails.getFileName();
         }
         BufferedImage originalImage = ImageIO.read(inputStream);
-
-        originalImage= Scalr.resize(originalImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_EXACT, 128, 153);
+        
+        if(documentName.equalsIgnoreCase("Photo")||documentName.equalsIgnoreCase("Sign") ){
+            originalImage= Scalr.resize(originalImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_EXACT, 200, 200);
+        }
+        else{
+        originalImage= Scalr.resize(originalImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_EXACT, 500, 500);
+        }
          //To save with original ratio uncomment next line and comment the above.
          //originalImage= Scalr.resize(originalImage, 153, 128);
          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         ImageIO.write(originalImage, "jpg", baos);
          inputStream = new ByteArrayInputStream(baos.toByteArray());
         final DocumentCommand documentCommand = new DocumentCommand(null, null, commonEntityType,entityId, name,fileName,
                 fileSize, bodyPart.getMediaType().toString(), description, null);

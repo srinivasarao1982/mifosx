@@ -244,10 +244,12 @@ public final class GroupingTypesDataValidator {
                 .resource(GroupingTypesApiConstants.CENTER_RESOURCE_NAME);
 
         final JsonElement element = command.parsedJson();
-
+        
+        if (this.fromApiJsonHelper.parameterExists(GroupingTypesApiConstants.nameParamName, element)) {
         final String name = this.fromApiJsonHelper.extractStringNamed(GroupingTypesApiConstants.nameParamName, element);
         baseDataValidator.reset().parameter(GroupingTypesApiConstants.nameParamName).value(name).notNull().notExceedingLengthOf(100);
-
+        }
+        
         if (this.fromApiJsonHelper.parameterExists(GroupingTypesApiConstants.externalIdParamName, element)) {
             final String externalId = this.fromApiJsonHelper.extractStringNamed(GroupingTypesApiConstants.externalIdParamName, element);
             baseDataValidator.reset().parameter(GroupingTypesApiConstants.externalIdParamName).value(externalId).notExceedingLengthOf(100);

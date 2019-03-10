@@ -1547,6 +1547,13 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService {
         final String sql = "Select MAX(l.loan_product_counter) from m_loan l where l.client_id = ? and l.product_id=?";
         return this.jdbcTemplate.queryForInt(sql, clientId, productId);
     }
+    
+    @SuppressWarnings("deprecation")
+    @Override
+    public Integer retriveLoanCounter(final Long clientId) {
+        final String sql = "Select MAX(l.loan_product_counter) from m_loan l where l.client_id = ? ";
+        return this.jdbcTemplate.queryForInt(sql, clientId);
+    }
 
     @Override
     public Collection<DisbursementData> retrieveLoanDisbursementDetails(final Long loanId) {

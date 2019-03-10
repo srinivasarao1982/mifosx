@@ -241,7 +241,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 		    final String fileFormat = fileNameArray[1];*/
 	        final String bcName = "Nextru";
 	        final String clientExternalId = client.getExternalId();
-	        final String newFileName = bcName + '_' + clientExternalId + '_' + documentType + fileExtension;
+	        final String newFileName = bcName + '_' + clientExternalId + '_' + documentType+"." + "jpg";
 	        return newFileName;
 	}
 	

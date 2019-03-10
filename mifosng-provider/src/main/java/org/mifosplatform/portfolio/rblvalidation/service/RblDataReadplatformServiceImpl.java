@@ -163,7 +163,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                 +"left join `rbl branch name` rblbranch on rblbranch.office_id =mc.office_id "
                  +"left join n_coapplicant nco on nco.client_id =mc.id "   
                 +"left join m_code_value nomineeRelation on nomineeRelation.id=nco.sp_relationship_cv_id "
-               +"left join m_bankdetails bankdtails on bankdtails.client_id = mc.id ";
+               +"left join m_bankdetails bankdtails on bankdtails.client_id = mc.id  and bankdtails.is_primary_account=1";
 
         }        
       	

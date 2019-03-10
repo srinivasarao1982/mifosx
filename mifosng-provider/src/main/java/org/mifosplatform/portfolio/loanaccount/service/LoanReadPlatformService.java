@@ -80,6 +80,9 @@ public interface LoanReadPlatformService {
     Integer retriveLoanCounter(Long groupId, Integer loanType, Long productId);
 
     Integer retriveLoanCounter(Long clientId, Long productId);
+    
+    Integer retriveLoanCounter(Long clientId);
+
 
     Collection<DisbursementData> retrieveLoanDisbursementDetails(Long loanId);
 

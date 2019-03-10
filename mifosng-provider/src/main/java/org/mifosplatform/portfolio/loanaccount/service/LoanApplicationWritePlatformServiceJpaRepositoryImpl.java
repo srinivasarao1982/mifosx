@@ -149,6 +149,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
     private final ClientExtAssembler clientExtAssembler;
     private final LoanTransactionRepository loanTransactionRepository;
 
+
     @Autowired
     public LoanApplicationWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final FromJsonHelper fromJsonHelper,
             final LoanApplicationTransitionApiJsonValidator loanApplicationTransitionApiJsonValidator,
@@ -222,20 +223,28 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("loan");
+            Integer cycleNumber = 0;
 
             if (loanProduct.useBorrowerCycle()) {
                 final Long clientId = this.fromJsonHelper.extractLongNamed("clientId", command.parsedJson());
                 final Long groupId = this.fromJsonHelper.extractLongNamed("groupId", command.parsedJson());
-                Integer cycleNumber = 0;
+                boolean isclientloanCounter =this.configurationDomainService.clientlevelLoanCounterEnable();
+                 if(isclientloanCounter){
+                	 cycleNumber =this.loanReadPlatformService.retriveLoanCounter(clientId);
+                  }
+                else{
+                
                 if (clientId != null) {
                     cycleNumber = this.loanReadPlatformService.retriveLoanCounter(clientId, loanProduct.getId());
                 } else if (groupId != null) {
-                    cycleNumber = this.loanReadPlatformService.retriveLoanCounter(groupId, AccountType.GROUP.getValue(),
+                    cycleNumber = this.loanReadPlatformService.retriveLoanCounter(groupId, AccountType.JLG.getValue(),
                             loanProduct.getId());
                 }
                 this.loanProductCommandFromApiJsonDeserializer.validateMinMaxConstraints(command.parsedJson(), baseDataValidator,
                         loanProduct, cycleNumber);
-            } else {
+              }
+            }
+             else {
                 this.loanProductCommandFromApiJsonDeserializer.validateMinMaxConstraints(command.parsedJson(), baseDataValidator,
                         loanProduct);
             }
@@ -255,6 +264,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     newLoanApplication.getTermPeriodFrequencyType(), productRelatedDetail.getNumberOfRepayments(),
                     productRelatedDetail.getRepayEvery(), productRelatedDetail.getRepaymentPeriodFrequencyType().getValue(),
                     newLoanApplication);
+            cycleNumber=cycleNumber+1;
+            newLoanApplication.updateClientLoanCounter(cycleNumber);
 
             this.loanRepository.save(newLoanApplication);
             

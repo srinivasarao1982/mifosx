@@ -50,5 +50,8 @@ public interface ConfigurationDomainService {
     public Integer retrieveMaxAllowedClientsInGroupAtTaskTime();
 
     boolean isMeetingMandatoryForJLGLoans();
+    
+    boolean clientlevelLoanCounterEnable();
+
 
 }
