@@ -626,6 +626,7 @@ public final class Client extends AbstractPersistable<Long> {
     private void validateNameParts(final List<ApiParameterError> dataValidationErrors) {
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("client");
 
+        this.fullname=null;
         if (StringUtils.isNotBlank(this.fullname)) {
 
             baseDataValidator.reset().parameter(ClientApiConstants.firstnameParamName).value(this.firstname)
