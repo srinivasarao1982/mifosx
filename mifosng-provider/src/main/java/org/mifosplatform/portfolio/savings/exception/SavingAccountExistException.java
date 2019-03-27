@@ -4,8 +4,8 @@ import org.mifosplatform.infrastructure.core.exception.AbstractPlatformDomainRul
 
 public class SavingAccountExistException extends AbstractPlatformDomainRuleException {
 
-    public SavingAccountExistException() {
-        super("error.msg.saving.account.exist","clients have alreay  open Saving Account" , "clients have alreay  open Saving Account");
+    public SavingAccountExistException(Long clintId) {
+        super("error.msg.saving.account.exist","clients have alreay"+clintId+" open Saving Account" , clintId);
     }
 
 }

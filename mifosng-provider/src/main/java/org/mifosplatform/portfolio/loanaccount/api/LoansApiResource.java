@@ -226,13 +226,14 @@ public class LoansApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String template(@QueryParam("clientId") final Long clientId, @QueryParam("groupId") final Long groupId,
             @QueryParam("productId") final Long productId, @QueryParam("templateType") final String templateType,
-            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly,
-            @DefaultValue("false") @QueryParam("activeOnly") final boolean onlyActive, @Context final UriInfo uriInfo,
+            @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly")  boolean staffInSelectedOfficeOnly,
+            @DefaultValue("false") @QueryParam("activeOnly")  boolean onlyActive, @Context final UriInfo uriInfo,
             @QueryParam ("centerId") final Long centerId) {
 
         this.context.authenticatedUser().validateHasReadPermission(this.resourceNameForPermissions);
 
         // template
+        onlyActive=true;
         final Collection<LoanProductData> productOptions = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup(onlyActive);
 
         // options
@@ -327,6 +328,7 @@ public class LoansApiResource {
                 throw new NotSupportedLoanTemplateTypeException(errorMsg, templateType);
             }
 
+            staffInSelectedOfficeOnly=true;
             allowedLoanOfficers = this.loanReadPlatformService.retrieveAllowedLoanOfficers(officeId, staffInSelectedOfficeOnly);
 
             Collection<PortfolioAccountData> accountLinkingOptions = null;

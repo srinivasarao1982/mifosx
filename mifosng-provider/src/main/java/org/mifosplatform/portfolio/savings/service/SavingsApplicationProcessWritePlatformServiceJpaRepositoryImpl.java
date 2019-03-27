@@ -507,8 +507,16 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         }
         this.savingsAccountWritePlatformService.processPostActiveActions(account, savingsAccountDataDTO.getFmt(), existingTransactionIds,
                 existingReversedTransactionIds);
-        
+      //newly Added 
+        Long seqId =(long) 5;
+        OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+        BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+        account.setExternalId(seqNumber.toString());
         this.savingAccountRepository.save(account);
+        
+        organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+        this.sequenceNumberRepository.save(organasitionSequenceNumber);
+
 
         generateAccountNumber(account);
         // post journal entries for activation charges
@@ -529,8 +537,17 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         final SavingsAccount account = this.savingAccountAssembler.assembleFrom(savingsAccountDataDTO.getClient(),
                 savingsAccountDataDTO.getGroup(), savingsAccountDataDTO.getSavingsProduct(), savingsAccountDataDTO.getStaff(), savingsAccountDataDTO.getApplicationDate(),
                 savingsAccountDataDTO.getAppliedBy());
-       
+      //newly Added 
+        Long seqId =(long) 1;
+        OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+        BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+        account.setExternalId(seqNumber.toString());
         this.savingAccountRepository.save(account);
+        
+        organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+        this.sequenceNumberRepository.save(organasitionSequenceNumber);
+
+        
 
         generateAccountNumber(account);
 
@@ -569,10 +586,13 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             if(savingsAccounts.size()>0){
             	for(SavingsAccount savingsAccount:savingsAccounts){
             		if(savingsAccount.isActive() || savingsAccount.isSubmittedAndPendingApproval()||savingsAccount.isApproved()){
-            		   throw new SavingAccountExistException();	
+            		   throw new SavingAccountExistException(clientId);	
             		}
             	}
             }
+            
+         
+
             
             SavingsAccountDataDTO savingsAccountDataDTO = new SavingsAccountDataDTO(client, group, product, staff, new LocalDate(date),
                     submittedBy, fmt);
@@ -581,8 +601,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             } else {
                 commandProcessingResult = this.createActiveApplication(savingsAccountDataDTO);
             }
-
-            return new CommandProcessingResultBuilder() //
+                    return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //
                     .withEntityId(commandProcessingResult.getSavingsId()) //
                     .withClientId(clientId) //

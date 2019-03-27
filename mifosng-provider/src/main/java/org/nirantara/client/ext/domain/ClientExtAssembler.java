@@ -215,7 +215,7 @@ public class ClientExtAssembler {
 
                 final Long addressTypeId = this.fromApiJsonHelper.extractLongNamed("addressType", element);
                 final Long stateId = this.fromApiJsonHelper.extractLongNamed("state", element);
-                if(stateId==null && addressTypeId==20)
+                if(stateId==null)
         		{
         	    throw new MandatoryFieldException("state"); 
                  }
@@ -244,7 +244,7 @@ public class ClientExtAssembler {
 
                     final String areaLocality = this.fromApiJsonHelper.extractStringNamed("areaLocality", element);
                       
-                    if((areaLocality==null ||  areaLocality.equals("")) && addressTypeId==20)
+                    if((areaLocality==null ||  areaLocality.equals("")))
                     {
                     	throw new MandatoryFieldException("areaLocality"); 
                     }
@@ -253,20 +253,20 @@ public class ClientExtAssembler {
                     
 
                     final String villageTown = this.fromApiJsonHelper.extractStringNamed("villageTown", element);
-                    if((villageTown==null ||  villageTown.equals("")) &&  addressTypeId==20)
+                    if((villageTown==null ||  villageTown.equals("")))
             		{
             	    throw new MandatoryFieldException("villageTown"); 
                      }
 
                     final String taluka = this.fromApiJsonHelper.extractStringNamed("taluka", element);
                     
-                    if((taluka==null ||  taluka.equals("")) &&   addressTypeId==20)
+                    if((taluka==null ||  taluka.equals("")))
             		{
             	    throw new MandatoryFieldException("taluka"); 
                      }
 
                     final Long districtId = this.fromApiJsonHelper.extractLongNamed("district", element);
-                    if(districtId==null &&  addressTypeId==20)
+                    if(districtId==null)
             		{
             	    throw new MandatoryFieldException("districtId"); 
                      }
@@ -281,7 +281,7 @@ public class ClientExtAssembler {
                     }
 
                     final Integer pinCode = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("pinCode", element);
-                    if(pinCode==null &&  addressTypeId==20)
+                    if(pinCode==null )
             		{
             	    throw new MandatoryFieldException("pinCode"); 
                      }
@@ -290,7 +290,7 @@ public class ClientExtAssembler {
 
                     final Long mobileNo = this.fromApiJsonHelper.extractLongNamed("mobileNo", element);
                     
-                    if(mobileNo==null &&  addressTypeId==20)
+                    if(mobileNo==null)
             		{
             	    throw new MandatoryFieldException("mobileNo"); 
                      }
@@ -451,6 +451,10 @@ public class ClientExtAssembler {
                     if (!(documentKey.matches("[0-9]+") && documentKey.length() > 2)) {
                     	throw new ClientIdentifierNumericxception(documentType.label());
                     }
+                    if ( documentKey.length() != 12) {
+                    	throw new AdharNumberLengthException(documentKey.length());
+                    }
+                    
                 }
                 final String documentKey = this.fromApiJsonHelper.extractStringNamed("documentKey", element);
                 final String description = this.fromApiJsonHelper.extractStringNamed("documentDescription", element);
@@ -612,7 +616,11 @@ public class ClientExtAssembler {
                 final Integer age = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("age", element);
 
                 final String mothersMaidenName = this.fromApiJsonHelper.extractStringNamed("mothersMaidenName", element);
+                
+                if(mothersMaidenName==null){
+                	throw new MandatoryFieldException("mothersMaidenName");
 
+                }
                
                 final String emailId = this.fromApiJsonHelper.extractStringNamed("emailId", element);
 
