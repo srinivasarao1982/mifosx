@@ -60,7 +60,8 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
      public CommandProcessingResult createRblCenter(JsonCommand command) {
     	   try{
     	   final Long centerId = command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.centerIdparamname);
-           final Long maximumIndividual = command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.maximumindividualParamName);
+    	   Long maximumIndividual=(long) 0;
+          /* //final Long maximumIndividual = command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.maximumindividualParamName);
              if(maximumIndividual!=null){
             	 String regex = "\\d+";
             	if(maximumIndividual.toString().matches(regex)){
@@ -75,7 +76,7 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
              }
              else{
             	 throw new MandatoryParameterException("Maximum Individual");
-             }
+             }*/
            final String meetingTime = command.stringValueOfParameterNamed(RblCenterDeatilsApiConstant.meetingtimeParamName);	
             if(meetingTime==null){
            	 throw new MandatoryParameterException("Meeting Time");
@@ -174,7 +175,9 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
         	  try{
         		    this.context.authenticatedUser();	
                  //For Validation Purpose
-        		    final Long maximumIndividual = command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.maximumindividualParamName);
+        	    	   Long maximumIndividual=(long) 0;
+
+        	/*	    final Long maximumIndividual = command.longValueOfParameterNamed(RblCenterDeatilsApiConstant.maximumindividualParamName);
                     if(maximumIndividual!=null){
                    	 String regex = "\\d+";
                    	if(maximumIndividual.toString().matches(regex)){
@@ -189,7 +192,7 @@ public class RblCenterWritePlatformServiceImpl implements RblCenterWritePlatform
                     }
                     else{
                    	 throw new MandatoryParameterException("Maximum Individual");
-                    }
+                    }*/
                   final String meetingTime = command.stringValueOfParameterNamed(RblCenterDeatilsApiConstant.meetingtimeParamName);	
                    if(meetingTime==null){
                   	 throw new MandatoryParameterException("Meeting Time");
