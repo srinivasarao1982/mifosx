@@ -196,7 +196,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
                 final CommandWrapper commandWrapper = new CommandWrapperBuilder().associateClientsToGroup(newGroup.getId()).build();
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
-
+           synchronized(this){
             OrganasitionSequenceNumber organasitionSequenceNumber =null;
             BigDecimal seqNumber =null;
             if(groupingType.getId()==1){
@@ -219,7 +219,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             this.groupRepository.save(newGroup);
             organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
             this.sequenceNumberRepository.save(organasitionSequenceNumber);
-
+           }
             /*if(groupingType.getId()==1){
             Long seqId =(long) 3;
             OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);

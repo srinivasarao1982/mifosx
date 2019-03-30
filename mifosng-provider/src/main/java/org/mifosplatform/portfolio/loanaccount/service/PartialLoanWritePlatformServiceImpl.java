@@ -124,6 +124,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                 }
                  int isDisburse=0;
                //newly Added 
+                 synchronized(this){
                  Long seqId =(long) 4;
                  OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
                  BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
@@ -131,6 +132,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                  
                  organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
                  this.sequenceNumberRepository.save(organasitionSequenceNumber);
+                 }
 
                 PartialLoan partialLoan =PartialLoan.createpartialloan(client, group, product,office,staff,purpose,rpdoNumber,principal,loantenure,fixedEmi,submittedDate.toDate(),status,null,1,isDisburse);
 	            this.partialLoanRepositoryWrapper.save(partialLoan);

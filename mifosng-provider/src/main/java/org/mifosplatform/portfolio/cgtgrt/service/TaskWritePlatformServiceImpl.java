@@ -168,6 +168,12 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 			Set<TaskDetails> taskDetailsData = this.taskDataValidator.assembletaskDetails(task, command);
 			task.updatetaskdeatisl(taskDetailsData);
 			this.taskRepositoryWrapper.saveAndFlush(task);;
+			
+			CodeValue codeValue = this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskTypeId);
+	        if(codeValue.label().equalsIgnoreCase("PSM GRT")){
+	        	group.setIsgrtCompleted((long) 0);
+	        	this.groupRepositoryWrapper.saveAndFlush(group);
+	        }
 
 			return new CommandProcessingResultBuilder() //
 					.withCommandId(command.commandId()) //
@@ -262,6 +268,12 @@ public class TaskWritePlatformServiceImpl implements TaskWriteplatformService {
 				taskforUpdate.updatetaskdeatisl(taskDetailsData);
 
 				this.taskRepositoryWrapper.saveAndFlush(taskforUpdate);
+		        CodeValue codeValue = this.codeValueRepositoryWrapper.findOneWithNotFoundDetection(taskTypeId);
+		        if(codeValue.label().equalsIgnoreCase("PSM GRT")){
+		        	group.setIsgrtCompleted((long) 1);
+		        	this.groupRepositoryWrapper.saveAndFlush(group);
+		        }
+				
 			}
 			return new CommandProcessingResultBuilder() //
 					.withCommandId(command.commandId()) //

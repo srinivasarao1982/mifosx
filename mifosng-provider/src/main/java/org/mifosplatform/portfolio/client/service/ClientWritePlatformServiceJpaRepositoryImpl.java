@@ -282,6 +282,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
             //newly Added 
+            synchronized(this){
             Long seqId =(long) 1;
             OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
             BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
@@ -290,7 +291,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             
             organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
             this.sequenceNumberRepository.save(organasitionSequenceNumber);
-
+            }
             
            /* Long seqId =(long) 1;
             OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);

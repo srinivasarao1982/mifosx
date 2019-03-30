@@ -178,6 +178,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
             final SavingsAccount account = this.savingAccountAssembler.assembleFrom(command, submittedBy);
             //newly Added 
+            synchronized(this){
             Long seqId =(long) 5;
             OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
             BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
@@ -187,7 +188,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
             this.sequenceNumberRepository.save(organasitionSequenceNumber);
 
-
+            }
             generateAccountNumber(account);
 
             final Long savingsId = account.getId();

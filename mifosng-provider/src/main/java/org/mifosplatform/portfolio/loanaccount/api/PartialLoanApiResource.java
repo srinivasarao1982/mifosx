@@ -65,7 +65,7 @@ public class PartialLoanApiResource {
     public String retrieveTemplate(@Context final UriInfo uriInfo,@PathParam("parentId") final Long parentId,@PathParam("isActive") final Long isActive,@QueryParam("isDisburse") final Long isDisburse) {
 
         PartialLoanData partialLoanData = null;
-        this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
+        //this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         
          partialLoanData = this.partialLoanReadPlatformService.retrieveTemplate();
@@ -81,7 +81,7 @@ public class PartialLoanApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String getParatialLoan(@PathParam("parentId") final Long parentId,@QueryParam("isSequenceNumber") final boolean isSequenceNumber,@QueryParam("isUpdateStatus") final boolean isUpdateStatus, @Context final UriInfo uriInfo) {
 
-        this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
+       // this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         List<PartialLoanData>partialLoanDatas=new ArrayList<PartialLoanData>();
         List<SequenceNumberData>sequenceNoDatas=new ArrayList<SequenceNumberData>();
@@ -105,7 +105,7 @@ public class PartialLoanApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String getParatialLoan(@PathParam("clientId") final Long clientId, @Context final UriInfo uriInfo) {
 
-        this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
+       // this.context.authenticatedUser().validateHasReadPermission(PartialLoanApiConstant.PARTIALLOAN_RESOURCE_NAME);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         List<PartialLoanData>partialLoanDatas=new ArrayList<PartialLoanData>();
         partialLoanDatas = this.partialLoanReadPlatformService.retrievepartialLoanDetailsforclients(clientId);     
