@@ -1,6 +1,7 @@
 package org.mifosplatform.portfolio.loanaccount.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.joda.time.LocalDate;
@@ -11,10 +12,12 @@ import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.organisation.office.data.OfficeData;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepositoryWrapper;
 import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
 import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
+import org.mifosplatform.organisation.office.service.OfficeReadPlatformService;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.Client;
@@ -30,6 +33,7 @@ import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepositoryWrapp
 import org.mifosplatform.portfolio.loanaccount.exception.PartialLoanAlreadyActive;
 import org.mifosplatform.portfolio.loanproduct.domain.LoanProduct;
 import org.mifosplatform.portfolio.loanproduct.domain.LoanProductRepository;
+import org.mifosplatform.portfolio.savings.domain.SavingsAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,8 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	    private final StaffRepositoryWrapper staffRepositoryWrapper;
 	    private final LoanProductRepository loanProductRepository;
 	    private final SequenceNumberRepository sequenceNumberRepository;
+	    private final OfficeReadPlatformService officeReadPlatformService;
+
 
 	    
 	    @Autowired
@@ -59,7 +65,8 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	            final OfficeRepositoryWrapper officeRepositoryWrapper,
 	            final GroupRepositoryWrapper groupRepositoryWrapper,final StaffRepositoryWrapper staffRepositoryWrapper,
 	            final LoanProductRepository loanProductRepository,
-	            final SequenceNumberRepository sequenceNumberRepository)
+	            final SequenceNumberRepository sequenceNumberRepository,
+	            final OfficeReadPlatformService officeReadPlatformService)
 	            {
 	        this.context = context;
 	        this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -71,6 +78,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	        this.officeRepositoryWrapper=officeRepositoryWrapper;
 	        this.partialLoanDataValidator=partialLoanDataValidator;
 	        this.sequenceNumberRepository=sequenceNumberRepository;
+	        this.officeReadPlatformService=officeReadPlatformService;
 	        
 	    }
 	    
@@ -124,15 +132,13 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                 }
                  int isDisburse=0;
                //newly Added 
-                 synchronized(this){
-                 Long seqId =(long) 4;
-                 OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-                 BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-                 rpdoNumber =seqNumber.toString();
                  
-                 organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-                 this.sequenceNumberRepository.save(organasitionSequenceNumber);
-                 }
+                  ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice(office.getId());
+                  for(OfficeData off:rbloffices){
+                  	if(office.getId()==off.getId()){
+                        rpdoNumber=SeqNumber();
+                  	}
+                  }
 
                 PartialLoan partialLoan =PartialLoan.createpartialloan(client, group, product,office,staff,purpose,rpdoNumber,principal,loantenure,fixedEmi,submittedDate.toDate(),status,null,1,isDisburse);
 	            this.partialLoanRepositoryWrapper.save(partialLoan);
@@ -147,7 +153,19 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	            return CommandProcessingResult.empty();
 	        }
 	    }
-	    
+	 @Transactional  
+	 private String SeqNumber(){
+	    	String extId=null;
+	    	Long seqId =(long) 4;
+            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+            BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+            extId =seqNumber.toString();
+            
+            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+            return extId;
+	    	
+	    }
 	    @Transactional
 	    @Override
 	    public CommandProcessingResult updatePartialLoan( final Long clientId,final Long groupId,final JsonCommand command) {

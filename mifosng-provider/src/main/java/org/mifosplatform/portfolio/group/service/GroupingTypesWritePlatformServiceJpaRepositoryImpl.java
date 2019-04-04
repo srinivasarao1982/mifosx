@@ -6,6 +6,7 @@
 package org.mifosplatform.portfolio.group.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,12 +28,14 @@ import org.mifosplatform.infrastructure.core.data.CommandProcessingResultBuilder
 import org.mifosplatform.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.organisation.office.data.OfficeData;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepository;
 import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
 import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.office.exception.InvalidOfficeException;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
+import org.mifosplatform.organisation.office.service.OfficeReadPlatformService;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
 import org.mifosplatform.portfolio.calendar.domain.Calendar;
@@ -95,6 +98,8 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
     private final SavingsAccountRepository savingsAccountRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final SequenceNumberRepository sequenceNumberRepository;
+    private final OfficeReadPlatformService officeReadPlatformService;
+
 
     @Autowired
     public GroupingTypesWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context,
@@ -105,7 +110,8 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final CodeValueRepositoryWrapper codeValueRepository, final CommandProcessingService commandProcessingService,
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
             final SavingsAccountRepository savingsAccountRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
-            final SequenceNumberRepository sequenceNumberRepository) {
+            final SequenceNumberRepository sequenceNumberRepository,
+            final OfficeReadPlatformService officeReadPlatformService) {
         this.context = context;
         this.groupRepository = groupRepository;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -123,6 +129,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
         this.savingsAccountRepository = savingsAccountRepository;
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.sequenceNumberRepository=sequenceNumberRepository;
+        this.officeReadPlatformService=officeReadPlatformService;
     }
 
     private CommandProcessingResult createGroupingType(final JsonCommand command, final GroupTypes groupingType, final Long centerId) {
@@ -196,47 +203,18 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
                 final CommandWrapper commandWrapper = new CommandWrapperBuilder().associateClientsToGroup(newGroup.getId()).build();
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
-           synchronized(this){
-            OrganasitionSequenceNumber organasitionSequenceNumber =null;
-            BigDecimal seqNumber =null;
-            if(groupingType.getId()==1){
-                Long seqId =(long) 3;
-                 organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-                 newGroup.setExternalId(organasitionSequenceNumber.getSeqNumber().toString());
-                 seqNumber = organasitionSequenceNumber.getSeqNumber();
-                //organasitionSequenceNumber.updateSeqNumber(seqNumber);
-                //this.sequenceNumberRepository.save(organasitionSequenceNumber);
-                }
-                else{
-                	Long seqId =(long) 2;
-                     organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-                     newGroup.setExternalId(organasitionSequenceNumber.getSeqNumber().toString());
-                     seqNumber = organasitionSequenceNumber.getSeqNumber();
-                 //   this.sequenceNumberRepository.save(organasitionSequenceNumber);
-                }
-      
-            // pre-save to generate id for use in group hierarchy
-            this.groupRepository.save(newGroup);
-            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-            this.sequenceNumberRepository.save(organasitionSequenceNumber);
-           }
-            /*if(groupingType.getId()==1){
-            Long seqId =(long) 3;
-            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-            BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newGroup.getExternalId())+1);
-            organasitionSequenceNumber.updateSeqNumber(seqNumber);
-            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+            
+            ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice(officeId);
+            for(OfficeData off:rbloffices){
+            	if(newGroup.getOffice().getId()==off.getId()){
+            		 String extId=  seqgenerator(groupingType.getId().intValue());
+                     newGroup.setExternalId(extId);
+            	}
             }
-            else{
-            	Long seqId =(long) 2;
-                OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-                BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newGroup.getExternalId())+1);
-                organasitionSequenceNumber.updateSeqNumber(seqNumber);
-                this.sequenceNumberRepository.save(organasitionSequenceNumber);
-	
-            }*/
-  
+         
+          this.groupRepository.save(newGroup);
 
+          
             /*
              * Generate hierarchy for a new center/group and all the child
              * groups if they exist
@@ -258,6 +236,27 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             return CommandProcessingResult.empty();
         }
     }
+    
+  @Transactional 
+  private String seqgenerator(int type )  {
+	   String autoexternalId=null;
+	  OrganasitionSequenceNumber organasitionSequenceNumber =null;
+      BigDecimal seqNumber =null;
+      if(type==1){
+          Long seqId =(long) 3;
+           organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+           seqNumber = organasitionSequenceNumber.getSeqNumber();
+          }
+          else{
+          	Long seqId =(long) 2;
+               organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+               seqNumber = organasitionSequenceNumber.getSeqNumber();
+          }
+      autoexternalId=seqNumber.toString();
+      organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+      this.sequenceNumberRepository.save(organasitionSequenceNumber);
+     return autoexternalId;
+  }
 
     @Transactional
     @Override

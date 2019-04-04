@@ -12,6 +12,7 @@
 package org.mifosplatform.portfolio.client.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,11 +36,13 @@ import org.mifosplatform.infrastructure.core.data.CommandProcessingResult;
 import org.mifosplatform.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.organisation.office.data.OfficeData;
 import org.mifosplatform.organisation.office.domain.Office;
 import org.mifosplatform.organisation.office.domain.OfficeRepository;
 import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
 import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
 import org.mifosplatform.organisation.office.exception.OfficeNotFoundException;
+import org.mifosplatform.organisation.office.service.OfficeReadPlatformService;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
 import org.mifosplatform.portfolio.client.api.ClientApiConstants;
@@ -113,6 +116,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final ClientExtAssembler clientExtAssembler;
     private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
     private final SequenceNumberRepository sequenceNumberRepository;
+    private final OfficeReadPlatformService officeReadPlatformService;
 
 
     @Autowired
@@ -126,7 +130,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final CommandProcessingService commandProcessingService, final ConfigurationDomainService configurationDomainService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientExtAssembler clientExtAssembler,
             final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService,
-            final SequenceNumberRepository sequenceNumberRepository) {
+            final SequenceNumberRepository sequenceNumberRepository,
+            final OfficeReadPlatformService officeReadPlatformService) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.officeRepository = officeRepository;
@@ -146,6 +151,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         this.clientExtAssembler = clientExtAssembler;
         this.clientIdentifierWritePlatformService = clientIdentifierWritePlatformService;
         this.sequenceNumberRepository=sequenceNumberRepository;
+        this.officeReadPlatformService=officeReadPlatformService;
     }
 
     @Transactional
@@ -281,24 +287,15 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 final CommandWrapper commandWrapper = new CommandWrapperBuilder().activateClient(null).build();
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
-            //newly Added 
-            synchronized(this){
-            Long seqId =(long) 1;
-            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-            BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-            newClient.setExternalId(seqNumber.toString());
-            this.clientRepository.save(newClient);
-            
-            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-            this.sequenceNumberRepository.save(organasitionSequenceNumber);
+           ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice(officeId);
+            for(OfficeData off:rbloffices){
+            	if(newClient.getOffice().getId()==off.getId()){
+                String ext=seqGenerator(1);
+                newClient.setExternalId(ext);
+            	}
             }
-            
-           /* Long seqId =(long) 1;
-            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-            BigDecimal seqNumber = BigDecimal.valueOf(Long.parseLong(newClient.getExternalId())+1);
-            organasitionSequenceNumber.updateSeqNumber(seqNumber);
-            this.sequenceNumberRepository.save(organasitionSequenceNumber);
-      */      
+            this.clientRepository.save(newClient);
+
             
             if (newClient.isAccountNumberRequiresAutoGeneration()) {
                 AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.CLIENT);
@@ -388,6 +385,19 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         }
     }
 
+    @Transactional
+    private String seqGenerator(int Type){
+    	String extId=null;
+    	 //newly Added 
+        Long seqId =(long) 1;
+        OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+        BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+        extId=seqNumber.toString();
+        organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+        this.sequenceNumberRepository.save(organasitionSequenceNumber);
+       return extId;
+    	
+    }
     @Transactional
     @Override
     public CommandProcessingResult updateClient(final Long clientId, final JsonCommand command) {

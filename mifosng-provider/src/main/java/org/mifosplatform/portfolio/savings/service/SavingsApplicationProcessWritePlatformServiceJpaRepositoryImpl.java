@@ -37,8 +37,10 @@ import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityExce
 import org.mifosplatform.infrastructure.core.service.DateUtils;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.monetary.domain.Money;
+import org.mifosplatform.organisation.office.data.OfficeData;
 import org.mifosplatform.organisation.office.domain.OrganasitionSequenceNumber;
 import org.mifosplatform.organisation.office.domain.SequenceNumberRepository;
+import org.mifosplatform.organisation.office.service.OfficeReadPlatformService;
 import org.mifosplatform.organisation.staff.domain.Staff;
 import org.mifosplatform.organisation.staff.domain.StaffRepository;
 import org.mifosplatform.organisation.staff.domain.StaffRepositoryWrapper;
@@ -102,6 +104,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     private final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository;
     private final SequenceNumberRepository sequenceNumberRepository;
     private final SavingsAccountRepository savingsRepository;
+    private final OfficeReadPlatformService officeReadPlatformService;
 
 
 
@@ -118,7 +121,9 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final SavingsAccountWritePlatformService savingsAccountWritePlatformService,
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientRepository clientrepo, final StaffRepository staffRepo,
             final SequenceNumberRepository sequenceNumberRepository,
-            final SavingsAccountRepository savingsRepository) {
+            final SavingsAccountRepository savingsRepository,
+            final OfficeReadPlatformService officeReadPlatformService)
+ {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
         this.savingAccountAssembler = savingAccountAssembler;
@@ -139,6 +144,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         this.staffRepo = staffRepo;
         this.sequenceNumberRepository=sequenceNumberRepository;
         this.savingsRepository=savingsRepository;
+        this.officeReadPlatformService=officeReadPlatformService;
     }
 
     /*
@@ -177,18 +183,17 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final AppUser submittedBy = this.context.authenticatedUser();
 
             final SavingsAccount account = this.savingAccountAssembler.assembleFrom(command, submittedBy);
-            //newly Added 
-            synchronized(this){
-            Long seqId =(long) 5;
-            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-            BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-            account.setExternalId(seqNumber.toString());            
-            
-            this.savingAccountRepository.save(account);
-            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-            this.sequenceNumberRepository.save(organasitionSequenceNumber);
-
+            ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice(account.officeId());
+            for(OfficeData off:rbloffices){
+            	if(account.officeId()==off.getId()){
+            		 String extId=seqGenerator();
+                     account.setExternalId(extId);            
+            	}
             }
+         
+           
+            this.savingAccountRepository.save(account);
+
             generateAccountNumber(account);
 
             final Long savingsId = account.getId();
@@ -206,6 +211,18 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         }
     }
 
+    @Transactional
+    private String seqGenerator(){
+    	String extId=null;
+    	 Long seqId =(long) 5;
+         OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+         BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
+         extId =seqNumber.toString();          
+         organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+         this.sequenceNumberRepository.save(organasitionSequenceNumber);
+          return extId; 
+    	
+    }
     private void generateAccountNumber(final SavingsAccount account) {
         if (account.isAccountNumberRequiresAutoGeneration()) {
             final AccountNumberFormat accountNumberFormat = this.accountNumberFormatRepository.findByAccountType(EntityAccountType.SAVINGS);

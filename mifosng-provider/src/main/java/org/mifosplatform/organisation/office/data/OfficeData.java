@@ -60,4 +60,41 @@ public class OfficeData implements Serializable {
     public String name() {
         return this.name;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getNameDecorated() {
+		return nameDecorated;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public LocalDate getOpeningDate() {
+		return openingDate;
+	}
+
+	public String getHierarchy() {
+		return hierarchy;
+	}
+
+	public Long getParentId() {
+		return parentId;
+	}
+
+	public String getParentName() {
+		return parentName;
+	}
+
+	public Collection<OfficeData> getAllowedParents() {
+		return allowedParents;
+	}
+    
 }
