@@ -133,7 +133,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                  int isDisburse=0;
                //newly Added 
                  
-                  ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice(office.getId());
+                  ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
                   for(OfficeData off:rbloffices){
                   	if(office.getId()==off.getId()){
                         rpdoNumber=SeqNumber();

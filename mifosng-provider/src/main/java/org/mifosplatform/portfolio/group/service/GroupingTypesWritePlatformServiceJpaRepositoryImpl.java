@@ -204,7 +204,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
             
-            ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice(officeId);
+            ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
             for(OfficeData off:rbloffices){
             	if(newGroup.getOffice().getId()==off.getId()){
             		 String extId=  seqgenerator(groupingType.getId().intValue());
