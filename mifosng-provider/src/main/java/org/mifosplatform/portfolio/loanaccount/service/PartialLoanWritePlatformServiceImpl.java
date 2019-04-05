@@ -153,19 +153,21 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	            return CommandProcessingResult.empty();
 	        }
 	    }
-	 @Transactional  
-	 private String SeqNumber(){
-	    	String extId=null;
-	    	Long seqId =(long) 4;
-            OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-            BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-            extId =seqNumber.toString();
-            
-            organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-            this.sequenceNumberRepository.save(organasitionSequenceNumber);
-            return extId;
-	    	
-	    }
+      
+        @Transactional
+        private synchronized String SeqNumber() {
+          String extId = null;
+          Long seqId = (long) 4;
+          OrganasitionSequenceNumber organasitionSequenceNumber =
+              this.sequenceNumberRepository.findOne(seqId);
+          BigDecimal seqNumber = organasitionSequenceNumber.getSeqNumber();
+          extId = seqNumber.toString();
+      
+          organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+          this.sequenceNumberRepository.saveAndFlush(organasitionSequenceNumber);
+          return extId;
+      
+        }
 	    @Transactional
 	    @Override
 	    public CommandProcessingResult updatePartialLoan( final Long clientId,final Long groupId,final JsonCommand command) {

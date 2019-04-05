@@ -237,25 +237,24 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
         }
     }
     
-  @Transactional 
-  private String seqgenerator(int type )  {
-	   String autoexternalId=null;
-	  OrganasitionSequenceNumber organasitionSequenceNumber =null;
-      BigDecimal seqNumber =null;
-      if(type==1){
-          Long seqId =(long) 3;
-           organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-           seqNumber = organasitionSequenceNumber.getSeqNumber();
-          }
-          else{
-          	Long seqId =(long) 2;
-               organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-               seqNumber = organasitionSequenceNumber.getSeqNumber();
-          }
-      autoexternalId=seqNumber.toString();
-      organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-      this.sequenceNumberRepository.save(organasitionSequenceNumber);
-     return autoexternalId;
+  @Transactional
+  private synchronized String seqgenerator(int type) {
+    String autoexternalId = null;
+    OrganasitionSequenceNumber organasitionSequenceNumber = null;
+    BigDecimal seqNumber = null;
+    if (type == 1) {
+      Long seqId = (long) 3;
+      organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+      seqNumber = organasitionSequenceNumber.getSeqNumber();
+    } else {
+      Long seqId = (long) 2;
+      organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
+      seqNumber = organasitionSequenceNumber.getSeqNumber();
+    }
+    autoexternalId = seqNumber.toString();
+    organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+    this.sequenceNumberRepository.saveAndFlush(organasitionSequenceNumber);
+    return autoexternalId;
   }
 
     @Transactional

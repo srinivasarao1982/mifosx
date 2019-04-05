@@ -385,19 +385,20 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         }
     }
 
-    @Transactional
-    private String seqGenerator(int Type){
-    	String extId=null;
-    	 //newly Added 
-        Long seqId =(long) 1;
-        OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-        BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-        extId=seqNumber.toString();
-        organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-        this.sequenceNumberRepository.save(organasitionSequenceNumber);
-       return extId;
-    	
-    }
+  @Transactional
+  private synchronized String seqGenerator(int Type) {
+    String extId = null;
+    // newly Added
+    Long seqId = (long) 1;
+    OrganasitionSequenceNumber organasitionSequenceNumber =
+        this.sequenceNumberRepository.findOne(seqId);
+    BigDecimal seqNumber = organasitionSequenceNumber.getSeqNumber();
+    extId = seqNumber.toString();
+    organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+    this.sequenceNumberRepository.saveAndFlush(organasitionSequenceNumber);
+    return extId;
+
+  }
     @Transactional
     @Override
     public CommandProcessingResult updateClient(final Long clientId, final JsonCommand command) {
