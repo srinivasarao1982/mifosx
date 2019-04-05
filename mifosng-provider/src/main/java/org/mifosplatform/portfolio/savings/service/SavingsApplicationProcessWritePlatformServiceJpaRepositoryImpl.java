@@ -212,16 +212,17 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     }
 
     @Transactional
-    private String seqGenerator(){
-    	String extId=null;
-    	 Long seqId =(long) 5;
-         OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-         BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-         extId =seqNumber.toString();          
-         organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-         this.sequenceNumberRepository.save(organasitionSequenceNumber);
-          return extId; 
-    	
+    private synchronized String seqGenerator() {
+      String extId = null;
+      Long seqId = (long) 5;
+      OrganasitionSequenceNumber organasitionSequenceNumber =
+          this.sequenceNumberRepository.findOne(seqId);
+      BigDecimal seqNumber = organasitionSequenceNumber.getSeqNumber();
+      extId = seqNumber.toString();
+      organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
+      this.sequenceNumberRepository.saveAndFlush(organasitionSequenceNumber);
+      return extId;
+  
     }
     private void generateAccountNumber(final SavingsAccount account) {
         if (account.isAccountNumberRequiresAutoGeneration()) {
