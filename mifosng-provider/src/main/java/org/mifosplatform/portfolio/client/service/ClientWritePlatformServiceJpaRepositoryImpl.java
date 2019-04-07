@@ -572,7 +572,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             this.fromApiJsonDeserializer.validateActivation(command);
 
             final Client client = this.clientRepository.findOneWithNotFoundDetection(clientId);
-            validateParentGroupRulesBeforeClientActivation(client);
+          //  validateParentGroupRulesBeforeClientActivation(client);
 
             final Locale locale = command.extractLocale();
             final DateTimeFormatter fmt = DateTimeFormat.forPattern(command.dateFormat()).withLocale(locale);

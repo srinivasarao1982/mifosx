@@ -63,7 +63,7 @@ public class TaskReadPlatformServiceImpl implements TaskReadPlatformService {
 		Collection<EnumOptionData> attendenceTypeOptions=this.attendanceDropdownReadPlatformService.retrieveAttendanceTypeOptions();
 		Collection<StaffData> staffOptions=null; 
 		if(roleId!=null){
-			if(roleId==11){
+			if(roleId==12){
 				officeId=(long) 35;
 			}
 		 staffOptions=this.staffReadPlatformService.retrieveAllStaffForDropdownBasedOnRole(officeId,roleId);
