@@ -49,6 +49,8 @@ import org.mifosplatform.portfolio.client.api.ClientApiConstants;
 import org.mifosplatform.portfolio.client.data.ClientDataValidator;
 import org.mifosplatform.portfolio.client.domain.AccountNumberGenerator;
 import org.mifosplatform.portfolio.client.domain.Client;
+import org.mifosplatform.portfolio.client.domain.ClientExternalId;
+import org.mifosplatform.portfolio.client.domain.ClientExternalIdRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.domain.ClientStatus;
 import org.mifosplatform.portfolio.client.exception.ClientActiveForUpdateException;
@@ -117,6 +119,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
     private final SequenceNumberRepository sequenceNumberRepository;
     private final OfficeReadPlatformService officeReadPlatformService;
+    private final ClientExternalIdRepositoryWrapper clientExternalIdRepository;
 
 
     @Autowired
@@ -131,7 +134,8 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientExtAssembler clientExtAssembler,
             final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService,
             final SequenceNumberRepository sequenceNumberRepository,
-            final OfficeReadPlatformService officeReadPlatformService) {
+            final OfficeReadPlatformService officeReadPlatformService,
+            final ClientExternalIdRepositoryWrapper clientExternalIdRepository) {
         this.context = context;
         this.clientRepository = clientRepository;
         this.officeRepository = officeRepository;
@@ -152,6 +156,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
         this.clientIdentifierWritePlatformService = clientIdentifierWritePlatformService;
         this.sequenceNumberRepository=sequenceNumberRepository;
         this.officeReadPlatformService=officeReadPlatformService;
+        this.clientExternalIdRepository=clientExternalIdRepository;
     }
 
     @Transactional
@@ -288,13 +293,23 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
                 rollbackTransaction = this.commandProcessingService.validateCommand(commandWrapper, currentUser);
             }
            ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
-            for(OfficeData off:rbloffices){
+           /* for(OfficeData off:rbloffices){
             	if(newClient.getOffice().getId()==off.getId()){
-                String ext=seqGenerator(1);
-                newClient.setExternalId(ext);
+                newClient.setExternalId(null);
             	}
             }
-            this.clientRepository.save(newClient);
+            
+            this.clientRepository.save(newClient);*/
+            
+            for(OfficeData off:rbloffices){
+            	if(newClient.getOffice().getId()==off.getId()){
+            		ClientExternalId clientExternalId =new ClientExternalId(newClient);
+            		this.clientExternalIdRepository.save(clientExternalId);
+            		newClient.setExternalId(clientExternalId.getId().toString());
+                    this.clientRepository.save(newClient);
+
+            	}
+            }
 
             
             if (newClient.isAccountNumberRequiresAutoGeneration()) {

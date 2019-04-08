@@ -67,6 +67,8 @@ import org.mifosplatform.portfolio.savings.domain.SavingsAccountDomainService;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountRepository;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.mifosplatform.portfolio.savings.domain.SavingsAccountStatusType;
+import org.mifosplatform.portfolio.savings.domain.SavingsExternalId;
+import org.mifosplatform.portfolio.savings.domain.SavingsExternalIdRepositoryWrapper;
 import org.mifosplatform.portfolio.savings.domain.SavingsProduct;
 import org.mifosplatform.portfolio.savings.domain.SavingsProductRepository;
 import org.mifosplatform.portfolio.savings.exception.SavingAccountExistException;
@@ -105,6 +107,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     private final SequenceNumberRepository sequenceNumberRepository;
     private final SavingsAccountRepository savingsRepository;
     private final OfficeReadPlatformService officeReadPlatformService;
+    private final SavingsExternalIdRepositoryWrapper savingsExternalIdRepository;
 
 
 
@@ -122,7 +125,8 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, final ClientRepository clientrepo, final StaffRepository staffRepo,
             final SequenceNumberRepository sequenceNumberRepository,
             final SavingsAccountRepository savingsRepository,
-            final OfficeReadPlatformService officeReadPlatformService)
+            final OfficeReadPlatformService officeReadPlatformService,
+            final SavingsExternalIdRepositoryWrapper savingsExternalIdRepository)
  {
         this.context = context;
         this.savingAccountRepository = savingAccountRepository;
@@ -145,6 +149,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         this.sequenceNumberRepository=sequenceNumberRepository;
         this.savingsRepository=savingsRepository;
         this.officeReadPlatformService=officeReadPlatformService;
+        this.savingsExternalIdRepository=savingsExternalIdRepository;
     }
 
     /*
@@ -184,15 +189,21 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
             final SavingsAccount account = this.savingAccountAssembler.assembleFrom(command, submittedBy);
             ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
-            for(OfficeData off:rbloffices){
+            for(OfficeData off:rbloffices){            	
             	if(account.officeId()==off.getId()){
-            		 String extId=seqGenerator();
-                     account.setExternalId(extId);            
+                     account.setExternalId(null);            
             	}
             }
-         
-           
+            
             this.savingAccountRepository.save(account);
+            for(OfficeData off:rbloffices){            	
+            	if(account.officeId()==off.getId()){
+            		SavingsExternalId savingsExternalId =new SavingsExternalId(account);
+            		this.savingsExternalIdRepository.save(savingsExternalId);
+            		account.setExternalId(savingsExternalId.getId().toString());
+            	}
+            }
+            this.savingAccountRepository.saveAndFlush(account);
 
             generateAccountNumber(account);
 
@@ -213,6 +224,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
     @Transactional
     private synchronized String seqGenerator() {
+      //TODO: unused method need remove 
       String extId = null;
       Long seqId = (long) 5;
       OrganasitionSequenceNumber organasitionSequenceNumber =

@@ -29,6 +29,8 @@ import org.mifosplatform.portfolio.group.domain.GroupRepositoryWrapper;
 import org.mifosplatform.portfolio.loanaccount.api.PartialLoanApiConstant;
 import org.mifosplatform.portfolio.loanaccount.data.PartialLoanDataValidator;
 import org.mifosplatform.portfolio.loanaccount.domain.PartialLoan;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanExternalId;
+import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanExternalIdRepositoryWrapper;
 import org.mifosplatform.portfolio.loanaccount.domain.PartialLoanRepositoryWrapper;
 import org.mifosplatform.portfolio.loanaccount.exception.PartialLoanAlreadyActive;
 import org.mifosplatform.portfolio.loanproduct.domain.LoanProduct;
@@ -55,6 +57,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	    private final LoanProductRepository loanProductRepository;
 	    private final SequenceNumberRepository sequenceNumberRepository;
 	    private final OfficeReadPlatformService officeReadPlatformService;
+	    private final PartialLoanExternalIdRepositoryWrapper partialLoanExternalIdRepository;
 
 
 	    
@@ -66,7 +69,8 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	            final GroupRepositoryWrapper groupRepositoryWrapper,final StaffRepositoryWrapper staffRepositoryWrapper,
 	            final LoanProductRepository loanProductRepository,
 	            final SequenceNumberRepository sequenceNumberRepository,
-	            final OfficeReadPlatformService officeReadPlatformService)
+	            final OfficeReadPlatformService officeReadPlatformService,
+	            final PartialLoanExternalIdRepositoryWrapper partialLoanExternalIdRepository)
 	            {
 	        this.context = context;
 	        this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -79,6 +83,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
 	        this.partialLoanDataValidator=partialLoanDataValidator;
 	        this.sequenceNumberRepository=sequenceNumberRepository;
 	        this.officeReadPlatformService=officeReadPlatformService;
+	        this.partialLoanExternalIdRepository=partialLoanExternalIdRepository;
 	        
 	    }
 	    
@@ -133,15 +138,20 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
                  int isDisburse=0;
                //newly Added 
                  
-                  ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
-                  for(OfficeData off:rbloffices){
-                  	if(office.getId()==off.getId()){
-                        rpdoNumber=SeqNumber();
-                  	}
-                  }
+                 
 
                 PartialLoan partialLoan =PartialLoan.createpartialloan(client, group, product,office,staff,purpose,rpdoNumber,principal,loantenure,fixedEmi,submittedDate.toDate(),status,null,1,isDisburse);
 	            this.partialLoanRepositoryWrapper.save(partialLoan);
+	            ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
+                for(OfficeData off:rbloffices){
+                	if(office.getId()==off.getId()){
+                		PartialLoanExternalId partialLoanExternalId =new PartialLoanExternalId(partialLoan);
+                		this.partialLoanExternalIdRepository.save(partialLoanExternalId);
+                		partialLoan.setRpdonumber(partialLoanExternalId.getId().toString());
+                	}
+                }
+	            this.partialLoanRepositoryWrapper.save(partialLoan);
+
 	            return new CommandProcessingResultBuilder() //
 	                    .withCommandId(command.commandId()) //
 	                    .withOfficeId(client.officeId()) //
@@ -156,6 +166,7 @@ public class PartialLoanWritePlatformServiceImpl  implements PartialLoanWritepla
       
         @Transactional
         private synchronized String SeqNumber() {
+          //TODO: Unused mentioned to be removed
           String extId = null;
           Long seqId = (long) 4;
           OrganasitionSequenceNumber organasitionSequenceNumber =
