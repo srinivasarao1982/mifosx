@@ -47,7 +47,11 @@ import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepositoryWrapper;
 import org.mifosplatform.portfolio.client.service.LoanStatusMapper;
 import org.mifosplatform.portfolio.group.api.GroupingTypesApiConstants;
+import org.mifosplatform.portfolio.group.domain.CenterExternalId;
+import org.mifosplatform.portfolio.group.domain.CenterExternalIdRepositoryWrapper;
 import org.mifosplatform.portfolio.group.domain.Group;
+import org.mifosplatform.portfolio.group.domain.GroupExternalId;
+import org.mifosplatform.portfolio.group.domain.GroupExternalIdRepositoryWrapper;
 import org.mifosplatform.portfolio.group.domain.GroupLevel;
 import org.mifosplatform.portfolio.group.domain.GroupLevelRepository;
 import org.mifosplatform.portfolio.group.domain.GroupRepositoryWrapper;
@@ -99,6 +103,8 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final SequenceNumberRepository sequenceNumberRepository;
     private final OfficeReadPlatformService officeReadPlatformService;
+    private final CenterExternalIdRepositoryWrapper centerExternalIdRepository;
+    private final GroupExternalIdRepositoryWrapper groupExternalIdRepository;
 
 
     @Autowired
@@ -111,7 +117,8 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             final CalendarInstanceRepository calendarInstanceRepository, final ConfigurationDomainService configurationDomainService,
             final SavingsAccountRepository savingsAccountRepository, final LoanRepositoryWrapper loanRepositoryWrapper,
             final SequenceNumberRepository sequenceNumberRepository,
-            final OfficeReadPlatformService officeReadPlatformService) {
+            final OfficeReadPlatformService officeReadPlatformService,
+            final CenterExternalIdRepositoryWrapper centerExternalIdRepository,GroupExternalIdRepositoryWrapper groupExternalIdRepository) {
         this.context = context;
         this.groupRepository = groupRepository;
         this.clientRepositoryWrapper = clientRepositoryWrapper;
@@ -130,6 +137,8 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
         this.loanRepositoryWrapper = loanRepositoryWrapper;
         this.sequenceNumberRepository=sequenceNumberRepository;
         this.officeReadPlatformService=officeReadPlatformService;
+        this.centerExternalIdRepository=centerExternalIdRepository;
+        this.groupExternalIdRepository=groupExternalIdRepository;
     }
 
     private CommandProcessingResult createGroupingType(final JsonCommand command, final GroupTypes groupingType, final Long centerId) {
@@ -205,16 +214,23 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
             }
             
             ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
-            for(OfficeData off:rbloffices){
-            	if(newGroup.getOffice().getId()==off.getId()){
-            		 String extId=  seqgenerator(groupingType.getId().intValue());
-                     newGroup.setExternalId(extId);
-            	}
+           
+          for (OfficeData off : rbloffices) {
+            if (newGroup.getOffice().getId() == off.getId()) {
+    
+              if (groupingType.getId().intValue() == 1) {
+                CenterExternalId centerExternalId = new CenterExternalId(newGroup);
+                this.centerExternalIdRepository.save(centerExternalId);
+                newGroup.setExternalId(centerExternalId.getId().toString());
+              } else {
+                GroupExternalId groupExternalId = new GroupExternalId(newGroup);
+                this.groupExternalIdRepository.save(groupExternalId);
+                newGroup.setExternalId(groupExternalId.getId().toString());
+              }
             }
-         
+          }
           this.groupRepository.save(newGroup);
 
-          
             /*
              * Generate hierarchy for a new center/group and all the child
              * groups if they exist
@@ -239,6 +255,7 @@ public class GroupingTypesWritePlatformServiceJpaRepositoryImpl implements Group
     
   @Transactional
   private synchronized String seqgenerator(int type) {
+    //TODO: Unused method to be removed in next release
     String autoexternalId = null;
     OrganasitionSequenceNumber organasitionSequenceNumber = null;
     BigDecimal seqNumber = null;
