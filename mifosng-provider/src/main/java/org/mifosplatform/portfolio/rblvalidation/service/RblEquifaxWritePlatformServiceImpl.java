@@ -244,7 +244,7 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 				      post.setEntity(new StringEntity(xml));
 				      
 				      post.setHeader("Content-type", "application/xml");
-				      post.setHeader("Authorization", "Basic TkVYVFJVTElWRTpTcmluaXZhc0BuZXh0cnU=");
+				      post.setHeader("Authorization", "Basic TkVYVFJVTElWRTpsZGFwQHNyaW5pdmFzQDE5ODI=");
 				      
 				      // make post call and get response
 				      CloseableHttpResponse response =httpclient.execute(post);
