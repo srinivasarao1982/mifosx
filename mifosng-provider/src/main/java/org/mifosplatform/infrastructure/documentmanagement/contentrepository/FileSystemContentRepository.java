@@ -127,7 +127,7 @@ public class FileSystemContentRepository implements ContentRepository {
                 + ThreadLocalContextUtil.getTenant().getName().replaceAll(" ", "").trim() + File.separator + "documents" + File.separator
                 // + entityType + File.separator + entityId + File.separator + ContentRepositoryUtils.generateRandomString();
                 //Nextru Specific change : Clients and Loans documents will be store in to single location RBL related changes.
-                + entityType + File.separator + entityId + File.separator;
+                + entityType + File.separator + entityId;
     }
 
     /**
