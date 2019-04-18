@@ -46,6 +46,9 @@ public class RblLoanValidationData {
         private String gurdianAddressline1;
         private String maritalStatus;
         private Integer spouseAge;
+        private String bankName;
+        private String ifscCode;
+        private String bankAccountNo;
         //private String gurdianAddressline2 =rs.getString("gurdianAddressline2");
        // private String gurdianAddressline3 =rs.getString("gurdianAddressline3");
       //  private String gurdianState =rs.getString("gurdianState");
@@ -294,7 +297,7 @@ public class RblLoanValidationData {
 				String nomineeAddressline3,String nomineeRlation,Date nomineeDateOfBirth ,String nomineeAge,String nomineeGender,
 				String nomineestate,String nomineecity,String nomineeMinor,String gurdianTitle,String gurdianName,Date gurdianDateofBirth,
 				String gurdianGender,String gurdianAddressline1,String gurdianRelation,String maritalStatus,Integer spouseAge
-         ) {
+				,String bankName,String ifscCode,String bankAccountNo ) {
 			super();
 			this.externalId = externalId;
 			this.customerExternalId = customerExternalId;
@@ -341,6 +344,9 @@ public class RblLoanValidationData {
 	       this.gurdianRelation=gurdianRelation ;
 	       this.spouseAge=spouseAge;
 	       this.maritalStatus=maritalStatus;
+	       this.bankName=bankName;
+	       this.ifscCode=ifscCode;
+	       this.bankAccountNo=bankAccountNo;
 		}
 		public String getMaritalStatus() {
 			return maritalStatus;
@@ -356,6 +362,24 @@ public class RblLoanValidationData {
 		}
 		public void setGurdianRelation(String gurdianRelation) {
 			this.gurdianRelation = gurdianRelation;
+		}
+		public String getBankName() {
+			return bankName;
+		}
+		public void setBankName(String bankName) {
+			this.bankName = bankName;
+		}
+		public String getIfscCode() {
+			return ifscCode;
+		}
+		public void setIfscCode(String ifscCode) {
+			this.ifscCode = ifscCode;
+		}
+		public String getBankAccountNo() {
+			return bankAccountNo;
+		}
+		public void setBankAccountNo(String bankAccountNo) {
+			this.bankAccountNo = bankAccountNo;
 		}
 	
 

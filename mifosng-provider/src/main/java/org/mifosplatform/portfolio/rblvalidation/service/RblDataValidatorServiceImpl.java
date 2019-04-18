@@ -530,44 +530,53 @@ public class RblDataValidatorServiceImpl implements RblDataValidatorService{
 			}
 			else{
 				if(rblloanData.getSpouseAge()<18 && rblloanData.getSpouseAge()>58)
-				fr.write("Spouse Age Must Be Between 18 to 58");
+				fr.write("Spouse Age Must Be Between 18 to 58" +"\n");
 			}
 			if(rblloanData.getNomineeName()==null){
-				fr.write("Nominee Name Cannot Be Null");
+				fr.write("Nominee Name Cannot Be Null" +"\n");
 			}
 			if(rblloanData.getNomineeAddressline1()==null){
-				fr.write("Nominee Address Line1 Cannot Be Null");
+				fr.write("Nominee Address Line1 Cannot Be Null" +"\n");
 
 			}
 			if(rblloanData.getNomineeRlation()==null){
-				fr.write("Nominee Relation  Cannot Be Null");
+				fr.write("Nominee Relation  Cannot Be Null" +"\n");
 			}
 			if(rblloanData.getNomineeDateOfBirth()==null){
-				fr.write("Nominee Date of Birth  Cannot Be Null");
+				fr.write("Nominee Date of Birth  Cannot Be Null" +"\n");
 			}
 			if(rblloanData.getNomineeAge()==null){
-				fr.write("Nominee Age Cannot Be Null");
+				fr.write("Nominee Age Cannot Be Null" +"\n");
 			}
 			if(rblloanData.getNomineeGender()==null){
-				fr.write("Nominee Gender Cannot Be Null");
+				fr.write("Nominee Gender Cannot Be Null" +"\n");
 			}
 			if(rblloanData.getGurdianTitle()==null){
-				fr.write("Gurdian Title Cannot Be Null");
+				fr.write("Gurdian Title Cannot Be Null" +"\n");
 			}
 			if(rblloanData.getGurdianName()==null){
-				fr.write("Gurdian Name Cannot Be Null");
+				fr.write("Gurdian Name Cannot Be Null"+"\n");
 			}
 			if(rblloanData.getGurdianDateofBirth()==null){
-				fr.write("Gurdian Date of Birth Cannot Be Null");
+				fr.write("Gurdian Date of Birth Cannot Be Null"+"\n");
 			}
 			if(rblloanData.getGurdianGender()==null){
-				fr.write("Gurdian Gender Cannot Be Null");
+				fr.write("Gurdian Gender Cannot Be Null"+"\n");
 			}
 			if(rblloanData.getGurdianAddressline1()==null){
-				fr.write("Gurdian Address 1 Cannot   Be Null");
+				fr.write("Gurdian Address 1 Cannot   Be Null"+"\n");
 			}
 			if(rblloanData.getGurdianRelation()==null){
-				fr.write("GurdianRelation Cannot   Be Null");
+				fr.write("GurdianRelation Cannot   Be Null"+"\n");
+			}
+			if(rblloanData.getBankAccountNo()==null){
+				fr.write("BankAccount Number can nto   Be Null"+"\n");
+			}
+			if(rblloanData.getBankName()==null){
+				fr.write("BankName can not   Be Null"+"\n");
+			}
+			if(rblloanData.getIfscCode()==null){
+				fr.write("Ifsc Code can not   Be Null"+"\n");
 			}
 			}
 //======================================================Rbl Client Data Validation================================================//	

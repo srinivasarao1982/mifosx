@@ -314,7 +314,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                     +"ifnull(ml.loan_counter,1) as loanCycle,nlt.loanApplication_Id as barcodeNo,ml.expected_firstrepaymenton_date as loanStratDate,"
                     +"ml.expected_firstrepaymenton_date as repaymentStartDate,ml.expected_disbursedon_date as ExceptedDisbursementDate,"
                     +"rbb.`bc branch code` as bcBranchCode,s.display_name as colector ,staff.display_name as approver,rbl.to_Up_flag as TopUpLoanFlag,"
-                    +"rbl.hosiptal_cash as hosiptalCash,rbl.prepaid_charge as prepaidCharge,"
+                    +"rbl.hosiptal_cash as hosiptalCash,rbl.prepaid_charge as prepaidCharge,mbk.bank_name as bankName,mbk.ifsc_code as ifscCode ,mbk.account_no as accountNumber, "
                     +"nc.first_name as nomineeName, concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as nomineeAddressline1,"
                     +"concat(ifnull(na.house_no,''),ifnull(na.street_no,' ')) as gurdianAddressline1,concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as nomineeAddressline2,"
                     +"concat(ifnull(na.area_locality,''),ifnull(na.landmark,' ')) as gurdianAddressline2,ifnull(na.taluka,'') as nomineeAddressline3,"
@@ -324,6 +324,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
                     +"nomineestate.code_score as nomineestate,nomineestate.code_score as gurdianState,'02' as nomineeMinor,relation.code_score as nomineeRlation,nc.date_of_birth as nomineeDateOfBirth,gender.code_score as nomineeGender, "
                     +"if(mp.repayment_period_frequency_enum=1,'02',if(mp.repayment_period_frequency_enum=0,'01',if(mp.repayment_period_frequency_enum=2,'04',if(mp.repayment_period_frequency_enum=3,'07',0)))) as repaymentfrequency "
                     +" from m_client mc "
+                    +" left join m_bankdetails mbk on mbk.client_id =mc.id and mbk.is_primary_account=1 "
                     + "left join n_coapplicant nc on nc.client_id =mc.id "
                     + "left join n_client_ext nct on mc.id=nct.client_id "
                     + "left join n_address na on na.client_id =mc.id and na.address_type_cv_id= 26 "
@@ -403,6 +404,9 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             final String gurdianRelation =rs.getString("gurdianRelation");
             final String maritalStaus =rs.getString("MaritalSta");
             final Integer SpouseAge=JdbcSupport.getInteger(rs, "SpouseAge") ;//,Round(datediff(curdate(),mrbl.spouse_DatofBirth)/365) as SpouseAge
+            final String bankName=rs.getString("bankName");
+            final String ifscCode=rs.getString("ifscCode");
+            final String accountNo=rs.getString("accountNumber");
 
             
             return new RblLoanValidationData(externalId,customerExternalId,centerExtrenalId,groupExternalId,loanProductCode,loanPurpose,
@@ -410,7 +414,7 @@ public class RblDataReadplatformServiceImpl  implements RblDataReadplatformServi
             		repaymentStartDate,bcBranchCode,colector,approver,ExceptedDisbursementDate,TopUpLoanFlag,hosiptalCash,prepaidCharge,
             		nomineeName,nomineeAddressline1,nomineeAddressline2,nomineeAddressline3,nomineeRlation,nomineeDateOfBirth,nomineeAge
             		,nomineeGender,nomineestate,nomineecity,nomineeMinor,gurdianTitle,gurdianName,gurdianDateofBirth,gurdianGender,gurdianAddressline1,
-            		gurdianRelation,maritalStaus,SpouseAge);
+            		gurdianRelation,maritalStaus,SpouseAge,bankName,ifscCode,accountNo);
         }
 
     }

@@ -532,22 +532,31 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
         final Set<Long> existingTransactionIds = new HashSet<>();
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
+        
+        ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
+        for(OfficeData off:rbloffices){            	
+        	if(account.officeId()==off.getId()){
+                 account.setExternalId(null);            
+        	}
+        }
+        
+        this.savingAccountRepository.save(account);
+        for(OfficeData off:rbloffices){            	
+        	if(account.officeId()==off.getId()){
+        		SavingsExternalId savingsExternalId =new SavingsExternalId(account);
+        		this.savingsExternalIdRepository.save(savingsExternalId);
+        		account.setExternalId(savingsExternalId.getId().toString());
+        	}
+        }
 
         if (amountForDeposit.isGreaterThanZero()) {
             this.savingAccountRepository.save(account);
         }
         this.savingsAccountWritePlatformService.processPostActiveActions(account, savingsAccountDataDTO.getFmt(), existingTransactionIds,
                 existingReversedTransactionIds);
-      //newly Added 
-        Long seqId =(long) 5;
-        OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-        BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-        account.setExternalId(seqNumber.toString());
-        this.savingAccountRepository.save(account);
         
-        organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-        this.sequenceNumberRepository.save(organasitionSequenceNumber);
-
+        
+      
 
         generateAccountNumber(account);
         // post journal entries for activation charges
@@ -568,18 +577,25 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         final SavingsAccount account = this.savingAccountAssembler.assembleFrom(savingsAccountDataDTO.getClient(),
                 savingsAccountDataDTO.getGroup(), savingsAccountDataDTO.getSavingsProduct(), savingsAccountDataDTO.getStaff(), savingsAccountDataDTO.getApplicationDate(),
                 savingsAccountDataDTO.getAppliedBy());
-      //newly Added 
-        Long seqId =(long) 1;
-        OrganasitionSequenceNumber organasitionSequenceNumber = this.sequenceNumberRepository.findOne(seqId);
-        BigDecimal seqNumber =organasitionSequenceNumber.getSeqNumber(); 
-        account.setExternalId(seqNumber.toString());
+        
+        ArrayList<OfficeData> rbloffices= (ArrayList<OfficeData>) this.officeReadPlatformService.retrieverblOffice((long) 35);
+        for(OfficeData off:rbloffices){            	
+        	if(account.officeId()==off.getId()){
+                 account.setExternalId(null);            
+        	}
+        }
+        
         this.savingAccountRepository.save(account);
-        
-        organasitionSequenceNumber.updateSeqNumber(seqNumber.add(new BigDecimal(1)));
-        this.sequenceNumberRepository.save(organasitionSequenceNumber);
-
-        
-
+        for(OfficeData off:rbloffices){            	
+        	if(account.officeId()==off.getId()){
+        		SavingsExternalId savingsExternalId =new SavingsExternalId(account);
+        		this.savingsExternalIdRepository.save(savingsExternalId);
+        		account.setExternalId(savingsExternalId.getId().toString());
+        	}
+        }
+      
+        this.savingAccountRepository.save(account);
+    
         generateAccountNumber(account);
 
         return new CommandProcessingResultBuilder() //
