@@ -277,6 +277,7 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 			 JSONObject rblCreditReportBody = RblCreditBureauResponseData.getJSONObject("getConsumerCreditReport").getJSONObject("getConsumerCreditReportBody");
 			 JSONObject rblCreditReportReply =rblCreditReportBody.getJSONObject("getConsumerCreditReportReply");
 			 JSONObject rblcreditReason =rblCreditReportReply.getJSONObject("creditDecisionReasons");
+			 String eligibleAmount="0";
 			 if(rblCreditReportReply.getString("creditApproved").equalsIgnoreCase("false")){			 
 				 final Client clientforUpdate =this.clientRepository.findOneWithNotFoundDetection(clientId);
 				 ClientStatus status = ClientStatus.REJECTED;
@@ -304,13 +305,14 @@ public class RblEquifaxWritePlatformServiceImpl implements RblEquifaxWritePlatfo
 					  partialLoanforUpdate.updatestatus(codevaluseStatus);
 					  partialLoanforUpdate.updateisActive(0);
 				  this.partialLoanRepositoryWrapper.saveAndFlush(partialLoanforUpdate);
+				  eligibleAmount=rblCreditReportReply.getString("eligibleLoanAmount");
 
 			 }
 			 JSONObject rsponse =(JSONObject) RblCreditBureauResponseData.getJSONObject("getConsumerCreditReport").getJSONObject("Header");
 			 RblHeaderData rblHeaderData= rblEquifaxData.getHeader();
 			 CreditBureaoResponse creditBureaoResponse=
 					 CreditBureaoResponse.create(centerId, rblHeaderData.getRequestUUID(), rblHeaderData.getServiceName(), rblHeaderData.getChannelId(), rblHeaderData.getCorpId(),
-							 rblCreditReportReply.getString("creditApproved"), rblcreditReason.getString("reason"), rblCreditReportReply.getString("eligibleLoanAmount"), null, clientId);
+							 rblCreditReportReply.getString("creditApproved"), rblcreditReason.getString("reason"),eligibleAmount , null, clientId);
 			 
 			 this.credeitBureauResponseRepositoryWrapper.save(creditBureaoResponse);
 			
